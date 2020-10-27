@@ -1,0 +1,70 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+#left {
+    position: fixed;
+    text-align: right;
+    background: #f5f6fa;
+    width: 300px;
+    height: 100%;
+    padding: 50px 10px;
+}
+#logo {
+    width: 110px;
+    height: 110px;
+    border: 5px solid transparent;
+    margin: 0 0 10px auto;
+    background-color: green;
+}
+#left h4 {
+    color: #777;
+    font-size: 14px;
+}
+#left p {
+    color: #6e6e6e;
+}
+#left .rim {
+    width: 80px;
+    height: 5px;
+    float: right;
+    background: #666;
+}
+header {
+    padding: 30px 10px;
+    text-align: right;
+    line-height: 26px;
+}
+header a,
+header a:hover {
+    text-decoration: none;
+}
+#right {
+    margin-left: 300px;
+}
+#right .items {
+    padding-top: 20px;
+    padding-left: 20px;
+    margin-bottom: -8px;
+    font-size: 0.8em;
+}
+#right .items .date {
+    color: #888;
+    margin-right: 10px;
+}
+#right .items a {
+    font-size: 1.3em;
+    line-height: 1.3em;
+    margin-top: 5px;
+}
+#right .items a,
+#right .items a:hover {
+    text-decoration: none;
+}
+#right .items p{
+    font-size: 16px;
+    margin-bottom: 0;
+}
