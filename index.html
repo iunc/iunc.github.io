@@ -6,14 +6,17 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="./imgs/favicon.ico"/>
+    <link rel="icon" type="image/png" href="./imgs/favicon.ico" />
+
+    <!-- font-awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
 
-<!-- main css -->
-<link rel="stylesheet" href="./style.css">
+    <!-- main css -->
+    <link rel="stylesheet" href="./style.css">
+</head>
 
 <body>
     <!-- left -->
@@ -35,6 +38,11 @@
 
     <!-- right -->
     <div id="right">
+        <div class="items">
+            <span class="date">28-10-2020</span> html, css <br>
+            <a href="https://iunc.github.io/menuItem/">menuItem</a>
+            <p class="font-italic">Tạo hiệu ứng khi rê chuột vào menu</p>
+        </div>
         <div class="items">
             <span class="date">27-10-2020</span> bootstrap, js <br>
             <a href="https://iunc.github.io/quanLyNhanVien/">quanLyNhanVien</a>
@@ -72,11 +80,20 @@
         </div>
     </div>
     <!-- //right -->
+
+    <!-- love -->
+    <div class="box">
+        <p class="text-dark text-center font-weight-bold" id="count"></p>
+        <button class="love" id="btnLove">
+            <i class="fa fa-heart text-danger"></i>
+        </button>
+    </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="./main.js"></script>
 </body>
 
 </html>
