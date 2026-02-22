@@ -3,12 +3,13 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-aut
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "DÁN_API_KEY_CỦA_BẠN",
-  authDomain: "DÁN_AUTH_DOMAIN",
-  projectId: "DÁN_PROJECT_ID",
-  storageBucket: "DÁN_STORAGE_BUCKET",
-  messagingSenderId: "DÁN_SENDER_ID",
-  appId: "DÁN_APP_ID"
+  apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
+  authDomain: "iunc-login.firebaseapp.com",
+  projectId: "iunc-login",
+  storageBucket: "iunc-login.firebasestorage.app",
+  messagingSenderId: "359473829379",
+  appId: "1:359473829379:web:b1102278155f598e316036",
+  measurementId: "G-79M0B1KJW5"
 };
 
 const app = initializeApp(firebaseConfig);
