@@ -11,23 +11,5 @@
   </script>
 </head>
 <body>
-  <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js")
-      .then(() => console.log("SW registered"))
-      .catch(err => console.log("SW error", err));
-  }
-</script>
-  <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js").then(reg => {
-      alert("Service Worker đã đăng ký thành công");
-    }).catch(err => {
-      alert("SW lỗi: " + err);
-    });
-  } else {
-    alert("Trình duyệt không hỗ trợ SW");
-  }
-  </script>
 </body>
 </html>
