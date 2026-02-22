@@ -148,21 +148,53 @@
     <div class="footer">Encrypted Channel v1.0</div>
   </div>
 
-  <script>
-    function login() {
-      const status = document.getElementById("status");
-      status.innerText = "Initializing secure channel...";
-      
-      setTimeout(() => {
-        status.innerText = "Authenticating...";
-      }, 800);
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-      setTimeout(() => {
-        status.innerText = "Access Granted";
-        status.style.color = "#00ff66";
-      }, 1800);
-    }
-  </script>
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+  apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
+  authDomain: "iunc-login.firebaseapp.com",
+  projectId: "iunc-login",
+  storageBucket: "iunc-login.firebasestorage.app",
+  messagingSenderId: "359473829379",
+  appId: "1:359473829379:web:b1102278155f598e316036",
+  measurementId: "G-79M0B1KJW5"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.login = function () {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const status = document.getElementById("status");
+
+    status.style.color = "#00aaff";
+    status.innerText = "Initializing secure channel...";
+
+    setTimeout(() => {
+      status.innerText = "Authenticating...";
+    }, 800);
+
+    setTimeout(() => {
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          status.innerText = "Access Granted";
+          status.style.color = "#00ff66";
+
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 1000);
+        })
+        .catch((error) => {
+          status.innerText = "Access Denied";
+          status.style.color = "red";
+        });
+    }, 1500);
+  };
+</script>
 
 </body>
 </html>                   
