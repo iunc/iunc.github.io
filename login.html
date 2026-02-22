@@ -146,6 +146,23 @@
 #togglePassword:hover {
   opacity: 1;
 }
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #111;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  display: none;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00aaff, #00ffcc);
+  box-shadow: 0 0 10px #00aaff;
+  transition: width 0.2s;
+}
   </style>
 </head>
 
@@ -155,7 +172,9 @@
     <div class="scanline"></div>
     <div class="title">SECURE TERMINAL</div>
     <div class="status" id="status"></div>
-
+    <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+    </div>
     <input type="email" id="email" placeholder="Tài khoản">
     <div class="password-wrapper">
     <input type="password" id="password" placeholder="Mật khẩu">
@@ -210,11 +229,28 @@
   }
 
   status.innerText = "XÁC THỰC THÀNH CÔNG";
-  status.style.color = "#00ff66";
+status.style.color = "#00ff66";
 
-  setTimeout(() => {
-    window.location.href = "dashboard.html";
-  }, 1000);
+const progressBar = document.querySelector(".progress-bar");
+const progressFill = document.getElementById("progressFill");
+
+progressBar.style.display = "block";
+
+let progress = 0;
+
+const interval = setInterval(() => {
+  progress += 5;
+  progressFill.style.width = progress + "%";
+
+  if (progress >= 100) {
+    clearInterval(interval);
+    status.innerText = "Đang thiết lập phiên bảo mật...";
+
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 800);
+  }
+}, 80);
 })
         .catch(() => {
   failedAttempts++;
