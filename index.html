@@ -1,22 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0f0f0f">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redirect</title>
   <script>
-    //window.location.href = "login.html";
+    window.location.href = "login.html";
   </script>
 </head>
 <body>
-  <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/swv2.js")
-      .then(() => console.log("SW registered"))
-      .catch(err => console.log("SW error", err));
-  }
-  </script>
 </body>
 </html>
