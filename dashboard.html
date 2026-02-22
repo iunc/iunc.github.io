@@ -88,19 +88,11 @@
 <div id="danhSach"></div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// Firebase config (giống login)
 const firebaseConfig = {
   apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
   authDomain: "iunc-login.firebaseapp.com",
@@ -114,86 +106,109 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let nguoiDung = null;
-let idDangSua = null;
-
+// Kiểm tra đăng nhập
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
-    nguoiDung = user;
-    taiDanhSach();
+    loadNotes(user.uid);
   }
 });
 
-window.dangXuat = function () {
+// Logout
+window.logout = function () {
   signOut(auth).then(() => {
     window.location.href = "login.html";
   });
 };
 
-window.luuGhiChu = async function () {
-  const text = document.getElementById("noiDung").value.trim();
+// Lưu ghi chú
+window.addNote = async function () {
+  const user = auth.currentUser;
+  const text = document.getElementById("noteInput").value.trim();
   if (!text) return;
 
-  if (idDangSua) {
-    await updateDoc(doc(db, "users", nguoiDung.uid, "notes", idDangSua), {
-      text: text
-    });
-    idDangSua = null;
-  } else {
-    await addDoc(collection(db, "users", nguoiDung.uid, "notes"), {
-      text: text
-    });
-  }
+  await addDoc(collection(db, "users", user.uid, "notes"), {
+    text: text,
+    createdAt: new Date()
+  });
 
-  document.getElementById("noiDung").value = "";
-  taiDanhSach();
+  document.getElementById("noteInput").value = "";
+  loadNotes(user.uid);
 };
 
-async function taiDanhSach() {
-  const container = document.getElementById("danhSach");
-  container.innerHTML = "";
+// Xóa ghi chú
+window.deleteNote = async function (id) {
+  const user = auth.currentUser;
+  await deleteDoc(doc(db, "users", user.uid, "notes", id));
+  loadNotes(user.uid);
+};
 
-  const querySnapshot = await getDocs(collection(db, "users", nguoiDung.uid, "notes"));
+// Format thời gian kiểu "5 phút trước"
+function timeAgo(date) {
+  const seconds = Math.floor((new Date() - date) / 1000);
 
-  querySnapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    const div = document.createElement("div");
-    div.className = "ghi-chu";
-    div.innerHTML = `
-      <div>${data.text}</div>
-      <div class="nut-nho">
-        <button class="btn-nho sua">Sửa</button>
-        <button class="btn-nho xoa">Xóa</button>
-      </div>
-    `;
+  const intervals = [
+    { label: "năm", seconds: 31536000 },
+    { label: "tháng", seconds: 2592000 },
+    { label: "ngày", seconds: 86400 },
+    { label: "giờ", seconds: 3600 },
+    { label: "phút", seconds: 60 }
+  ];
 
-    div.querySelector(".xoa").onclick = async () => {
-      await deleteDoc(doc(db, "users", nguoiDung.uid, "notes", docSnap.id));
-      taiDanhSach();
-    };
+  for (let i of intervals) {
+    const count = Math.floor(seconds / i.seconds);
+    if (count >= 1) {
+      return count + " " + i.label + " trước";
+    }
+  }
 
-    div.querySelector(".sua").onclick = () => {
-      document.getElementById("noiDung").value = data.text;
-      idDangSua = docSnap.id;
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-
-    container.appendChild(div);
-  });
+  return "Vừa xong";
 }
 
-document.getElementById("timKiem").addEventListener("input", function () {
-  const keyword = this.value.toLowerCase();
-  const notes = document.querySelectorAll(".ghi-chu");
+// Load ghi chú
+async function loadNotes(uid) {
+  const container = document.getElementById("notes");
+  container.innerHTML = "";
 
-  notes.forEach(note => {
-    const text = note.innerText.toLowerCase();
-    note.style.display = text.includes(keyword) ? "block" : "none";
+  const q = query(
+    collection(db, "users", uid, "notes"),
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+    const date = new Date(data.createdAt.seconds * 1000);
+    const formatted = date.toLocaleString("vi-VN");
+
+    const div = document.createElement("div");
+    div.className = "note";
+    div.style.opacity = "0";
+    div.style.transform = "translateY(10px)";
+    div.style.transition = "0.3s ease";
+
+    div.innerHTML = `
+      <div style="font-size:12px;color:#00ffcc;margin-bottom:6px;">
+        ${timeAgo(date)} • ${formatted}
+      </div>
+      <div style="margin-bottom:10px;">${data.text}</div>
+      <button onclick="deleteNote('${docSnap.id}')" 
+        style="background:#ff4444;padding:6px 10px;font-size:12px;border-radius:6px;">
+        Xóa
+      </button>
+    `;
+
+    container.appendChild(div);
+
+    // hiệu ứng fade
+    setTimeout(() => {
+      div.style.opacity = "1";
+      div.style.transform = "translateY(0)";
+    }, 50);
   });
-});
-
+}
 </script>
 
 </body>
