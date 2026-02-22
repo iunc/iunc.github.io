@@ -1,40 +1,65 @@
  <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Login</title>
   <style>
-    body {
-      background: #121212;
-      color: white;
-      font-family: sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .box {
-      background: #1e1e1e;
-      padding: 30px;
-      border-radius: 10px;
-      width: 300px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      background: #2c2c2c;
-      border: none;
-      color: white;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #4caf50;
-      border: none;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: #0f0f0f;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .box {
+    width: 90%;
+    max-width: 400px;
+    background: #1a1a1a;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    background: #262626;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+  }
+
+  button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    background: #3b82f6;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  button:active {
+    opacity: 0.8;
+  }
+</style>
 </head>
 <body>
 <div class="box">
