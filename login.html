@@ -114,6 +114,29 @@
         padding: 25px;
       }
     }
+
+    .password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 45px;
+}
+
+#togglePassword {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.6;
+  transition: 0.2s;
+}
+
+#togglePassword:hover {
+  opacity: 1;
+}
   </style>
 </head>
 
@@ -125,7 +148,10 @@
     <div class="status" id="status"></div>
 
     <input type="email" id="email" placeholder="Tài khoản">
+    <div class="password-wrapper">
     <input type="password" id="password" placeholder="Mật khẩu">
+    <span id="togglePassword">👁</span>
+    </div>
 
     <button onclick="login()">Vào</button>
   </div>
@@ -176,6 +202,15 @@
         });
     }, 1500);
   };
+    const toggle = document.getElementById("togglePassword");
+const passwordInput = document.getElementById("password");
+
+toggle.addEventListener("click", () => {
+  const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+  passwordInput.setAttribute("type", type);
+
+  toggle.textContent = type === "password" ? "👁" : "🙈";
+});
 </script>
 </body>
 </html>                   
