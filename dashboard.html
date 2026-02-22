@@ -2,7 +2,9 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <title>Bảng Điều Khiển</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     * { box-sizing: border-box; }
 
@@ -16,17 +18,18 @@
 
     h2 {
       text-align: center;
+      margin-bottom: 20px;
     }
 
     textarea, input {
       width: 100%;
-      padding: 14px;
-      background: #1e1e1e;
-      border: 1px solid #333;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #262626;
+      border: none;
       border-radius: 10px;
       color: white;
       font-size: 15px;
-      margin-bottom: 10px;
     }
 
     button {
@@ -41,131 +44,156 @@
       cursor: pointer;
     }
 
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .note {
+    .ghi-chu {
       background: #1a1a1a;
       padding: 15px;
-      margin-top: 10px;
-      border-radius: 10px;
-      word-wrap: break-word;
-      border-left: 3px solid #3b82f6;
+      margin-top: 12px;
+      border-radius: 12px;
+      position: relative;
     }
 
-    .section {
-      margin-bottom: 25px;
+    .nut-nho {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-nho {
+      flex: 1;
+      padding: 6px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+
+    .xoa { background: #ef4444; }
+    .sua { background: #f59e0b; }
+
+    .dang-xuat {
+      background: #444;
+      margin-top: 20px;
     }
   </style>
 </head>
+
 <body>
 
-<h2>My Secure Notes</h2>
+<h2>Ghi Chú Cá Nhân</h2>
 
-<div class="section">
-  <textarea id="noteInput" placeholder="Nhập nội dung..."></textarea>
-  <button onclick="addNote()">Lưu</button>
-</div>
+<input type="text" id="timKiem" placeholder="Tìm kiếm ghi chú...">
+<textarea id="noiDung" placeholder="Nhập nội dung..."></textarea>
 
-<div class="section">
-  <input type="text" id="searchInput" placeholder="Nhập từ khóa tìm kiếm...">
-  <button onclick="searchNotes()">Tìm</button>
-</div>
+<button onclick="luuGhiChu()">Lưu</button>
+<button onclick="dangXuat()" class="dang-xuat">Đăng xuất</button>
 
-<button onclick="logout()">Logout</button>
-
-<div id="notes"></div>
+<div id="danhSach"></div>
 
 <script type="module">
-import { auth, db } from "./firebase.js";
-import { 
-  onAuthStateChanged, 
-  signOut 
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  query, 
-  orderBy 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-let currentUser = null;
-let allNotes = [];
+const firebaseConfig = {
+  apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
+  authDomain: "iunc-login.firebaseapp.com",
+  projectId: "iunc-login",
+  storageBucket: "iunc-login.firebasestorage.app",
+  messagingSenderId: "359473829379",
+  appId: "1:359473829379:web:b1102278155f598e316036"
+};
 
-// Kiểm tra đăng nhập
-onAuthStateChanged(auth, async (user) => {
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let nguoiDung = null;
+let idDangSua = null;
+
+onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
-    currentUser = user;
-    await loadNotes();
+    nguoiDung = user;
+    taiDanhSach();
   }
 });
 
-// Logout
-window.logout = function () {
+window.dangXuat = function () {
   signOut(auth).then(() => {
     window.location.href = "login.html";
   });
 };
 
-// Lưu note
-window.addNote = async function () {
-  const text = document.getElementById("noteInput").value.trim();
+window.luuGhiChu = async function () {
+  const text = document.getElementById("noiDung").value.trim();
   if (!text) return;
 
-  await addDoc(collection(db, "users", currentUser.uid, "notes"), {
-    text: text,
-    createdAt: Date.now()
-  });
+  if (idDangSua) {
+    await updateDoc(doc(db, "users", nguoiDung.uid, "notes", idDangSua), {
+      text: text
+    });
+    idDangSua = null;
+  } else {
+    await addDoc(collection(db, "users", nguoiDung.uid, "notes"), {
+      text: text
+    });
+  }
 
-  document.getElementById("noteInput").value = "";
-  await loadNotes();
+  document.getElementById("noiDung").value = "";
+  taiDanhSach();
 };
 
-// Load toàn bộ notes
-async function loadNotes() {
-  const q = query(
-    collection(db, "users", currentUser.uid, "notes"),
-    orderBy("createdAt", "desc")
-  );
-
-  const snapshot = await getDocs(q);
-
-  allNotes = [];
-  snapshot.forEach(doc => {
-    allNotes.push(doc.data().text);
-  });
-
-  renderNotes(allNotes);
-}
-
-// Hiển thị notes
-function renderNotes(notesArray) {
-  const container = document.getElementById("notes");
+async function taiDanhSach() {
+  const container = document.getElementById("danhSach");
   container.innerHTML = "";
 
-  notesArray.forEach(text => {
+  const querySnapshot = await getDocs(collection(db, "users", nguoiDung.uid, "notes"));
+
+  querySnapshot.forEach((docSnap) => {
+    const data = docSnap.data();
     const div = document.createElement("div");
-    div.className = "note";
-    div.innerText = text;
+    div.className = "ghi-chu";
+    div.innerHTML = `
+      <div>${data.text}</div>
+      <div class="nut-nho">
+        <button class="btn-nho sua">Sửa</button>
+        <button class="btn-nho xoa">Xóa</button>
+      </div>
+    `;
+
+    div.querySelector(".xoa").onclick = async () => {
+      await deleteDoc(doc(db, "users", nguoiDung.uid, "notes", docSnap.id));
+      taiDanhSach();
+    };
+
+    div.querySelector(".sua").onclick = () => {
+      document.getElementById("noiDung").value = data.text;
+      idDangSua = docSnap.id;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
     container.appendChild(div);
   });
 }
 
-// Tìm kiếm
-window.searchNotes = function () {
-  const keyword = document.getElementById("searchInput").value.toLowerCase();
+document.getElementById("timKiem").addEventListener("input", function () {
+  const keyword = this.value.toLowerCase();
+  const notes = document.querySelectorAll(".ghi-chu");
 
-  const filtered = allNotes.filter(note =>
-    note.toLowerCase().includes(keyword)
-  );
+  notes.forEach(note => {
+    const text = note.innerText.toLowerCase();
+    note.style.display = text.includes(keyword) ? "block" : "none";
+  });
+});
 
-  renderNotes(filtered);
-};
 </script>
 
 </body>
