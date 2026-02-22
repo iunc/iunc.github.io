@@ -27,7 +27,7 @@ textarea, input {
   margin-bottom: 10px;
   background: #262626;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   color: white;
   font-size: 15px;
 }
@@ -38,21 +38,25 @@ button {
   margin-bottom: 10px;
   background: #3b82f6;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   color: white;
   font-weight: bold;
   cursor: pointer;
+  overflow: hidden;              /* FIX hiệu ứng tràn góc */
+  position: relative;
+  transition: 0.2s;
 }
 
 button:hover {
   opacity: 0.9;
+  transform: scale(0.98);
 }
 
 .note {
   background: #1a1a1a;
   padding: 15px;
   margin-top: 12px;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 
 .note small {
@@ -70,15 +74,15 @@ button:hover {
   flex: 1;
   padding: 6px;
   font-size: 13px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .edit { background: #f59e0b; }
 .delete { background: #ef4444; }
 .logout { background: #444; margin-top:20px; }
-
 </style>
 </head>
+
 <body>
 
 <h2>Ghi Chú Cá Nhân</h2>
@@ -86,7 +90,7 @@ button:hover {
 <input type="text" id="search" placeholder="Tìm kiếm ghi chú...">
 <textarea id="content" placeholder="Nhập nội dung..."></textarea>
 
-<button onclick="saveNote()">Lưu Ghi Chú</button>
+<button id="saveBtn">Lưu Ghi Chú</button>
 <button onclick="logout()" class="logout">Đăng xuất</button>
 
 <div id="notes"></div>
@@ -121,156 +125,12 @@ const db = getFirestore(app);
 
 let currentUID = null;
 let allNotes = [];
-
-// ===== Kiểm tra đăng nhập =====
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  } else {
-    currentUID = user.uid;
-    loadNotes();
-  }
-});
-
-// ===== Đăng xuất =====
-window.logout = function () {
-  signOut(auth).then(() => {
-    window.location.href = "login.html";
-  });
-};
-
-// ===== Lưu ghi chú =====
-window.saveNote = async function () {
-  const text = document.getElementById("content").value.trim();
-  if (!text) return;
-
-  await addDoc(collection(db, "users", currentUID, "notes"), {
-    text: text,
-    createdAt: new Date()
-  });
-
-  document.getElementById("content").value = "";
-  loadNotes();
-};
-
-// ===== Xóa =====
-window.deleteNote = async function (id) {
-  await deleteDoc(doc(db, "users", currentUID, "notes", id));
-  loadNotes();
-};
-
-// ===== Sửa =====
-window.editNote = async function (id, oldText) {
-  const newText = prompt("Chỉnh sửa nội dung:", oldText);
-  if (!newText) return;
-
-  await updateDoc(doc(db, "users", currentUID, "notes", id), {
-    text: newText
-  });
-
-  loadNotes();
-};
-
-// ===== Hiển thị thời gian =====
-function timeAgo(date) {
-  const seconds = Math.floor((new Date() - date) / 1000);
-
-  const intervals = [
-    { label: "năm", seconds: 31536000 },
-    { label: "tháng", seconds: 2592000 },
-    { label: "ngày", seconds: 86400 },
-    { label: "giờ", seconds: 3600 },
-    { label: "phút", seconds: 60 }
-  ];
-
-  for (let i of intervals) {
-    const count = Math.floor(seconds / i.seconds);
-    if (count >= 1) return count + " " + i.label + " trước";
-  }
-
-  return "Vừa xong";
-}
-
-// ===== Load ghi chú =====
-async function loadNotes() {
-  const container = document.getElementById("notes");
-  container.innerHTML = "";
-
-  const q = query(
-    collection(db, "users", currentUID, "notes"),
-    orderBy("createdAt", "desc")
-  );
-
-  const snapshot = await getDocs(q);
-  allNotes = [];
-
-  snapshot.forEach((docSnap) => {
-    allNotes.push({
-      id: docSnap.id,
-      ...docSnap.data()
-    });
-  });
-
-  renderNotes(allNotes);
-}
-
-// ===== Render =====
-function renderNotes(notes) {
-  const container = document.getElementById("notes");
-  container.innerHTML = "";
-
-  notes.forEach(note => {
-    const date = new Date(note.createdAt.seconds * 1000);
-    const formatted = date.toLocaleString("vi-VN");
-
-    const div = document.createElement("div");
-    div.className = "note";
-
-    div.innerHTML = `
-      <small>${timeAgo(date)} • ${formatted}</small>
-      <div style="margin-top:8px;">${note.text}</div>
-
-      <div class="actions">
-        <button class="edit" onclick="editNote('${note.id}', \`${note.text}\`)">Sửa</button>
-        <button class="delete" onclick="deleteNote('${note.id}')">Xóa</button>
-      </div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs, 
-  deleteDoc, 
-  doc, 
-  updateDoc, 
-  query, 
-  orderBy 
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
-  authDomain: "iunc-login.firebaseapp.com",
-  projectId: "iunc-login",
-  storageBucket: "iunc-login.firebasestorage.app",
-  messagingSenderId: "359473829379",
-  appId: "1:359473829379:web:b1102278155f598e316036"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-let currentUID = null;
-let allNotes = [];
-let editingID = null; // đang sửa note nào
+let editingID = null;
 
 const contentInput = document.getElementById("content");
-const saveBtn = document.querySelector("button");
+const saveBtn = document.getElementById("saveBtn");
 
-// ===== Kiểm tra đăng nhập =====
+// ===== Bắt buộc login =====
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
@@ -288,16 +148,14 @@ window.logout = function () {
 };
 
 // ===== Lưu hoặc cập nhật =====
-window.saveNote = async function () {
+saveBtn.addEventListener("click", async () => {
   const text = contentInput.value.trim();
   if (!text) return;
 
-  // Nếu đang sửa
   if (editingID) {
     await updateDoc(doc(db, "users", currentUID, "notes", editingID), {
       text: text
     });
-
     editingID = null;
     saveBtn.innerText = "Lưu Ghi Chú";
   } else {
@@ -309,7 +167,7 @@ window.saveNote = async function () {
 
   contentInput.value = "";
   loadNotes();
-};
+});
 
 // ===== Xóa =====
 window.deleteNote = async function (id) {
@@ -346,9 +204,6 @@ function timeAgo(date) {
 
 // ===== Load =====
 async function loadNotes() {
-  const container = document.getElementById("notes");
-  container.innerHTML = "";
-
   const q = query(
     collection(db, "users", currentUID, "notes"),
     orderBy("createdAt", "desc")
@@ -381,19 +236,23 @@ function renderNotes(notes) {
 
     div.innerHTML = `
       <small>${timeAgo(date)} • ${formatted}</small>
-      <div style="margin-top:8px;white-space:pre-wrap;">${note.text}</div>
-
+      <div style="margin-top:8px;white-space:pre-wrap;"></div>
       <div class="actions">
-        <button class="edit" onclick="editNote('${note.id}', \`${note.text}\`)">Sửa</button>
-        <button class="delete" onclick="deleteNote('${note.id}')">Xóa</button>
+        <button class="edit">Sửa</button>
+        <button class="delete">Xóa</button>
       </div>
     `;
+
+    div.querySelector("div").innerText = note.text;
+
+    div.querySelector(".edit").onclick = () => editNote(note.id, note.text);
+    div.querySelector(".delete").onclick = () => deleteNote(note.id);
 
     container.appendChild(div);
   });
 }
 
-// ===== Tìm kiếm =====
+// ===== Tìm kiếm realtime =====
 document.getElementById("search").addEventListener("input", function(e) {
   const keyword = e.target.value.toLowerCase();
   const filtered = allNotes.filter(note =>
@@ -402,5 +261,6 @@ document.getElementById("search").addEventListener("input", function(e) {
   renderNotes(filtered);
 });
 </script>
+
 </body>
 </html>
