@@ -86,13 +86,11 @@
 <button onclick="dangXuat()" class="dang-xuat">Đăng xuất</button>
 
 <div id="danhSach"></div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Firebase config (giống login)
 const firebaseConfig = {
   apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
   authDomain: "iunc-login.firebaseapp.com",
@@ -106,45 +104,46 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+let currentUID = null;
+
 // Kiểm tra đăng nhập
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
-    loadNotes(user.uid);
+    currentUID = user.uid;
+    loadNotes();
   }
 });
 
-// Logout
-window.logout = function () {
+// ===== ĐĂNG XUẤT =====
+window.dangXuat = function () {
   signOut(auth).then(() => {
     window.location.href = "login.html";
   });
 };
 
-// Lưu ghi chú
-window.addNote = async function () {
-  const user = auth.currentUser;
-  const text = document.getElementById("noteInput").value.trim();
+// ===== LƯU GHI CHÚ =====
+window.luuGhiChu = async function () {
+  const text = document.getElementById("noiDung").value.trim();
   if (!text) return;
 
-  await addDoc(collection(db, "users", user.uid, "notes"), {
+  await addDoc(collection(db, "users", currentUID, "notes"), {
     text: text,
     createdAt: new Date()
   });
 
-  document.getElementById("noteInput").value = "";
-  loadNotes(user.uid);
+  document.getElementById("noiDung").value = "";
+  loadNotes();
 };
 
-// Xóa ghi chú
-window.deleteNote = async function (id) {
-  const user = auth.currentUser;
-  await deleteDoc(doc(db, "users", user.uid, "notes", id));
-  loadNotes(user.uid);
+// ===== XÓA GHI CHÚ =====
+window.xoaGhiChu = async function (id) {
+  await deleteDoc(doc(db, "users", currentUID, "notes", id));
+  loadNotes();
 };
 
-// Format thời gian kiểu "5 phút trước"
+// ===== HIỂN THỊ THỜI GIAN =====
 function timeAgo(date) {
   const seconds = Math.floor((new Date() - date) / 1000);
 
@@ -152,64 +151,6 @@ function timeAgo(date) {
     { label: "năm", seconds: 31536000 },
     { label: "tháng", seconds: 2592000 },
     { label: "ngày", seconds: 86400 },
-    { label: "giờ", seconds: 3600 },
-    { label: "phút", seconds: 60 }
-  ];
-
-  for (let i of intervals) {
-    const count = Math.floor(seconds / i.seconds);
-    if (count >= 1) {
-      return count + " " + i.label + " trước";
-    }
-  }
-
-  return "Vừa xong";
-}
-
-// Load ghi chú
-async function loadNotes(uid) {
-  const container = document.getElementById("notes");
-  container.innerHTML = "";
-
-  const q = query(
-    collection(db, "users", uid, "notes"),
-    orderBy("createdAt", "desc")
-  );
-
-  const snapshot = await getDocs(q);
-
-  snapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    const date = new Date(data.createdAt.seconds * 1000);
-    const formatted = date.toLocaleString("vi-VN");
-
-    const div = document.createElement("div");
-    div.className = "note";
-    div.style.opacity = "0";
-    div.style.transform = "translateY(10px)";
-    div.style.transition = "0.3s ease";
-
-    div.innerHTML = `
-      <div style="font-size:12px;color:#00ffcc;margin-bottom:6px;">
-        ${timeAgo(date)} • ${formatted}
-      </div>
-      <div style="margin-bottom:10px;">${data.text}</div>
-      <button onclick="deleteNote('${docSnap.id}')" 
-        style="background:#ff4444;padding:6px 10px;font-size:12px;border-radius:6px;">
-        Xóa
-      </button>
-    `;
-
-    container.appendChild(div);
-
-    // hiệu ứng fade
-    setTimeout(() => {
-      div.style.opacity = "1";
-      div.style.transform = "translateY(0)";
-    }, 50);
-  });
-}
-</script>
 
 </body>
 </html>
