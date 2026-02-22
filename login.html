@@ -233,7 +233,7 @@ progressBar.style.display = "block";
 let progress = 0;
 
 const interval = setInterval(() => {
-  progress += 5;
+  progress += 2;
   progressFill.style.width = progress + "%";
 
   if (progress >= 100) {
@@ -242,9 +242,9 @@ const interval = setInterval(() => {
 
     setTimeout(() => {
       window.location.href = "dashboard.html";
-    }, 800);
+    },1200);
   }
-}, 80);
+}, 100);
 })
         .catch(() => {
   failedAttempts++;
