@@ -185,11 +185,10 @@
   </div>
 
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
   authDomain: "iunc-login.firebaseapp.com",
   projectId: "iunc-login",
@@ -199,82 +198,103 @@
   measurementId: "G-79M0B1KJW5"
 };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-  let failedAttempts = 0; 
+let failedAttempts = 0;
+let isLoggingIn = false;
 
-    
-  window.login = function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const status = document.getElementById("status");
+window.login = function () {
 
-    status.style.color = "#00aaff";
-    status.innerText = "Đang khởi tạo kết nối bảo mật...";
+  if (isLoggingIn) return; // chặn spam
+  isLoggingIn = true;
 
-    setTimeout(() => {
-      status.innerText = "Đang xác thực danh tính...";
-    }, 800);
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const status = document.getElementById("status");
+  const loginBtn = document.querySelector("button");
+  const progressBar = document.querySelector(".progress-bar");
+  const progressFill = document.getElementById("progressFill");
 
-    setTimeout(() => {
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-  const user = userCredential.user;
+  // reset progress mỗi lần login
+  progressFill.style.width = "0%";
+  progressBar.style.display = "none";
 
-  status.innerText = "XÁC THỰC THÀNH CÔNG";
-status.style.color = "#00ff66";
+  loginBtn.disabled = true;
+  loginBtn.style.opacity = "0.6";
+  loginBtn.innerText = "Đang xử lý...";
 
-const progressBar = document.querySelector(".progress-bar");
-const progressFill = document.getElementById("progressFill");
+  status.style.color = "#00aaff";
+  status.innerText = "Đang khởi tạo kết nối bảo mật...";
 
-progressBar.style.display = "block";
+  setTimeout(() => {
+    status.innerText = "Đang xác thực danh tính...";
+  }, 800);
 
-let progress = 0;
+  setTimeout(() => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
 
-const interval = setInterval(() => {
-  progress += 2;
-  progressFill.style.width = progress + "%";
+        status.innerText = "XÁC THỰC THÀNH CÔNG";
+        status.style.color = "#00ff66";
 
-  if (progress >= 100) {
-    clearInterval(interval);
-    status.innerText = "Đang thiết lập phiên bảo mật...";
+        progressBar.style.display = "block";
 
-    setTimeout(() => {
-      window.location.href = "dashboard.html";
-    },1200);
-  }
-}, 100);
-})
-        .catch(() => {
-  failedAttempts++;
-  
-  if (failedAttempts >= 5) {
-    status.innerText = "Tạm khóa 30 giây do nhập sai nhiều lần.";
-    status.style.color = "red";
-    document.querySelector("button").disabled = true;
+        let progress = 0;
 
-    setTimeout(() => {
-      failedAttempts = 0;
-      document.querySelector("button").disabled = false;
-      status.innerText = "";
-    }, 30000);
+        const interval = setInterval(() => {
+          progress += 2;
+          progressFill.style.width = progress + "%";
 
-    return;
-  }
+          if (progress >= 100) {
+            clearInterval(interval);
+            status.innerText = "Đang thiết lập phiên bảo mật...";
 
-  status.innerText = "Thông tin đăng nhập không hợp lệ.";
-  status.style.color = "red";
-});
-    }, 1500);
-  };
-    const toggle = document.getElementById("togglePassword");
+            setTimeout(() => {
+              window.location.href = "dashboard.html";
+            }, 1200);
+          }
+
+        }, 100);
+
+      })
+      .catch(() => {
+
+        isLoggingIn = false;
+        loginBtn.disabled = false;
+        loginBtn.style.opacity = "1";
+        loginBtn.innerText = "Vào";
+
+        failedAttempts++;
+
+        if (failedAttempts >= 5) {
+          status.innerText = "Tạm khóa 30 giây do nhập sai nhiều lần.";
+          status.style.color = "red";
+          loginBtn.disabled = true;
+
+          setTimeout(() => {
+            failedAttempts = 0;
+            loginBtn.disabled = false;
+            loginBtn.innerText = "Vào";
+            status.innerText = "";
+          }, 30000);
+
+          return;
+        }
+
+        status.innerText = "Thông tin đăng nhập không hợp lệ.";
+        status.style.color = "red";
+      });
+
+  }, 1500);
+};
+
+const toggle = document.getElementById("togglePassword");
 const passwordInput = document.getElementById("password");
 
 toggle.addEventListener("click", () => {
   const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
   passwordInput.setAttribute("type", type);
-
   toggle.textContent = type === "password" ? "👁" : "🙈";
 });
 </script>
