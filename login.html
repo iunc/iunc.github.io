@@ -316,5 +316,12 @@ toggle.addEventListener("click", () => {
   toggle.textContent = type === "password" ? "👁" : "🙈";
 });
 </script>
+  <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js")
+    .then(() => console.log("PWA đã kích hoạt"))
+    .catch(err => console.log("Lỗi SW:", err));
+}
+</script>
 </body>
 </html>                   
