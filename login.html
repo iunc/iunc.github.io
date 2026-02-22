@@ -183,6 +183,9 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
+  let failedAttempts = 0; 
+
+    
   window.login = function () {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
@@ -197,18 +200,42 @@
 
     setTimeout(() => {
       signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          status.innerText = "THÀNH CÔNG";
-          status.style.color = "#00ff66";
+        .then((userCredential) => {
+  const user = userCredential.user;
 
-          setTimeout(() => {
-            window.location.href = "dashboard.html";
-          }, 1000);
-        })
-        .catch((error) => {
-          status.innerText = "THẤT BẠI";
-          status.style.color = "red";
-        });
+  if (!user.emailVerified) {
+    status.innerText = "Vui lòng xác minh email trước khi đăng nhập.";
+    status.style.color = "orange";
+    return;
+  }
+
+  status.innerText = "XÁC THỰC THÀNH CÔNG";
+  status.style.color = "#00ff66";
+
+  setTimeout(() => {
+    window.location.href = "dashboard.html";
+  }, 1000);
+})
+        .catch(() => {
+  failedAttempts++;
+  
+  if (failedAttempts >= 5) {
+    status.innerText = "Tạm khóa 30 giây do nhập sai nhiều lần.";
+    status.style.color = "red";
+    document.querySelector("button").disabled = true;
+
+    setTimeout(() => {
+      failedAttempts = 0;
+      document.querySelector("button").disabled = false;
+      status.innerText = "";
+    }, 30000);
+
+    return;
+  }
+
+  status.innerText = "Thông tin đăng nhập không hợp lệ.";
+  status.style.color = "red";
+});
     }, 1500);
   };
     const toggle = document.getElementById("togglePassword");
@@ -219,6 +246,13 @@ toggle.addEventListener("click", () => {
   passwordInput.setAttribute("type", type);
 
   toggle.textContent = type === "password" ? "👁" : "🙈";
+});
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+onAuthStateChanged(auth, (user) => {
+  if (user && user.emailVerified) {
+    window.location.href = "dashboard.html";
+  }
 });
 </script>
 </body>
