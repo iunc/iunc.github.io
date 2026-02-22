@@ -86,6 +86,7 @@
 <button onclick="dangXuat()" class="dang-xuat">Đăng xuất</button>
 
 <div id="danhSach"></div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -105,6 +106,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUID = null;
+let allNotes = [];
 
 // Kiểm tra đăng nhập
 onAuthStateChanged(auth, (user) => {
@@ -116,14 +118,14 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// ===== ĐĂNG XUẤT =====
+// Đăng xuất
 window.dangXuat = function () {
   signOut(auth).then(() => {
     window.location.href = "login.html";
   });
 };
 
-// ===== LƯU GHI CHÚ =====
+// Lưu ghi chú
 window.luuGhiChu = async function () {
   const text = document.getElementById("noiDung").value.trim();
   if (!text) return;
@@ -137,13 +139,22 @@ window.luuGhiChu = async function () {
   loadNotes();
 };
 
-// ===== XÓA GHI CHÚ =====
+// Xóa ghi chú
 window.xoaGhiChu = async function (id) {
   await deleteDoc(doc(db, "users", currentUID, "notes", id));
   loadNotes();
 };
 
-// ===== HIỂN THỊ THỜI GIAN =====
+// Tìm kiếm realtime
+document.getElementById("timKiem").addEventListener("input", function() {
+  const keyword = this.value.toLowerCase();
+  const filtered = allNotes.filter(note => 
+    note.text.toLowerCase().includes(keyword)
+  );
+  renderNotes(filtered);
+});
+
+// Hiển thị thời gian
 function timeAgo(date) {
   const seconds = Math.floor((new Date() - date) / 1000);
 
@@ -151,6 +162,68 @@ function timeAgo(date) {
     { label: "năm", seconds: 31536000 },
     { label: "tháng", seconds: 2592000 },
     { label: "ngày", seconds: 86400 },
+    { label: "giờ", seconds: 3600 },
+    { label: "phút", seconds: 60 }
+  ];
 
+  for (let i of intervals) {
+    const count = Math.floor(seconds / i.seconds);
+    if (count >= 1) {
+      return count + " " + i.label + " trước";
+    }
+  }
+
+  return "Vừa xong";
+}
+
+// Load ghi chú
+async function loadNotes() {
+  const q = query(
+    collection(db, "users", currentUID, "notes"),
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  allNotes = snapshot.docs.map(docSnap => {
+    const data = docSnap.data();
+    const date = data.createdAt?.seconds
+      ? new Date(data.createdAt.seconds * 1000)
+      : new Date();
+
+    return {
+      id: docSnap.id,
+      text: data.text,
+      date: date
+    };
+  });
+
+  renderNotes(allNotes);
+}
+
+// Render ghi chú
+function renderNotes(notes) {
+  const container = document.getElementById("danhSach");
+  container.innerHTML = "";
+
+  notes.forEach(note => {
+    const div = document.createElement("div");
+    div.className = "ghi-chu";
+
+    div.innerHTML = `
+      <div style="font-size:12px;color:#00ffcc;margin-bottom:6px;">
+        ${timeAgo(note.date)} • ${note.date.toLocaleString("vi-VN")}
+      </div>
+      <div style="margin-bottom:10px;">${note.text}</div>
+      <button onclick="xoaGhiChu('${note.id}')" 
+        style="background:#ef4444;padding:6px 10px;font-size:12px;border-radius:6px;">
+        Xóa
+      </button>
+    `;
+
+    container.appendChild(div);
+  });
+}
+</script>
 </body>
 </html>
