@@ -222,12 +222,6 @@
         .then((userCredential) => {
   const user = userCredential.user;
 
-  if (!user.emailVerified) {
-    status.innerText = "Vui lòng xác minh email trước khi đăng nhập.";
-    status.style.color = "orange";
-    return;
-  }
-
   status.innerText = "XÁC THỰC THÀNH CÔNG";
 status.style.color = "#00ff66";
 
@@ -286,7 +280,7 @@ toggle.addEventListener("click", () => {
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 onAuthStateChanged(auth, (user) => {
-  if (user && user.emailVerified) {
+  if (user) {
     window.location.href = "dashboard.html";
   }
 });
