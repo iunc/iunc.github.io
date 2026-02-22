@@ -137,15 +137,15 @@
 
   <div class="card">
     <div class="scanline"></div>
-    <div class="title">SECURE TERMINAL</div>
+    <div class="title">ĐĂNG NHẬP</div>
     <div class="status" id="status"></div>
 
-    <input type="email" id="email" placeholder="User ID">
-    <input type="password" id="password" placeholder="Access Key">
+    <input type="email" id="email" placeholder="Tài khoản">
+    <input type="password" id="password" placeholder="Mật khẩu">
 
-    <button onclick="login()">INITIALIZE</button>
+    <button onclick="login()">Vào</button>
 
-    <div class="footer">Encrypted Channel v1.0</div>
+    <div class="footer">iunc</div>
   </div>
 
   <script type="module">
@@ -172,16 +172,16 @@
     const status = document.getElementById("status");
 
     status.style.color = "#00aaff";
-    status.innerText = "Initializing secure channel...";
+    status.innerText = "Đang khởi tạo kết nối bảo mật...";
 
     setTimeout(() => {
-      status.innerText = "Authenticating...";
+      status.innerText = "Đang xác thực danh tính...";
     }, 800);
 
     setTimeout(() => {
       signInWithEmailAndPassword(auth, email, password)
         .then(() => {
-          status.innerText = "Access Granted";
+          status.innerText = "THÀNH CÔNG";
           status.style.color = "#00ff66";
 
           setTimeout(() => {
@@ -189,14 +189,11 @@
           }, 1000);
         })
         .catch((error) => {
-          status.innerText = "Access Denied";
+          status.innerText = "THẤT BẠI";
           status.style.color = "red";
         });
     }, 1500);
   };
 </script>
-<script>
-alert("JS đang chạy");
-</script
 </body>
 </html>                   
