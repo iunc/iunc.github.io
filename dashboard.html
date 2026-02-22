@@ -1,104 +1,171 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Dashboard</title>
   <style>
-  * {
-    box-sizing: border-box;
-  }
+    * { box-sizing: border-box; }
 
-  body {
-    margin: 0;
-    padding: 20px;
-    background: #0f0f0f;
-    color: white;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #0f0f0f;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
 
-  h2 {
-    text-align: center;
-  }
+    h2 {
+      text-align: center;
+    }
 
-  textarea {
-    width: 100%;
-    min-height: 100px;
-    padding: 14px;
-    background: #262626;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 16px;
-  }
+    textarea, input {
+      width: 100%;
+      padding: 14px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
 
-  button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    background: #3b82f6;
-    border: none;
-    border-radius: 10px;
-    color: white;
-    font-weight: bold;
-  }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #3b82f6;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-  .note {
-    background: #1a1a1a;
-    padding: 15px;
-    margin-top: 12px;
-    border-radius: 12px;
-    word-wrap: break-word;
-  }
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .note {
+      background: #1a1a1a;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 10px;
+      word-wrap: break-word;
+      border-left: 3px solid #3b82f6;
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
   </style>
 </head>
 <body>
 
-<h2>My Notes</h2>
-<textarea id="noteInput" placeholder="Write something..."></textarea>
-<button onclick="addNote()">Save</button>
+<h2>My Secure Notes</h2>
+
+<div class="section">
+  <textarea id="noteInput" placeholder="Nhập nội dung..."></textarea>
+  <button onclick="addNote()">Lưu</button>
+</div>
+
+<div class="section">
+  <input type="text" id="searchInput" placeholder="Nhập từ khóa tìm kiếm...">
+  <button onclick="searchNotes()">Tìm</button>
+</div>
+
 <button onclick="logout()">Logout</button>
 
 <div id="notes"></div>
 
 <script type="module">
 import { auth, db } from "./firebase.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { 
+  onAuthStateChanged, 
+  signOut 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-onAuthStateChanged(auth, (user) => {
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  orderBy 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+let currentUser = null;
+let allNotes = [];
+
+// Kiểm tra đăng nhập
+onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
-    loadNotes(user.uid);
+    currentUser = user;
+    await loadNotes();
   }
 });
 
+// Logout
 window.logout = function () {
   signOut(auth).then(() => {
     window.location.href = "login.html";
   });
 };
 
+// Lưu note
 window.addNote = async function () {
-  const user = auth.currentUser;
-  const text = document.getElementById("noteInput").value;
+  const text = document.getElementById("noteInput").value.trim();
+  if (!text) return;
 
-  await addDoc(collection(db, "users", user.uid, "notes"), {
+  await addDoc(collection(db, "users", currentUser.uid, "notes"), {
     text: text,
+    createdAt: Date.now()
   });
 
-  location.reload();
+  document.getElementById("noteInput").value = "";
+  await loadNotes();
 };
 
-async function loadNotes(uid) {
-  const querySnapshot = await getDocs(collection(db, "users", uid, "notes"));
+// Load toàn bộ notes
+async function loadNotes() {
+  const q = query(
+    collection(db, "users", currentUser.uid, "notes"),
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  allNotes = [];
+  snapshot.forEach(doc => {
+    allNotes.push(doc.data().text);
+  });
+
+  renderNotes(allNotes);
+}
+
+// Hiển thị notes
+function renderNotes(notesArray) {
   const container = document.getElementById("notes");
-  querySnapshot.forEach((doc) => {
+  container.innerHTML = "";
+
+  notesArray.forEach(text => {
     const div = document.createElement("div");
     div.className = "note";
-    div.innerText = doc.data().text;
+    div.innerText = text;
     container.appendChild(div);
   });
 }
+
+// Tìm kiếm
+window.searchNotes = function () {
+  const keyword = document.getElementById("searchInput").value.toLowerCase();
+
+  const filtered = allNotes.filter(note =>
+    note.toLowerCase().includes(keyword)
+  );
+
+  renderNotes(filtered);
+};
 </script>
 
 </body>
