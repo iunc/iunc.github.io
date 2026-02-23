@@ -177,9 +177,11 @@ saveBtn.addEventListener("click", async () => {
     saveBtn.innerText = "Lưu Ghi Chú";
   } else {
     await addDoc(collection(db, "users", currentUID, "notes"), {
-      text: text,
-      createdAt: new Date()
-    });
+         text: text,
+         createdAt: new Date(),
+         pinned: false,
+         color: randomColor()
+       });
   }
 
   contentInput.value = "";
