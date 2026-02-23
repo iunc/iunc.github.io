@@ -174,11 +174,19 @@ setStatus(isEditingMode ? "editing" : "typing");
     if(!text) return;
 
     const tagsRaw = document.getElementById("tags").value;
+    /*
     const tags = tagsRaw
       .split(",")
       .map(t => t.trim())
       .filter(t => t !== "");
-
+    */
+    const tags = [...new Set(
+  tagsRaw
+    .split(",")
+    .map(t => t.trim().toLowerCase()) // 🔥 lowercase
+    .filter(t => t !== "")
+   )];
+    
     try{
       setStatus("saving");
 
@@ -328,12 +336,19 @@ saveBtn.addEventListener("click", async ()=>{
   if(!text) return;
 
   const tagsRaw = document.getElementById("tags").value;
-
+/*
   const tags = tagsRaw
     .split(",")
     .map(t => t.trim())
     .filter(t => t !== "");
-
+ */
+ const tags = [...new Set(
+  tagsRaw
+    .split(",")
+    .map(t => t.trim().toLowerCase()) // 🔥 lowercase
+    .filter(t => t !== "")
+)];
+  
   try{
     setStatus("saving");
 
