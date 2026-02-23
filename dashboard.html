@@ -107,16 +107,16 @@ let editingID = null;
 let allNotes = [];
 
 const colors = [
-  "#ff4d4d",
-  "#4d79ff",
-  "#4dff88",
-  "#ffcc00",
-  "#cc66ff",
-  "#00e6e6",
-  "#ff66b3",
-  "#ffa64d",
-  "#66ffcc",
-  "#9999ff"
+  "#1e293b",  // slate navy
+  "#1b263b",  // deep navy
+  "#16213e",  // midnight blue
+  "#14213d",  // dark steel blue
+  "#0f3460",  // cyber blue
+  "#1a1a2e",  // indigo dark
+  "#2c2c54",  // code violet
+  "#1f4068",  // dev blue
+  "#0b3d3d",  // dark teal
+  "#2d1e2f"   // deep purple
 ];
 
 let lastColor = null;
@@ -198,7 +198,7 @@ function renderNotes(notes){
     const div=document.createElement("div");
     div.className="note";
 
-div.style.border = "1px solid #00ff88";
+div.style.border = "1px solid #30363d";
 div.style.fontFamily = "monospace";
 div.style.color = "#d4d4d4";
 div.style.background = note.color || getRandomColor() ;  
