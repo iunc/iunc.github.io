@@ -208,19 +208,28 @@ div.style.border = "1px solid #30363d";
 div.style.fontFamily = "monospace";
 div.style.color = "#d4d4d4";
 div.style.background = note.color || getRandomColor() ;  
+if(note.pinned){
+  div.style.boxShadow = "0 0 0 1px #00ff88";
+}
     
     div.innerHTML=`
-      <small>${date}</small>
-      <div style="margin-top:5px;white-space:pre-wrap">${note.text}</div>
-      <div class="actions">
-        <button class="edit">Sửa</button>
-        <button class="delete">Xóa</button>
-      </div>
-    `;
+  <small>${date}</small>
+  <div style="margin-top:5px;white-space:pre-wrap">${note.text}</div>
+  <div class="actions">
+    <button class="pin">${note.pinned ? "📌" : "📍"}</button>
+    <button class="edit">Sửa</button>
+    <button class="delete">Xóa</button>
+  </div>
+`;
 
     div.querySelector(".delete").onclick=()=>deleteNote(note.id);
     div.querySelector(".edit").onclick=()=>editNote(note.id,note.text);
-
+    div.querySelector(".pin").onclick = async () => {
+  await updateDoc(doc(db,"users",currentUID,"notes",note.id),{
+    pinned: !note.pinned
+  });
+};
+    
     container.appendChild(div);
   });
 }
