@@ -201,7 +201,7 @@ function renderNotes(notes){
 div.style.border = "1px solid #00ff88";
 div.style.fontFamily = "monospace";
 div.style.color = "#c9d1d9";
-div.style.background = note.color;  
+div.style.background = note.color || getRandomColor() ;  
     
     div.innerHTML=`
       <small>${date}</small>
