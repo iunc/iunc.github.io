@@ -132,6 +132,7 @@ let editingID = null;
 let allNotes = [];
 let currentTagFilter = null;
 let autoSaveTimeout = null;
+let isEditingMode = false;
 
 const colors = [
   "#1e293b",  // slate navy
@@ -159,9 +160,12 @@ function getRandomColor(){
 }
   
 const contentInput = document.getElementById("content");
-
+/*
 contentInput.addEventListener("input", () => {
 setStatus(editingID ? "editing" : "typing");
+*/
+  contentInput.addEventListener("input", () => {
+setStatus(isEditingMode ? "editing" : "typing");
   clearTimeout(autoSaveTimeout);
 
   autoSaveTimeout = setTimeout(async () => {
@@ -339,6 +343,7 @@ saveBtn.addEventListener("click", async ()=>{
         tags: tags
       });
       editingID=null;
+      isEditingMode = false;
       saveBtn.innerText="Lưu Ghi Chú";
     }else{
       await addDoc(collection(db,"users",currentUID,"notes"),{
@@ -516,6 +521,7 @@ window.deleteNote = async function(id){
 
 window.editNote = function(id,text){
   editingID=id;
+  isEditingMode = true;
   contentInput.value=text;
   saveBtn.innerText="Cập Nhật";
   contentInput.focus();
