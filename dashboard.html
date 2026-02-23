@@ -159,22 +159,17 @@ function getRandomColor(){
 }
   
 const contentInput = document.getElementById("content");
-const saveBtn = document.getElementById("saveBtn");
 
 contentInput.addEventListener("input", () => {
 
-  // Nếu chưa có nội dung thì không làm gì
-  if(!contentInput.value.trim()) return;
-
-  // Clear timeout cũ
   clearTimeout(autoSaveTimeout);
 
-  // Đợi 1 giây sau khi ngừng gõ
   autoSaveTimeout = setTimeout(async () => {
 
     const text = contentInput.value.trim();
-    const tagsRaw = document.getElementById("tags").value;
+    if(!text) return;
 
+    const tagsRaw = document.getElementById("tags").value;
     const tags = tagsRaw
       .split(",")
       .map(t => t.trim())
@@ -183,11 +178,27 @@ contentInput.addEventListener("input", () => {
     try{
       setStatus("saving");
 
+      // 🔥 Nếu đang chỉnh sửa
       if(editingID){
         await updateDoc(doc(db,"users",currentUID,"notes",editingID),{
           text:text,
           tags:tags
         });
+      }
+      // 🔥 Nếu chưa có note → tạo draft
+      else{
+        const docRef = await addDoc(
+          collection(db,"users",currentUID,"notes"),
+          {
+            text:text,
+            createdAt: serverTimestamp(),
+            color: getRandomColor(),
+            pinned:false,
+            tags:tags
+          }
+        );
+
+        editingID = docRef.id; // lưu lại id để update tiếp
       }
 
       setStatus("done");
@@ -196,8 +207,11 @@ contentInput.addEventListener("input", () => {
       setStatus("error");
     }
 
-  },1000); // 1 giây
-});  
+  },1000);
+
+});
+  
+const saveBtn = document.getElementById("saveBtn");
   
 const syncStatus = document.getElementById("syncStatus");
 
