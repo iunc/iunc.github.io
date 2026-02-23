@@ -131,6 +131,7 @@ let currentUID = null;
 let editingID = null;
 let allNotes = [];
 let currentTagFilter = null;
+let autoSaveTimeout = null;
 
 const colors = [
   "#1e293b",  // slate navy
@@ -160,6 +161,44 @@ function getRandomColor(){
 const contentInput = document.getElementById("content");
 const saveBtn = document.getElementById("saveBtn");
 
+contentInput.addEventListener("input", () => {
+
+  // Nếu chưa có nội dung thì không làm gì
+  if(!contentInput.value.trim()) return;
+
+  // Clear timeout cũ
+  clearTimeout(autoSaveTimeout);
+
+  // Đợi 1 giây sau khi ngừng gõ
+  autoSaveTimeout = setTimeout(async () => {
+
+    const text = contentInput.value.trim();
+    const tagsRaw = document.getElementById("tags").value;
+
+    const tags = tagsRaw
+      .split(",")
+      .map(t => t.trim())
+      .filter(t => t !== "");
+
+    try{
+      setStatus("saving");
+
+      if(editingID){
+        await updateDoc(doc(db,"users",currentUID,"notes",editingID),{
+          text:text,
+          tags:tags
+        });
+      }
+
+      setStatus("done");
+
+    }catch(err){
+      setStatus("error");
+    }
+
+  },1000); // 1 giây
+});  
+  
 const syncStatus = document.getElementById("syncStatus");
 
 function setStatus(type){
