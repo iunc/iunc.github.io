@@ -524,7 +524,7 @@ function getTagColor(tag){
   "#b1bac4"  // xám sáng tech
 ];
 
-  return tagColors[Math.abs(hash) % colors.length];
+  return tagColors[Math.abs(hash) % tagColors.length];
 }
   
 function renderNotes(notes){
