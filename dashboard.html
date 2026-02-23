@@ -20,7 +20,6 @@ body {
 
 h2 { text-align: center; margin-bottom: 20px; }
 
-/* ===== STATS ===== */
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -33,11 +32,6 @@ h2 { text-align: center; margin-bottom: 20px; }
   padding: 15px;
   border-radius: 14px;
   text-align: center;
-  transition: 0.2s ease;
-}
-
-.stat-card:hover {
-  transform: scale(1.05);
 }
 
 .stat-card small {
@@ -50,7 +44,6 @@ h2 { text-align: center; margin-bottom: 20px; }
   font-size: 22px;
 }
 
-/* ===== INPUT ===== */
 textarea, input {
   width: 100%;
   padding: 12px;
@@ -74,12 +67,10 @@ button {
   cursor: pointer;
 }
 
-/* ===== NOTE ===== */
 .note {
   padding: 15px;
   margin-top: 12px;
   border-radius: 14px;
-  position: relative;
 }
 
 .note small {
@@ -184,8 +175,9 @@ function randomColor() {
 }
 
 onAuthStateChanged(auth, (user) => {
-  if (!user) window.location.href = "login.html";
-  else {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
     currentUID = user.uid;
     listenNotes();
   }
