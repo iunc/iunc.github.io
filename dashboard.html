@@ -503,7 +503,8 @@ if(note.pinned){
 `;
 
     div.querySelector(".delete").onclick=()=>deleteNote(note.id);
-    div.querySelector(".edit").onclick=()=>editNote(note.id,note.text);
+  /*  div.querySelector(".edit").onclick=()=>editNote(note.id,note.text); */
+    div.querySelector(".edit").onclick=()=>editNote(note.id,note.text,note.tags || []);
     div.querySelector(".pin").onclick = async () => {
   await updateDoc(doc(db,"users",currentUID,"notes",note.id),{
     pinned: !note.pinned
@@ -519,10 +520,15 @@ window.deleteNote = async function(id){
   await deleteDoc(doc(db,"users",currentUID,"notes",id));
 };
 
-window.editNote = function(id,text){
+window.editNote = function(id,text,tags){
   editingID=id;
   isEditingMode = true;
+  
   contentInput.value=text;
+
+  // 🔥 set lại tag input
+  document.getElementById("tags").value = tags.join(", ");
+  
   saveBtn.innerText="Cập Nhật";
   contentInput.focus();
   setStatus("editing");
