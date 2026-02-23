@@ -59,6 +59,21 @@ small{
   font-size:18px;
   color:#00ff88;
 }  
+.tag-badge{
+  display:inline-block;
+  background:#111827;
+  color:#38bdf8;
+  border:1px solid #38bdf855;
+  padding:3px 8px;
+  font-size:11px;
+  border-radius:6px;
+  margin-right:6px;
+  cursor:pointer;
+  font-family:monospace;
+}
+.tag-badge:hover{
+  background:#38bdf822;
+}
 </style>
 </head>
 <body>
@@ -67,7 +82,8 @@ small{
 
 <input type="text" id="search" placeholder="Tìm kiếm...">
 <textarea id="content" placeholder="Nhập ghi chú..."></textarea>
-
+<input type="text" id="tags" placeholder="tags: dev, idea, bug">
+  
 <button id="saveBtn">Lưu Ghi Chú</button>
 <button onclick="logout()" class="logout">Đăng xuất</button>
 <div id="syncStatus" style="font-size:13px;color:#00ffcc;margin-bottom:10px;">
@@ -191,7 +207,14 @@ saveBtn.addEventListener("click", async ()=>{
   contentInput.value="";
 }); */
 saveBtn.addEventListener("click", async ()=>{
-  const text = contentInput.value.trim();
+  const text = 
+    const tagsRaw = document.getElementById("tags").value;
+
+const tags = tagsRaw
+  .split(",")
+  .map(t => t.trim())
+  .filter(t => t !== "");
+    contentInput.value.trim();
   if(!text) return;
 
   try{
@@ -208,11 +231,13 @@ saveBtn.addEventListener("click", async ()=>{
         text: text,
         createdAt: serverTimestamp(),
         color: getRandomColor(),
-        pinned: false
+        pinned: false,
+        tags: tags
       });
     }
 
     contentInput.value="";
+    document.getElementById("tags").value="";
     setStatus("done");
 
   }catch(err){
@@ -282,6 +307,11 @@ function renderNotes(notes){
 });
   
   notes.forEach(note=>{
+    const tagsHtml = note.tags
+  ? note.tags.map(tag =>
+      `<span class="tag-badge" onclick="filterByTag('${tag}')">#${tag}</span>`
+    ).join("")
+  : "";
     const date = note.createdAt?.toDate?.().toLocaleString("vi-VN") || "";
 
     const div=document.createElement("div");
@@ -294,10 +324,15 @@ div.style.background = note.color || getRandomColor() ;
 if(note.pinned){
   div.style.boxShadow = "0 0 0 1px #00ff88";
 }
-    
+   /* 
     div.innerHTML=`
   <small>${date}</small>
   <div style="margin-top:5px;white-space:pre-wrap">${note.text}</div>
+  <div class="actions"> */
+  div.innerHTML=`
+  <small>${date}</small>
+  <div style="margin-top:5px;white-space:pre-wrap">${note.text}</div>
+  <div style="margin-top:6px">${tagsHtml}</div>
   <div class="actions">
     <button class="pin">${note.pinned ? "📌" : "📍"}</button>
     <button class="edit">Sửa</button>
@@ -328,7 +363,13 @@ window.editNote = function(id,text){
   saveBtn.innerText="Cập Nhật";
   contentInput.focus();
 };
-
+window.filterByTag = function(tag){
+  const filtered = allNotes.filter(n =>
+    n.tags && n.tags.includes(tag)
+  );
+  renderNotes(filtered);
+};
+  
 document.getElementById("search").addEventListener("input",(e)=>{
   const keyword=e.target.value.toLowerCase();
   const filtered=allNotes.filter(n=>
