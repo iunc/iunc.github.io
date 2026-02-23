@@ -70,7 +70,10 @@ small{
 
 <button id="saveBtn">Lưu Ghi Chú</button>
 <button onclick="logout()" class="logout">Đăng xuất</button>
-
+<div id="syncStatus" style="font-size:13px;color:#00ffcc;margin-bottom:10px;">
+  🟢 Đã đồng bộ
+</div>
+  
 <div id="notes"></div>
 
 <script type="module">
@@ -134,6 +137,23 @@ function getRandomColor(){
 const contentInput = document.getElementById("content");
 const saveBtn = document.getElementById("saveBtn");
 
+const syncStatus = document.getElementById("syncStatus");
+
+function setStatus(type){
+  if(type==="saving"){
+    syncStatus.innerText="🟡 Đang lưu...";
+    syncStatus.style.color="#facc15";
+  }
+  else if(type==="done"){
+    syncStatus.innerText="🟢 Đã đồng bộ";
+    syncStatus.style.color="#00ff88";
+  }
+  else if(type==="error"){
+    syncStatus.innerText="🔴 Lỗi kết nối";
+    syncStatus.style.color="#ef4444";
+  }
+}
+  
 onAuthStateChanged(auth, (user)=>{
   if(!user){
     window.location.href="login.html";
@@ -148,7 +168,7 @@ window.logout = function(){
     window.location.href="login.html";
   });
 };
-
+/*
 saveBtn.addEventListener("click", async ()=>{
   const text = contentInput.value.trim();
   if(!text) return;
@@ -169,8 +189,37 @@ saveBtn.addEventListener("click", async ()=>{
   }
 
   contentInput.value="";
-});
+}); */
+saveBtn.addEventListener("click", async ()=>{
+  const text = contentInput.value.trim();
+  if(!text) return;
 
+  try{
+    setStatus("saving");
+
+    if(editingID){
+      await updateDoc(doc(db,"users",currentUID,"notes",editingID),{
+        text:text
+      });
+      editingID=null;
+      saveBtn.innerText="Lưu Ghi Chú";
+    }else{
+      await addDoc(collection(db,"users",currentUID,"notes"),{
+        text: text,
+        createdAt: serverTimestamp(),
+        color: getRandomColor(),
+        pinned: false
+      });
+    }
+
+    contentInput.value="";
+    setStatus("done");
+
+  }catch(err){
+    setStatus("error");
+  }
+});
+  
 function listenNotes(){
   const q = query(
     collection(db,"users",currentUID,"notes"),
