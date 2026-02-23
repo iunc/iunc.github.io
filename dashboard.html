@@ -81,6 +81,7 @@ small{
 <h2 class="dashboard-title">Ghi chú của bạn</h2>
 
 <input type="text" id="search" placeholder="Tìm kiếm...">
+<div id="filterStatus" style="font-size:12px;color:#38bdf8;margin-bottom:8px;"></div>
 <textarea id="content" placeholder="Nhập ghi chú..."></textarea>
 <input type="text" id="tags" placeholder="tags: dev, idea, bug">
   
@@ -124,6 +125,7 @@ const db = getFirestore(app);
 let currentUID = null;
 let editingID = null;
 let allNotes = [];
+let currentTagFilter = null;
 
 const colors = [
   "#1e293b",  // slate navy
@@ -206,6 +208,7 @@ saveBtn.addEventListener("click", async ()=>{
 
   contentInput.value="";
 }); */
+  
 /* saveBtn.addEventListener("click", async ()=>{
   const text = 
     const tagsRaw = document.getElementById("tags").value;
@@ -339,6 +342,13 @@ function listenNotes(){
 }
   
 function renderNotes(notes){
+  const filterStatus = document.getElementById("filterStatus");
+
+if(currentTagFilter){
+  filterStatus.innerText = "Đang lọc theo #" + currentTagFilter + " (bấm lại tag để bỏ lọc)";
+}else{
+  filterStatus.innerText = "";
+}
   const container=document.getElementById("notes");
   container.innerHTML="";
   
@@ -404,10 +414,22 @@ window.editNote = function(id,text){
   saveBtn.innerText="Cập Nhật";
   contentInput.focus();
 };
+  
 window.filterByTag = function(tag){
+
+  // Nếu bấm lại cùng tag → bỏ lọc
+  if(currentTagFilter === tag){
+    currentTagFilter = null;
+    renderNotes(allNotes);
+    return;
+  }
+
+  currentTagFilter = tag;
+
   const filtered = allNotes.filter(n =>
     n.tags && n.tags.includes(tag)
   );
+
   renderNotes(filtered);
 };
   
