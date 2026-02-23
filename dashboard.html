@@ -5,14 +5,55 @@
 <title>Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{margin:0;padding:20px;background:#0f0f0f;color:white;font-family:sans-serif}
-textarea,input,button{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:none}
-textarea,input{background:#262626;color:white}
-button{background:#3b82f6;color:white;font-weight:bold}
-.note{background:#1e293b;padding:15px;margin-top:10px;border-radius:12px}
-small{color:#00ffcc}
-.migrate{background:#f59e0b}
-.logout{background:#444}
+body{
+  margin:0;
+  padding:20px;
+  background:#0f0f0f;
+  color:white;
+  font-family:sans-serif;
+}
+textarea,input,button{
+  width:100%;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:10px;
+  border:none;
+}
+textarea,input{
+  background:#262626;
+  color:white;
+}
+button{
+  background:#3b82f6;
+  color:white;
+  font-weight:bold;
+}
+.note{
+  background:#1e293b;
+  padding:15px;
+  margin-top:10px;
+  border-radius:12px;
+}
+small{
+  color:#00ffcc;
+  font-size:12px;
+}
+.logout{
+  background:#444;
+}
+.actions{
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+}
+.actions button{
+  flex:1;
+  padding:6px;
+  font-size:13px;
+  border-radius:8px;
+}
+.delete{ background:#ef4444; }
+.edit{ background:#f59e0b; }
 </style>
 </head>
 <body>
@@ -23,7 +64,6 @@ small{color:#00ffcc}
 <textarea id="content" placeholder="Nhập ghi chú..."></textarea>
 
 <button id="saveBtn">Lưu Ghi Chú</button>
-<button onclick="migrateOldNotes()" class="migrate">Migrate Note Cũ (Bấm 1 lần)</button>
 <button onclick="logout()" class="logout">Đăng xuất</button>
 
 <div id="notes"></div>
@@ -38,9 +78,10 @@ import {
   deleteDoc,
   doc,
   updateDoc,
-  getDocs,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -57,90 +98,109 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUID = null;
+let editingID = null;
 let allNotes = [];
 
 const contentInput = document.getElementById("content");
-const notesDiv = document.getElementById("notes");
+const saveBtn = document.getElementById("saveBtn");
 
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  } else {
+onAuthStateChanged(auth, (user)=>{
+  if(!user){
+    window.location.href="login.html";
+  }else{
     currentUID = user.uid;
-    listenUserNotes();
-    listenOldNotes(); // hiển thị note cũ luôn
+    listenNotes();
   }
 });
 
 window.logout = function(){
-  signOut(auth).then(()=>window.location.href="login.html");
+  signOut(auth).then(()=>{
+    window.location.href="login.html";
+  });
 };
 
-document.getElementById("saveBtn").addEventListener("click", async ()=>{
+saveBtn.addEventListener("click", async ()=>{
   const text = contentInput.value.trim();
   if(!text) return;
 
-  await addDoc(collection(db,"users",currentUID,"notes"),{
-    text:text,
-    createdAt:serverTimestamp()
-  });
+  if(editingID){
+    await updateDoc(doc(db,"users",currentUID,"notes",editingID),{
+      text:text
+    });
+    editingID=null;
+    saveBtn.innerText="Lưu Ghi Chú";
+  }else{
+    await addDoc(collection(db,"users",currentUID,"notes"),{
+      text:text,
+      createdAt:serverTimestamp()
+    });
+  }
 
   contentInput.value="";
 });
 
-// nghe note mới (chuẩn)
-function listenUserNotes(){
-  onSnapshot(collection(db,"users",currentUID,"notes"),(snap)=>{
-    snap.forEach(docSnap=>{
-      const data=docSnap.data();
-      renderNote(docSnap.id,data,true);
+function listenNotes(){
+  const q = query(
+    collection(db,"users",currentUID,"notes"),
+    orderBy("createdAt","desc")
+  );
+
+  onSnapshot(q,(snapshot)=>{
+    allNotes=[];
+    snapshot.forEach(docSnap=>{
+      allNotes.push({
+        id:docSnap.id,
+        ...docSnap.data()
+      });
     });
+    renderNotes(allNotes);
   });
 }
 
-// nghe note cũ
-function listenOldNotes(){
-  onSnapshot(collection(db,"notes"),(snap)=>{
-    snap.forEach(docSnap=>{
-      const data=docSnap.data();
-      renderNote(docSnap.id,data,false);
-    });
+function renderNotes(notes){
+  const container=document.getElementById("notes");
+  container.innerHTML="";
+
+  notes.forEach(note=>{
+    const date = note.createdAt?.toDate?.().toLocaleString("vi-VN") || "";
+
+    const div=document.createElement("div");
+    div.className="note";
+
+    div.innerHTML=`
+      <small>${date}</small>
+      <div style="margin-top:5px;white-space:pre-wrap">${note.text}</div>
+      <div class="actions">
+        <button class="edit">Sửa</button>
+        <button class="delete">Xóa</button>
+      </div>
+    `;
+
+    div.querySelector(".delete").onclick=()=>deleteNote(note.id);
+    div.querySelector(".edit").onclick=()=>editNote(note.id,note.text);
+
+    container.appendChild(div);
   });
 }
 
-function renderNote(id,data,isNew){
-  if(document.getElementById(id)) return;
-
-  const div=document.createElement("div");
-  div.className="note";
-  div.id=id;
-
-  const date=data.createdAt?.toDate?.().toLocaleString("vi-VN")||"";
-
-  div.innerHTML=`
-    <small>${isNew?"(Mới)":"(Cũ)"} ${date}</small>
-    <div style="margin-top:5px">${data.text}</div>
-    ${isNew?`<button onclick="deleteNote('${id}')">Xóa</button>`:""}
-  `;
-
-  notesDiv.prepend(div);
-}
-
-window.deleteNote=async function(id){
+window.deleteNote = async function(id){
   await deleteDoc(doc(db,"users",currentUID,"notes",id));
-  document.getElementById(id)?.remove();
 };
 
-// migrate 1 lần
-window.migrateOldNotes=async function(){
-  const oldSnap=await getDocs(collection(db,"notes"));
-
-  for(const d of oldSnap.docs){
-    await addDoc(collection(db,"users",currentUID,"notes"),d.data());
-  }
-
-  alert("Đã migrate xong! Reload trang.");
+window.editNote = function(id,text){
+  editingID=id;
+  contentInput.value=text;
+  saveBtn.innerText="Cập Nhật";
+  contentInput.focus();
 };
+
+document.getElementById("search").addEventListener("input",(e)=>{
+  const keyword=e.target.value.toLowerCase();
+  const filtered=allNotes.filter(n=>
+    n.text.toLowerCase().includes(keyword)
+  );
+  renderNotes(filtered);
+});
 </script>
 
 </body>
