@@ -1,130 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f0f0f">
 <meta charset="UTF-8">
-<title>Bảng Điều Khiển</title>
+<title>Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-body {
-  margin: 0;
-  padding: 20px;
-  background: #0f0f0f;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-h2 { text-align: center; margin-bottom: 20px; }
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.stat-card {
-  background: #1e293b;
-  padding: 15px;
-  border-radius: 14px;
-  text-align: center;
-}
-
-.stat-card small {
-  color: #94a3b8;
-  font-size: 12px;
-}
-
-.stat-card h3 {
-  margin: 5px 0 0;
-  font-size: 22px;
-}
-
-textarea, input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  background: #262626;
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-size: 15px;
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  background: #3b82f6;
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.note {
-  padding: 15px;
-  margin-top: 12px;
-  border-radius: 14px;
-}
-
-.note small {
-  font-size: 12px;
-  color: #00ffcc;
-}
-
-.actions {
-  margin-top: 10px;
-  display: flex;
-  gap: 8px;
-}
-
-.actions button {
-  flex: 1;
-  padding: 6px;
-  font-size: 13px;
-  border-radius: 8px;
-}
-
-.pin { background: #6366f1; }
-.edit { background: #f59e0b; }
-.delete { background: #ef4444; }
-.logout { background: #444; margin-top:20px; }
-
-.pinned {
-  border: 2px solid gold;
-}
+body{margin:0;padding:20px;background:#0f0f0f;color:white;font-family:sans-serif}
+textarea,input,button{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:none}
+textarea,input{background:#262626;color:white}
+button{background:#3b82f6;color:white;font-weight:bold}
+.note{background:#1e293b;padding:15px;margin-top:10px;border-radius:12px}
+small{color:#00ffcc}
+.migrate{background:#f59e0b}
+.logout{background:#444}
 </style>
 </head>
-
 <body>
 
-<h2>Ghi Chú Cá Nhân</h2>
+<h2>Ghi chú của bạn</h2>
 
-<div class="stats">
-  <div class="stat-card">
-    <small>Tổng</small>
-    <h3 id="totalCount">0</h3>
-  </div>
-  <div class="stat-card">
-    <small>Đã ghim</small>
-    <h3 id="pinnedCount">0</h3>
-  </div>
-  <div class="stat-card">
-    <small>Hôm nay</small>
-    <h3 id="todayCount">0</h3>
-  </div>
-</div>
-
-<input type="text" id="search" placeholder="Tìm kiếm ghi chú...">
-<textarea id="content" placeholder="Nhập nội dung..."></textarea>
+<input type="text" id="search" placeholder="Tìm kiếm...">
+<textarea id="content" placeholder="Nhập ghi chú..."></textarea>
 
 <button id="saveBtn">Lưu Ghi Chú</button>
+<button onclick="migrateOldNotes()" class="migrate">Migrate Note Cũ (Bấm 1 lần)</button>
 <button onclick="logout()" class="logout">Đăng xuất</button>
 
 <div id="notes"></div>
@@ -132,15 +31,14 @@ button {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  deleteDoc, 
-  doc, 
-  updateDoc, 
-  query, 
-  orderBy,
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+  getDocs,
   onSnapshot,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -159,160 +57,90 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUID = null;
-let editingID = null;
 let allNotes = [];
 
 const contentInput = document.getElementById("content");
-const saveBtn = document.getElementById("saveBtn");
-
-function randomColor() {
-  const colors = [
-    "#0f172a","#111827","#1e293b",
-    "#1f2937","#0b3b5c","#083344",
-    "#1e3a8a","#312e81","#134e4a","#2e1065"
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
+const notesDiv = document.getElementById("notes");
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
     currentUID = user.uid;
-    listenNotes();
+    listenUserNotes();
+    listenOldNotes(); // hiển thị note cũ luôn
   }
 });
 
-window.logout = function () {
-  signOut(auth).then(() => {
-    window.location.href = "login.html";
-  });
+window.logout = function(){
+  signOut(auth).then(()=>window.location.href="login.html");
 };
 
-saveBtn.addEventListener("click", async () => {
+document.getElementById("saveBtn").addEventListener("click", async ()=>{
   const text = contentInput.value.trim();
-  if (!text) return;
+  if(!text) return;
 
-  if (editingID) {
-    await updateDoc(doc(db, "users", currentUID, "notes", editingID), {
-      text: text
+  await addDoc(collection(db,"users",currentUID,"notes"),{
+    text:text,
+    createdAt:serverTimestamp()
+  });
+
+  contentInput.value="";
+});
+
+// nghe note mới (chuẩn)
+function listenUserNotes(){
+  onSnapshot(collection(db,"users",currentUID,"notes"),(snap)=>{
+    snap.forEach(docSnap=>{
+      const data=docSnap.data();
+      renderNote(docSnap.id,data,true);
     });
-    editingID = null;
-    saveBtn.innerText = "Lưu Ghi Chú";
-  } else {
-    await addDoc(collection(db, "users", currentUID, "notes"), {
-      text: text,
-      createdAt: serverTimestamp(),
-      pinned: false,
-      color: randomColor()
+  });
+}
+
+// nghe note cũ
+function listenOldNotes(){
+  onSnapshot(collection(db,"notes"),(snap)=>{
+    snap.forEach(docSnap=>{
+      const data=docSnap.data();
+      renderNote(docSnap.id,data,false);
     });
+  });
+}
+
+function renderNote(id,data,isNew){
+  if(document.getElementById(id)) return;
+
+  const div=document.createElement("div");
+  div.className="note";
+  div.id=id;
+
+  const date=data.createdAt?.toDate?.().toLocaleString("vi-VN")||"";
+
+  div.innerHTML=`
+    <small>${isNew?"(Mới)":"(Cũ)"} ${date}</small>
+    <div style="margin-top:5px">${data.text}</div>
+    ${isNew?`<button onclick="deleteNote('${id}')">Xóa</button>`:""}
+  `;
+
+  notesDiv.prepend(div);
+}
+
+window.deleteNote=async function(id){
+  await deleteDoc(doc(db,"users",currentUID,"notes",id));
+  document.getElementById(id)?.remove();
+};
+
+// migrate 1 lần
+window.migrateOldNotes=async function(){
+  const oldSnap=await getDocs(collection(db,"notes"));
+
+  for(const d of oldSnap.docs){
+    await addDoc(collection(db,"users",currentUID,"notes"),d.data());
   }
 
-  contentInput.value = "";
-});
-
-window.deleteNote = async function (id) {
-  await deleteDoc(doc(db, "users", currentUID, "notes", id));
+  alert("Đã migrate xong! Reload trang.");
 };
-
-window.editNote = function (id, text) {
-  editingID = id;
-  contentInput.value = text;
-  saveBtn.innerText = "Cập Nhật";
-  contentInput.focus();
-};
-
-window.togglePin = async function(id, currentState) {
-  await updateDoc(doc(db, "users", currentUID, "notes", id), {
-    pinned: !currentState
-  });
-};
-
-function listenNotes() {
-  const q = query(
-    collection(db, "users", currentUID, "notes"),
-    orderBy("pinned", "desc"),
-    orderBy("createdAt", "desc")
-  );
-
-  onSnapshot(q, (snapshot) => {
-    allNotes = [];
-    snapshot.forEach(docSnap => {
-      allNotes.push({
-        id: docSnap.id,
-        ...docSnap.data()
-      });
-    });
-
-    updateStats(allNotes);
-    renderNotes(allNotes);
-  });
-}
-
-function updateStats(notes) {
-  const total = notes.length;
-  const pinned = notes.filter(n => n.pinned).length;
-
-  const today = new Date().toDateString();
-  const todayNotes = notes.filter(n => {
-    if (!n.createdAt) return false;
-    return n.createdAt.toDate().toDateString() === today;
-  }).length;
-
-  document.getElementById("totalCount").innerText = total;
-  document.getElementById("pinnedCount").innerText = pinned;
-  document.getElementById("todayCount").innerText = todayNotes;
-}
-
-function renderNotes(notes) {
-  const container = document.getElementById("notes");
-  container.innerHTML = "";
-
-  notes.forEach(note => {
-    const date = note.createdAt?.toDate?.() || new Date();
-    const formatted = date.toLocaleString("vi-VN");
-
-    const div = document.createElement("div");
-    div.className = "note";
-    if (note.pinned) div.classList.add("pinned");
-    div.style.background = note.color || "#1a1a1a";
-
-    div.innerHTML = `
-      <small>${formatted}</small>
-      <div style="margin-top:8px;white-space:pre-wrap;">${note.text}</div>
-      <div class="actions">
-        <button class="pin">${note.pinned ? "Bỏ ghim" : "Ghim"}</button>
-        <button class="edit">Sửa</button>
-        <button class="delete">Xóa</button>
-      </div>
-    `;
-
-    div.querySelector(".pin").onclick = () =>
-      togglePin(note.id, note.pinned);
-
-    div.querySelector(".edit").onclick = () =>
-      editNote(note.id, note.text);
-
-    div.querySelector(".delete").onclick = () =>
-      deleteNote(note.id);
-
-    container.appendChild(div);
-  });
-}
-
-document.getElementById("search").addEventListener("input", function(e) {
-  const keyword = e.target.value.toLowerCase();
-  const filtered = allNotes.filter(note =>
-    note.text.toLowerCase().includes(keyword)
-  );
-  renderNotes(filtered);
-});
-</script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./service-worker.js");
-}
 </script>
 
 </body>
