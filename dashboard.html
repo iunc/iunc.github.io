@@ -219,7 +219,7 @@ saveBtn.addEventListener("click", async ()=>{
     setStatus("error");
   }
 });
-  
+/*
 function listenNotes(){
   const q = query(
     collection(db,"users",currentUID,"notes"),
@@ -237,7 +237,41 @@ function listenNotes(){
     renderNotes(allNotes);
   });
 }
+*/
+function listenNotes(){
+  const q = query(
+    collection(db,"users",currentUID,"notes"),
+    orderBy("createdAt","desc")
+  );
 
+  onSnapshot(q,
+    (snapshot)=>{
+
+      // 🟡 BẮT ĐẦU ĐỒNG BỘ
+      setStatus("saving");
+
+      allNotes=[];
+      snapshot.forEach(docSnap=>{
+        allNotes.push({
+          id:docSnap.id,
+          ...docSnap.data()
+        });
+      });
+
+      renderNotes(allNotes);
+
+      // 🟢 XONG
+      setTimeout(()=>{
+        setStatus("done");
+      },300);
+
+    },
+    (error)=>{
+      setStatus("error");
+    }
+  );
+}
+  
 function renderNotes(notes){
   const container=document.getElementById("notes");
   container.innerHTML="";
