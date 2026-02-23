@@ -106,6 +106,31 @@ let currentUID = null;
 let editingID = null;
 let allNotes = [];
 
+const colors = [
+  "#0d1117",
+  "#0f172a",
+  "#111827",
+  "#001f1f",
+  "#002b36",
+  "#001a2e",
+  "#0a0f1c",
+  "#112240",
+  "#0c1022",
+  "#031926"
+];
+
+let lastColor = null;
+
+function getRandomColor(){
+  let newColor;
+  do{
+    newColor = colors[Math.floor(Math.random()*colors.length)];
+  }while(newColor === lastColor);
+
+  lastColor = newColor;
+  return newColor;
+}
+  
 const contentInput = document.getElementById("content");
 const saveBtn = document.getElementById("saveBtn");
 
@@ -136,9 +161,10 @@ saveBtn.addEventListener("click", async ()=>{
     saveBtn.innerText="Lưu Ghi Chú";
   }else{
     await addDoc(collection(db,"users",currentUID,"notes"),{
-      text:text,
-      createdAt:serverTimestamp()
-    });
+  text: text,
+  createdAt: serverTimestamp(),
+  color: getRandomColor()
+});
   }
 
   contentInput.value="";
@@ -172,6 +198,10 @@ function renderNotes(notes){
     const div=document.createElement("div");
     div.className="note";
 
+div.style.border = "1px solid #00ff88";
+div.style.fontFamily = "monospace";
+div.style.color = "#c9d1d9";
+    
     div.innerHTML=`
       <small>${date}</small>
       <div style="margin-top:5px;white-space:pre-wrap">${note.text}</div>
