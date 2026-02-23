@@ -558,6 +558,8 @@ return `
     #${tag}
   </span>
 `;
+    }).join("")
+  : "";
     
     const date = note.createdAt?.toDate?.().toLocaleString("vi-VN") || "";
 
