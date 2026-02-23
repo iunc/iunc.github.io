@@ -74,6 +74,12 @@ small{
 .tag-badge:hover{
   background:#38bdf822;
 }
+.tag-badge.active{
+  background:#38bdf8;
+  color:#0f0f0f;
+  border:1px solid #38bdf8;
+  box-shadow:0 0 8px #38bdf8aa;
+}
 </style>
 </head>
 <body>
@@ -358,11 +364,19 @@ if(currentTagFilter){
 });
   
   notes.forEach(note=>{
+    /*
     const tagsHtml = note.tags
   ? note.tags.map(tag =>
       `<span class="tag-badge" onclick="filterByTag('${tag}')">#${tag}</span>`
     ).join("")
+  : "";  */
+    const tagsHtml = note.tags
+  ? note.tags.map(tag => {
+      const activeClass = (tag === currentTagFilter) ? "active" : "";
+      return `<span class="tag-badge ${activeClass}" onclick="filterByTag('${tag}')">#${tag}</span>`;
+    }).join("")
   : "";
+    
     const date = note.createdAt?.toDate?.().toLocaleString("vi-VN") || "";
 
     const div=document.createElement("div");
