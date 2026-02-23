@@ -332,8 +332,28 @@ function listenNotes(){
         });
       });
 
-      renderNotes(allNotes);
+      /*renderNotes(allNotes);*/
+      // Nếu đang lọc theo tag thì kiểm tra tag còn tồn tại không
+if(currentTagFilter){
+  const stillExist = allNotes.some(n =>
+    n.tags && n.tags.includes(currentTagFilter)
+  );
 
+  if(!stillExist){
+    currentTagFilter = null;
+  }
+}
+
+// Render đúng theo trạng thái hiện tại
+if(currentTagFilter){
+  const filtered = allNotes.filter(n =>
+    n.tags && n.tags.includes(currentTagFilter)
+  );
+  renderNotes(filtered);
+}else{
+  renderNotes(allNotes);
+}
+      
       // 🟢 XONG
       setTimeout(()=>{
         setStatus("done");
