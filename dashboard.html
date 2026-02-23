@@ -76,12 +76,6 @@ small{
 .tag-badge:hover{
   background:#38bdf822;
 }
-.tag-badge.active{
-  background:#38bdf8;
-  color:#0f0f0f;
-  border:1px solid #38bdf8;
-  box-shadow:0 0 8px #38bdf8aa;
-}
 
 </style>
 </head>
@@ -544,28 +538,28 @@ if(currentTagFilter){
   : "";  */
     const tagsHtml = note.tags
   ? note.tags.map(tag => {
-      const activeClass = (tag === currentTagFilter) ? "active" : "";
-    /*
-      return `<span class="tag-badge ${activeClass}" onclick="filterByTag('${tag}')">#${tag}</span>`;
-    }).join("")
-  : "";
-  */
-    const color = getTagColor(tag.toLowerCase());
 
-return `
-  <span 
-    class="tag-badge ${activeClass}" 
-    onclick="filterByTag('${tag}')"
-    style="
-  border:1px solid ${color};
-  color:${color};
-  background:#2a2a2a;
-  font-family: monospace;
-"
-  >
-    #${tag}
-  </span>
-`;
+      const color = getTagColor(tag.toLowerCase());
+      const isActive =
+        currentTagFilter &&
+        tag.toLowerCase() === currentTagFilter.toLowerCase();
+
+      return `
+        <span 
+          class="tag-badge"
+          onclick="filterByTag('${tag}')"
+          style="
+            border:1px solid ${color};
+            color:${isActive ? "#0f0f0f" : color};
+            background:${isActive ? color : "#1a1a1a"};
+            font-family: monospace;
+            transition:0.2s;
+            box-shadow:${isActive ? `0 0 8px ${color}88` : "none"};
+          "
+        >
+          #${tag}
+        </span>
+      `;
     }).join("")
   : "";
     
