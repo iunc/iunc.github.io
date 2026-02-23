@@ -29,10 +29,12 @@ button{
   font-weight:bold;
 }
 .note{
-  background:#1e293b;
+  background:#1e1e1e;
   padding:15px;
   margin-top:10px;
-  border-radius:12px;
+  border-radius:8px;
+  border:1px solid #2a2a2a;
+  font-family: monospace;
 }
 small{
   color:#00ffcc;
@@ -148,22 +150,7 @@ const colors = [
   "#2d1e2f"   // deep purple
 ];
 */
-  const colors = [
-  "#262626",
-  "#262625"
-];
- 
-let lastColor = null;
-
-function getRandomColor(){
-  let newColor;
-  do{
-    newColor = colors[Math.floor(Math.random()*colors.length)];
-  }while(newColor === lastColor);
-
-  lastColor = newColor;
-  return newColor;
-}
+  
   
 const contentInput = document.getElementById("content");
 /*
@@ -570,10 +557,11 @@ return `
     class="tag-badge ${activeClass}" 
     onclick="filterByTag('${tag}')"
     style="
-      border:1px solid ${color};
-      color:${color};
-      background:${color}22;
-    "
+  border:1px solid ${color};
+  color:${color};
+  background:#2a2a2a;
+  font-family: monospace;
+"
   >
     #${tag}
   </span>
@@ -586,10 +574,10 @@ return `
     const div=document.createElement("div");
     div.className="note";
 
-div.style.border = "1px solid #30363d";
-div.style.fontFamily = "monospace";
+ div.style.background = "#1e1e1e";   // nền code
+div.style.border = "1px solid #2a2a2a";
 div.style.color = "#d4d4d4";
-div.style.background = getRandomColor() ;  
+div.style.fontFamily = "monospace";
 if(note.pinned){
   div.style.boxShadow = "0 0 0 1px #00ff88";
 }
