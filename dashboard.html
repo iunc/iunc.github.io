@@ -421,9 +421,16 @@ function listenNotes(){
       /*renderNotes(allNotes);*/
       // Nếu đang lọc theo tag thì kiểm tra tag còn tồn tại không
 if(currentTagFilter){
+  /*
   const stillExist = allNotes.some(n =>
     n.tags && n.tags.includes(currentTagFilter)
   );
+  */
+  const stillExist = allNotes.some(n =>
+  n.tags && n.tags.some(t => 
+    t.toLowerCase() === currentTagFilter.toLowerCase()
+  )
+);
 
   if(!stillExist){
     currentTagFilter = null;
@@ -432,9 +439,17 @@ if(currentTagFilter){
 
 // Render đúng theo trạng thái hiện tại
 if(currentTagFilter){
+  /*
   const filtered = allNotes.filter(n =>
     n.tags && n.tags.includes(currentTagFilter)
   );
+  */
+  const filtered = allNotes.filter(n =>
+  n.tags && n.tags.some(t => 
+    t.toLowerCase() === currentTagFilter.toLowerCase()
+  )
+);
+  
   renderNotes(filtered);
 }else{
   renderNotes(allNotes);
@@ -559,11 +574,15 @@ window.filterByTag = function(tag){
   }
 
   currentTagFilter = tag;
-
+/*
   const filtered = allNotes.filter(n =>
     n.tags && n.tags.includes(tag)
   );
-
+*/
+  const filtered = allNotes.filter(n =>
+  n.tags && n.tags.some(t => t.toLowerCase() === tag.toLowerCase())
+);
+  
   renderNotes(filtered);
 };
   
