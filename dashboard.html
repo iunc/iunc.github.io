@@ -121,19 +121,20 @@ const contentInput = document.getElementById("content");
 const saveBtn = document.getElementById("saveBtn");
 
 function randomColor() {
-  let hue;
+  const colors = [
+    "#0f172a", // deep navy
+    "#111827", // midnight
+    "#1e293b", // slate blue
+    "#1f2937", // graphite
+    "#0b3b5c", // cyber blue
+    "#083344", // deep teal
+    "#1e3a8a", // royal blue
+    "#312e81", // indigo tech
+    "#134e4a", // dark emerald
+    "#2e1065"  // deep purple
+  ];
 
-  do {
-    hue = Math.floor(Math.random() * 360);
-  } 
-  // Né đỏ (0–15 & 345–360) và cam (25–45)
-  while (
-    (hue >= 0 && hue <= 15) ||
-    (hue >= 345 && hue <= 360) ||
-    (hue >= 25 && hue <= 45)
-  );
-
-  return `hsl(${hue}, 50%, 32%)`;
+  return colors[Math.floor(Math.random() * colors.length)];
 }
 
 onAuthStateChanged(auth, (user) => {
