@@ -512,16 +512,16 @@ function getTagColor(tag){
   ];
   */
   const tagColors = [
-  "#ff7b72", // đỏ coral
-  "#ffa657", // cam nổi
-  "#f2cc60", // vàng ấm
-  "#7ee787", // xanh neon dịu
-  "#56d364", // xanh lá sáng
-  "#79c0ff", // xanh dương sáng
-  "#a5d6ff", // cyan sáng
-  "#d2a8ff", // tím sáng
-  "#ff9bce", // hồng nhẹ
-  "#b1bac4"  // xám sáng tech
+  "#569cd6", // blue (variable)
+  "#4ec9b0", // cyan (type)
+  "#dcdcaa", // yellow (function)
+  "#c586c0", // purple (keyword)
+  "#ce9178", // orange (string)
+  "#9cdcfe", // light blue
+  "#6a9955", // green (comment)
+  "#f44747", // red (error)
+  "#b5cea8", // pale green
+  "#d7ba7d"  // warm yellow
 ];
 
   return tagColors[Math.abs(hash) % tagColors.length];
@@ -565,9 +565,9 @@ return `
     class="tag-badge ${activeClass}" 
     onclick="filterByTag('${tag}')"
     style="
-      border:1px solid ${color}55;
+      border:1px solid ${color};
       color:${color};
-      background:${color}22;
+      background:#111111;
     "
   >
     #${tag}
