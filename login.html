@@ -323,5 +323,64 @@ if ("serviceWorker" in navigator) {
     .catch(err => console.log("Lỗi SW:", err));
 }
 </script>
+  <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js")
+    .then(reg => {
+
+      reg.addEventListener("updatefound", () => {
+        const newWorker = reg.installing;
+
+        newWorker.addEventListener("statechange", () => {
+          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+            hienPopupCapNhat();
+          }
+        });
+      });
+
+    });
+}
+
+function hienPopupCapNhat() {
+  const div = document.createElement("div");
+  div.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 9999;">
+      Có phiên bản mới 🚀
+      <button onclick="capNhatNgay()" style="
+        margin-left:10px;
+        background:#4CAF50;
+        color:white;
+        border:none;
+        padding:5px 10px;
+        border-radius:5px;">
+        Cập nhật
+      </button>
+    </div>
+  `;
+  document.body.appendChild(div);
+}
+
+function capNhatNgay() {
+  navigator.serviceWorker.getRegistration().then(reg => {
+    if (reg.waiting) {
+      reg.waiting.postMessage({ type: "SKIP_WAITING" });
+    }
+  });
+}
+
+// Reload khi service worker mới kích hoạt
+navigator.serviceWorker.addEventListener("controllerchange", () => {
+  window.location.reload();
+});
+</script>
 </body>
 </html>                   
