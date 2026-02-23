@@ -9,6 +9,7 @@
 
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
 body {
   margin: 0;
   padding: 20px;
@@ -19,6 +20,37 @@ body {
 
 h2 { text-align: center; margin-bottom: 20px; }
 
+/* ===== STATS ===== */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 14px;
+  text-align: center;
+  transition: 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: scale(1.05);
+}
+
+.stat-card small {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.stat-card h3 {
+  margin: 5px 0 0;
+  font-size: 22px;
+}
+
+/* ===== INPUT ===== */
 textarea, input {
   width: 100%;
   padding: 12px;
@@ -42,10 +74,12 @@ button {
   cursor: pointer;
 }
 
+/* ===== NOTE ===== */
 .note {
   padding: 15px;
   margin-top: 12px;
   border-radius: 14px;
+  position: relative;
 }
 
 .note small {
@@ -56,7 +90,7 @@ button {
 .actions {
   margin-top: 10px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .actions button {
@@ -66,15 +100,35 @@ button {
   border-radius: 8px;
 }
 
+.pin { background: #6366f1; }
 .edit { background: #f59e0b; }
 .delete { background: #ef4444; }
 .logout { background: #444; margin-top:20px; }
+
+.pinned {
+  border: 2px solid gold;
+}
 </style>
 </head>
 
 <body>
 
 <h2>Ghi Chú Cá Nhân</h2>
+
+<div class="stats">
+  <div class="stat-card">
+    <small>Tổng</small>
+    <h3 id="totalCount">0</h3>
+  </div>
+  <div class="stat-card">
+    <small>Đã ghim</small>
+    <h3 id="pinnedCount">0</h3>
+  </div>
+  <div class="stat-card">
+    <small>Hôm nay</small>
+    <h3 id="todayCount">0</h3>
+  </div>
+</div>
 
 <input type="text" id="search" placeholder="Tìm kiếm ghi chú...">
 <textarea id="content" placeholder="Nhập nội dung..."></textarea>
@@ -101,12 +155,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
-  authDomain: "iunc-login.firebaseapp.com",
-  projectId: "iunc-login",
-  storageBucket: "iunc-login.firebasestorage.app",
-  messagingSenderId: "359473829379",
-  appId: "1:359473829379:web:b1102278155f598e316036"
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_SENDER",
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -122,25 +176,16 @@ const saveBtn = document.getElementById("saveBtn");
 
 function randomColor() {
   const colors = [
-    "#0f172a", // deep navy
-    "#111827", // midnight
-    "#1e293b", // slate blue
-    "#1f2937", // graphite
-    "#0b3b5c", // cyber blue
-    "#083344", // deep teal
-    "#1e3a8a", // royal blue
-    "#312e81", // indigo tech
-    "#134e4a", // dark emerald
-    "#2e1065"  // deep purple
+    "#0f172a","#111827","#1e293b",
+    "#1f2937","#0b3b5c","#083344",
+    "#1e3a8a","#312e81","#134e4a","#2e1065"
   ];
-
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
 onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  } else {
+  if (!user) window.location.href = "login.html";
+  else {
     currentUID = user.uid;
     listenNotes();
   }
@@ -185,9 +230,16 @@ window.editNote = function (id, text) {
   contentInput.focus();
 };
 
+window.togglePin = async function(id, currentState) {
+  await updateDoc(doc(db, "users", currentUID, "notes", id), {
+    pinned: !currentState
+  });
+};
+
 function listenNotes() {
   const q = query(
     collection(db, "users", currentUID, "notes"),
+    orderBy("pinned", "desc"),
     orderBy("createdAt", "desc")
   );
 
@@ -199,8 +251,25 @@ function listenNotes() {
         ...docSnap.data()
       });
     });
+
+    updateStats(allNotes);
     renderNotes(allNotes);
   });
+}
+
+function updateStats(notes) {
+  const total = notes.length;
+  const pinned = notes.filter(n => n.pinned).length;
+
+  const today = new Date().toDateString();
+  const todayNotes = notes.filter(n => {
+    if (!n.createdAt) return false;
+    return n.createdAt.toDate().toDateString() === today;
+  }).length;
+
+  document.getElementById("totalCount").innerText = total;
+  document.getElementById("pinnedCount").innerText = pinned;
+  document.getElementById("todayCount").innerText = todayNotes;
 }
 
 function renderNotes(notes) {
@@ -213,20 +282,27 @@ function renderNotes(notes) {
 
     const div = document.createElement("div");
     div.className = "note";
+    if (note.pinned) div.classList.add("pinned");
     div.style.background = note.color || "#1a1a1a";
 
     div.innerHTML = `
       <small>${formatted}</small>
-      <div style="margin-top:8px;white-space:pre-wrap;"></div>
+      <div style="margin-top:8px;white-space:pre-wrap;">${note.text}</div>
       <div class="actions">
+        <button class="pin">${note.pinned ? "Bỏ ghim" : "Ghim"}</button>
         <button class="edit">Sửa</button>
         <button class="delete">Xóa</button>
       </div>
     `;
 
-    div.querySelector("div").innerText = note.text;
-    div.querySelector(".edit").onclick = () => editNote(note.id, note.text);
-    div.querySelector(".delete").onclick = () => deleteNote(note.id);
+    div.querySelector(".pin").onclick = () =>
+      togglePin(note.id, note.pinned);
+
+    div.querySelector(".edit").onclick = () =>
+      editNote(note.id, note.text);
+
+    div.querySelector(".delete").onclick = () =>
+      deleteNote(note.id);
 
     container.appendChild(div);
   });
