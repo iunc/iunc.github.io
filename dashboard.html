@@ -545,13 +545,15 @@ if(currentTagFilter){
           class="tag-badge"
           onclick="filterByTag('${tag}')"
           style="
-            border:1px solid ${color};
-            color:${isActive ? "#0f0f0f" : color};
-            background:${isActive ? color : "#1a1a1a"};
-            font-family: monospace;
-            transition:0.2s;
-            box-shadow:${isActive ? `0 0 8px ${color}88` : "none"};
-          "
+  border:1px solid ${color};
+  color:${isActive ? '#0f0f0f' : color};
+  background:${isActive ? color : '#111'};
+  font-family: monospace;
+  font-weight:600;
+  text-shadow:${isActive ? 'none' : `0 0 6px ${color}`};
+  box-shadow:${isActive ? `0 0 12px ${color}aa` : 'none'};
+  transition:0.2s;
+"
         >
           #${tag}
         </span>
