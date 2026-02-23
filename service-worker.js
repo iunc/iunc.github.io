@@ -1,4 +1,4 @@
-const CACHE_NAME = "ghichu-v1";
+const CACHE_NAME = "ghichu-v2";
 const urlsToCache = [
   "login.html",
   "dashboard.html"
