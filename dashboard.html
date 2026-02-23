@@ -1,30 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f0f0f">
 <meta charset="UTF-8">
 <title>Bảng Điều Khiển</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-* { box-sizing: border-box; }
-* { 
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent; /* Tắt hiệu ứng vuông Android */
-}
-
-button {
-  outline: none;
-}
-
-button:focus {
-  outline: none;
-}
-
-button:active {
-  transform: scale(0.97);
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
   margin: 0;
   padding: 20px;
@@ -33,10 +17,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
+h2 { text-align: center; margin-bottom: 20px; }
 
 textarea, input {
   width: 100%;
@@ -59,26 +40,17 @@ button {
   color: white;
   font-weight: bold;
   cursor: pointer;
-  overflow: hidden;              /* FIX hiệu ứng tràn góc */
-  position: relative;
-  transition: 0.2s;
-}
-
-button:hover {
-  opacity: 0.9;
-  transform: scale(0.98);
 }
 
 .note {
-  background: #1a1a1a;
   padding: 15px;
   margin-top: 12px;
   border-radius: 14px;
 }
 
 .note small {
-  color: #00ffcc;
   font-size: 12px;
+  color: #00ffcc;
 }
 
 .actions {
@@ -119,12 +91,13 @@ import {
   getFirestore, 
   collection, 
   addDoc, 
-  getDocs, 
   deleteDoc, 
   doc, 
   updateDoc, 
   query, 
-  orderBy 
+  orderBy,
+  onSnapshot,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -141,30 +114,40 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUID = null;
-let allNotes = [];
 let editingID = null;
+let allNotes = [];
 
 const contentInput = document.getElementById("content");
 const saveBtn = document.getElementById("saveBtn");
 
-// ===== Bắt buộc login =====
+function randomColor() {
+  const colors = [
+    "#1f2937",
+    "#334155",
+    "#3b82f6",
+    "#9333ea",
+    "#16a34a",
+    "#f59e0b",
+    "#ef4444"
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
   } else {
     currentUID = user.uid;
-    loadNotes();
+    listenNotes();
   }
 });
 
-// ===== Đăng xuất =====
 window.logout = function () {
   signOut(auth).then(() => {
     window.location.href = "login.html";
   });
 };
 
-// ===== Lưu hoặc cập nhật =====
 saveBtn.addEventListener("click", async () => {
   const text = contentInput.value.trim();
   if (!text) return;
@@ -177,24 +160,20 @@ saveBtn.addEventListener("click", async () => {
     saveBtn.innerText = "Lưu Ghi Chú";
   } else {
     await addDoc(collection(db, "users", currentUID, "notes"), {
-         text: text,
-         createdAt: new Date(),
-         pinned: false,
-         color: randomColor()
-       });
+      text: text,
+      createdAt: serverTimestamp(),
+      pinned: false,
+      color: randomColor()
+    });
   }
 
   contentInput.value = "";
-  loadNotes();
 });
 
-// ===== Xóa =====
 window.deleteNote = async function (id) {
   await deleteDoc(doc(db, "users", currentUID, "notes", id));
-  loadNotes();
 };
 
-// ===== Sửa (đổ lại textarea) =====
 window.editNote = function (id, text) {
   editingID = id;
   contentInput.value = text;
@@ -202,59 +181,38 @@ window.editNote = function (id, text) {
   contentInput.focus();
 };
 
-// ===== Thời gian =====
-function timeAgo(date) {
-  const seconds = Math.floor((new Date() - date) / 1000);
-  const intervals = [
-    { label: "năm", seconds: 31536000 },
-    { label: "tháng", seconds: 2592000 },
-    { label: "ngày", seconds: 86400 },
-    { label: "giờ", seconds: 3600 },
-    { label: "phút", seconds: 60 }
-  ];
-
-  for (let i of intervals) {
-    const count = Math.floor(seconds / i.seconds);
-    if (count >= 1) return count + " " + i.label + " trước";
-  }
-
-  return "Vừa xong";
-}
-
-// ===== Load =====
-async function loadNotes() {
+function listenNotes() {
   const q = query(
     collection(db, "users", currentUID, "notes"),
     orderBy("createdAt", "desc")
   );
 
-  const snapshot = await getDocs(q);
-  allNotes = [];
-
-  snapshot.forEach((docSnap) => {
-    allNotes.push({
-      id: docSnap.id,
-      ...docSnap.data()
+  onSnapshot(q, (snapshot) => {
+    allNotes = [];
+    snapshot.forEach(docSnap => {
+      allNotes.push({
+        id: docSnap.id,
+        ...docSnap.data()
+      });
     });
+    renderNotes(allNotes);
   });
-
-  renderNotes(allNotes);
 }
 
-// ===== Render =====
 function renderNotes(notes) {
   const container = document.getElementById("notes");
   container.innerHTML = "";
 
   notes.forEach(note => {
-    const date = new Date(note.createdAt.seconds * 1000);
+    const date = note.createdAt?.toDate?.() || new Date();
     const formatted = date.toLocaleString("vi-VN");
 
     const div = document.createElement("div");
     div.className = "note";
+    div.style.background = note.color || "#1a1a1a";
 
     div.innerHTML = `
-      <small>${timeAgo(date)} • ${formatted}</small>
+      <small>${formatted}</small>
       <div style="margin-top:8px;white-space:pre-wrap;"></div>
       <div class="actions">
         <button class="edit">Sửa</button>
@@ -263,7 +221,6 @@ function renderNotes(notes) {
     `;
 
     div.querySelector("div").innerText = note.text;
-
     div.querySelector(".edit").onclick = () => editNote(note.id, note.text);
     div.querySelector(".delete").onclick = () => deleteNote(note.id);
 
@@ -271,7 +228,6 @@ function renderNotes(notes) {
   });
 }
 
-// ===== Tìm kiếm realtime =====
 document.getElementById("search").addEventListener("input", function(e) {
   const keyword = e.target.value.toLowerCase();
   const filtered = allNotes.filter(note =>
@@ -280,12 +236,12 @@ document.getElementById("search").addEventListener("input", function(e) {
   renderNotes(filtered);
 });
 </script>
+
 <script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js")
-    .then(() => console.log("PWA đã kích hoạt"))
-    .catch(err => console.log("Lỗi SW:", err));
+  navigator.serviceWorker.register("./service-worker.js");
 }
 </script>
+
 </body>
 </html>
