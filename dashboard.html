@@ -80,6 +80,18 @@ small{
   border:1px solid #38bdf8;
   box-shadow:0 0 8px #38bdf8aa;
 }
+  .tag-badge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: 0.15s ease;
+}
+
+.tag-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(255,255,255,0.05);
+                           }
 </style>
 </head>
 <body>
@@ -511,16 +523,16 @@ function getTagColor(tag){
   ];
   */
   const tagColors = [
-  "#58a6ff", // xanh git link
-  "#3fb950", // xanh commit
-  "#f85149", // đỏ error
-  "#d2a8ff", // tím branch
-  "#ffa657", // cam merge
-  "#79c0ff", // xanh nhạt
-  "#ff7b72", // đỏ nhẹ
-  "#a5d6ff", // cyan sáng
+  "#ff7b72", // đỏ coral
+  "#ffa657", // cam nổi
+  "#f2cc60", // vàng ấm
   "#7ee787", // xanh neon dịu
-  "#e3b341"  // vàng git warning
+  "#56d364", // xanh lá sáng
+  "#79c0ff", // xanh dương sáng
+  "#a5d6ff", // cyan sáng
+  "#d2a8ff", // tím sáng
+  "#ff9bce", // hồng nhẹ
+  "#b1bac4"  // xám sáng tech
 ];
 
   return colors[Math.abs(hash) % colors.length];
