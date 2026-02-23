@@ -107,16 +107,16 @@ let editingID = null;
 let allNotes = [];
 
 const colors = [
-  "#161b22", // github dark
-  "#1f2937", // gray 800
-  "#1e1e2e", // vscode dark
-  "#111827", // slate deep
-  "#0b1f2a", // deep blue
-  "#132f4c", // github blue dark
-  "#1a2332", // code navy
-  "#0f172a", // slate 900
-  "#1c1c1c", // terminal dark
-  "#182635"  // muted cyber
+  "#ff4d4d",
+  "#4d79ff",
+  "#4dff88",
+  "#ffcc00",
+  "#cc66ff",
+  "#00e6e6",
+  "#ff66b3",
+  "#ffa64d",
+  "#66ffcc",
+  "#9999ff"
 ];
 
 let lastColor = null;
@@ -200,7 +200,7 @@ function renderNotes(notes){
 
 div.style.border = "1px solid #00ff88";
 div.style.fontFamily = "monospace";
-div.style.color = "#c9d1d9";
+div.style.color = "#d4d4d4";
 div.style.background = note.color || getRandomColor() ;  
     
     div.innerHTML=`
