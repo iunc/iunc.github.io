@@ -1,19 +1,20 @@
-const CACHE_NAME = "ghichu-v4";
-const urlsToCache = [
-  "login.html",
-  "dashboard.html"
+const CACHE_NAME = "ghichu-v1";
+
+const STATIC_ASSETS = [
+  "/login.html",
+  "/dashboard.html",
+  "/manifest.json"
 ];
 
-// Cài đặt
+// Install
 self.addEventListener("install", event => {
-  self.skipWaiting(); // cập nhật ngay
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
   );
 });
 
-// Kích hoạt
+// Activate
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -28,26 +29,24 @@ self.addEventListener("activate", event => {
   );
 });
 
-// Fetch (ưu tiên mạng cho trang chính)
+// Fetch
 self.addEventListener("fetch", event => {
-  if (event.request.mode === "navigate") {
+
+  // 🔥 CHỈ cache file nội bộ (cùng origin)
+  if (event.request.url.startsWith(self.location.origin)) {
+
     event.respondWith(
-      fetch(event.request).catch(() =>
-        caches.match("login.html")
-      )
+      fetch(event.request)
+        .then(response => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, clone);
+          });
+          return response;
+        })
+        .catch(() => caches.match(event.request))
     );
-    return;
+
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-  );
-});
-
-// Nhận lệnh cập nhật
-self.addEventListener("message", event => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
 });
