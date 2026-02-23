@@ -161,7 +161,7 @@ function getRandomColor(){
 const contentInput = document.getElementById("content");
 
 contentInput.addEventListener("input", () => {
-
+setStatus(editingID ? "editing" : "typing");
   clearTimeout(autoSaveTimeout);
 
   autoSaveTimeout = setTimeout(async () => {
@@ -215,20 +215,33 @@ const saveBtn = document.getElementById("saveBtn");
   
 const syncStatus = document.getElementById("syncStatus");
 
-function setStatus(type){
-  if(type==="saving"){
+  function setStatus(type){
+
+  if(type==="typing"){
+    syncStatus.innerText="✍️ Đang nhập...";
+    syncStatus.style.color="#38bdf8";
+  }
+
+  else if(type==="editing"){
+    syncStatus.innerText="📝 Đang chỉnh sửa...";
+    syncStatus.style.color="#f59e0b";
+  }
+
+  else if(type==="saving"){
     syncStatus.innerText="🟡 Đang lưu...";
     syncStatus.style.color="#facc15";
   }
+
   else if(type==="done"){
     syncStatus.innerText="🟢 Đã đồng bộ";
     syncStatus.style.color="#00ff88";
   }
+
   else if(type==="error"){
     syncStatus.innerText="🔴 Lỗi kết nối";
     syncStatus.style.color="#ef4444";
   }
-}
+  }
   
 onAuthStateChanged(auth, (user)=>{
   if(!user){
@@ -408,9 +421,16 @@ if(currentTagFilter){
 }
       
       // 🟢 XONG
+      /*
       setTimeout(()=>{
         setStatus("done");
       },300);
+      */
+      setTimeout(()=>{
+  if(!document.activeElement || document.activeElement.id !== "content"){
+    setStatus("done");
+  }
+},300);
 
     },
     (error)=>{
@@ -499,6 +519,7 @@ window.editNote = function(id,text){
   contentInput.value=text;
   saveBtn.innerText="Cập Nhật";
   contentInput.focus();
+  setStatus("editing");
 };
   
 window.filterByTag = function(tag){
