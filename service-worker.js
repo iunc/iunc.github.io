@@ -1,14 +1,12 @@
-const CACHE_NAME = "ghichu-v2"; // tăng version mỗi lần update
-
+const CACHE_NAME = "ghichu-v1";
 const urlsToCache = [
   "login.html",
   "dashboard.html"
-  // ❌ BỎ manifest.json
 ];
 
 // Cài đặt
 self.addEventListener("install", event => {
-  self.skipWaiting(); // update ngay
+  self.skipWaiting(); // cập nhật ngay
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
@@ -26,15 +24,18 @@ self.addEventListener("activate", event => {
           }
         })
       )
-    ).then(() => self.clients.claim()) // nhận quyền ngay
+    ).then(() => self.clients.claim())
   );
 });
 
-// Fetch
+// Fetch (ưu tiên mạng cho trang chính)
 self.addEventListener("fetch", event => {
-  if (event.request.url.includes("manifest.json")) {
-    // luôn lấy manifest mới từ server
-    event.respondWith(fetch(event.request));
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() =>
+        caches.match("login.html")
+      )
+    );
     return;
   }
 
@@ -42,4 +43,11 @@ self.addEventListener("fetch", event => {
     caches.match(event.request)
       .then(response => response || fetch(event.request))
   );
+});
+
+// Nhận lệnh cập nhật
+self.addEventListener("message", event => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
