@@ -211,6 +211,7 @@ div.style.background = note.color || getRandomColor() ;
 if(note.pinned){
   div.style.boxShadow = "0 0 0 1px #00ff88";
 }
+div.querySelector(".pin").style.background = note.pinned ? "#00ff88" : "#444";  
     
     div.innerHTML=`
   <small>${date}</small>
