@@ -226,7 +226,13 @@ if(!text){
   
 contentInput.addEventListener("input", () => {
 
-  setStatus(isEditingMode ? "editing" : "typing");
+  //setStatus(isEditingMode ? "editing" : "typing");
+  if(isEditingMode){
+  setStatus("editing");
+}else{
+  setStatus("typing");
+  }
+  
   clearTimeout(autoSaveTimeout);
 
   autoSaveTimeout = setTimeout(async () => {
@@ -368,7 +374,7 @@ try {
     );
 
     editingID = docRef.id;
-    isEditingMode = true;
+   // isEditingMode = true;
   }
   else{
     await updateDoc(
