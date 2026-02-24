@@ -61,6 +61,44 @@ small{
 .permanent{
   background:#ef4444;
 }
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.modal-box{
+  background:#1e1e1e;
+  padding:20px;
+  border-radius:12px;
+  width:85%;
+  max-width:350px;
+  text-align:center;
+}
+
+.modal-actions{
+  margin-top:15px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.modal button{
+  flex:1;
+  padding:8px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.danger{
+  background:#ff4d4f;
+  color:white;
+}
 </style>
 </head>
 
@@ -102,6 +140,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUID = null;
+let deleteID = null;
 
 onAuthStateChanged(auth, (user)=>{
   if(!user){
@@ -186,6 +225,15 @@ function listenTrash(){
   });
 }
 </script>
-
+<div id="confirmModal" class="modal">
+  <div class="modal-box">
+    <h3>Xoá vĩnh viễn?</h3>
+    <p>Hành động này không thể hoàn tác.</p>
+    <div class="modal-actions">
+      <button id="cancelDelete">Huỷ</button>
+      <button id="confirmDelete" class="danger">Xoá</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
