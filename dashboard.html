@@ -55,12 +55,27 @@ small{
   display:flex;
   gap:8px;
 }
+/*
 .actions button{
   flex:1;
   padding:6px;
   font-size:13px;
   border-radius:8px;
 }
+*/
+.actions button{
+  flex:1;
+  padding:6px;
+  font-size:12px;
+  border-radius:8px;
+  opacity:0.7;
+  transition:0.2s;
+}
+
+.actions button:hover{
+  opacity:1;
+}
+  
 .delete{ background:#ef4444; }
 .edit{ background:#f59e0b; }
 .dashboard-title{
@@ -88,6 +103,16 @@ small{
 </head>
 <body>
 <h2 class="dashboard-title">Ghi chú của bạn</h2>
+
+<div id="swipeHint" style="
+  font-size:12px;
+  color:#38bdf8;
+  margin-bottom:8px;
+  opacity:0.8;
+  font-family:monospace;
+">
+👉 Vuốt trái để xoá • Vuốt phải để ghim
+</div>
 
 <input type="text" id="search" placeholder="Tìm kiếm...">
 <div id="filterStatus" style="font-size:12px;color:#38bdf8;margin-bottom:8px;"></div>
@@ -482,7 +507,8 @@ if(note.pinned){
     
     container.appendChild(div);
     //Vuốt
-         let startX = 0;
+
+    let startX = 0;
 let currentX = 0;
 
 div.addEventListener("touchstart", (e) => {
@@ -492,26 +518,41 @@ div.addEventListener("touchstart", (e) => {
 div.addEventListener("touchmove", (e) => {
   currentX = e.touches[0].clientX;
   const diff = currentX - startX;
+
   div.style.transform = `translateX(${diff}px)`;
+
+  if (diff < -50) {
+    div.style.background = "#3f1d1d"; // đỏ chuẩn bị xoá
+  }
+  else if (diff > 50) {
+    div.style.background = "#0f2f1f"; // xanh chuẩn bị ghim
+  }
 });
 
 div.addEventListener("touchend", async () => {
   const diff = currentX - startX;
 
+  // xoá hint sau lần vuốt đầu
+  document.getElementById("swipeHint")?.remove();
+
   if (diff < -100) {
-    // Vuốt trái → Xóa
+    if (navigator.vibrate) navigator.vibrate(30);
+
     await deleteDoc(doc(db,"users",currentUID,"notes",note.id));
   }
 
   else if (diff > 100) {
-    // Vuốt phải → Pin
+    if (navigator.vibrate) navigator.vibrate(30);
+
     await updateDoc(doc(db,"users",currentUID,"notes",note.id),{
       pinned: !note.pinned
     });
   }
 
   div.style.transform = "translateX(0)";
+  div.style.background = "#1e1e1e";
 });
+
     //Vuốt
   });
 }
