@@ -36,6 +36,12 @@ button{
   border:1px solid #2a2a2a;
   font-family: monospace;
 }
+
+.note {
+  position: relative;
+  transition: transform 0.2s ease;
+  touch-action: pan-y;
+}
   
 small{
   color:#00ffcc;
@@ -475,6 +481,38 @@ if(note.pinned){
     div.querySelector(".pin").style.background = note.pinned ? "#00ff88" : "#444";
     
     container.appendChild(div);
+    //Vuốt
+         let startX = 0;
+let currentX = 0;
+
+div.addEventListener("touchstart", (e) => {
+  startX = e.touches[0].clientX;
+});
+
+div.addEventListener("touchmove", (e) => {
+  currentX = e.touches[0].clientX;
+  const diff = currentX - startX;
+  div.style.transform = `translateX(${diff}px)`;
+});
+
+div.addEventListener("touchend", async () => {
+  const diff = currentX - startX;
+
+  if (diff < -100) {
+    // Vuốt trái → Xóa
+    await deleteDoc(doc(db,"users",currentUID,"notes",note.id));
+  }
+
+  else if (diff > 100) {
+    // Vuốt phải → Pin
+    await updateDoc(doc(db,"users",currentUID,"notes",note.id),{
+      pinned: !note.pinned
+    });
+  }
+
+  div.style.transform = "translateX(0)";
+});
+    //Vuốt
   });
 }
 
