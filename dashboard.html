@@ -287,7 +287,10 @@ contentInput.addEventListener("input", () => {
   },1000);
 
 });
-  
+
+document.getElementById("tags").addEventListener("input", () => {
+  contentInput.dispatchEvent(new Event("input"));
+});
   
 const saveBtn = document.getElementById("saveBtn");
   
@@ -421,7 +424,7 @@ function listenNotes(){
     (snapshot)=>{
 
       // 🟡 BẮT ĐẦU ĐỒNG BỘ
-      setStatus("saving");
+      //setStatus("saving");
 
       allNotes=[];
       snapshot.forEach(docSnap=>{
