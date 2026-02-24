@@ -376,5 +376,20 @@ navigator.serviceWorker.addEventListener("controllerchange", () => {
   window.location.reload();
 });
 </script>
+  <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js")
+    .then(reg => {
+      alert("SW registered");
+
+      if (navigator.serviceWorker.controller) {
+        alert("SW controlling page");
+      } else {
+        alert("SW NOT controlling yet");
+      }
+    })
+    .catch(() => alert("SW FAIL"));
+}
+  </script>
 </body>
 </html>                   
