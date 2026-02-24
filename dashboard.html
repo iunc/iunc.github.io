@@ -139,27 +139,10 @@ let allNotes = [];
 let currentTagFilter = null;
 let autoSaveTimeout = null;
 let isEditingMode = false;
-/*
-const colors = [
-  "#1e293b",  // slate navy
-  "#1b263b",  // deep navy
-  "#16213e",  // midnight blue
-  "#14213d",  // dark steel blue
-  "#0f3460",  // cyber blue
-  "#1a1a2e",  // indigo dark
-  "#2c2c54",  // code violet
-  "#1f4068",  // dev blue
-  "#0b3d3d",  // dark teal
-  "#2d1e2f"   // deep purple
-];
-*/
-  
+
   
 const contentInput = document.getElementById("content");
-/*
-contentInput.addEventListener("input", () => {
-setStatus(editingID ? "editing" : "typing");
-*/
+
   contentInput.addEventListener("input", () => {
 setStatus(isEditingMode ? "editing" : "typing");
   clearTimeout(autoSaveTimeout);
@@ -170,20 +153,7 @@ setStatus(isEditingMode ? "editing" : "typing");
     if(!text) return;
 
     const tagsRaw = document.getElementById("tags").value;
-    /*
-    const tags = tagsRaw
-      .split(",")
-      .map(t => t.trim())
-      .filter(t => t !== "");
-    */
-    /*
-    const tags = [...new Set(
-  tagsRaw
-    .split(",")
-    .map(t => t.trim().toLowerCase()) // 🔥 lowercase
-    .filter(t => t !== "")
-   )];
-    */
+    
     const tags = [...new Set(
   tagsRaw
     .split(",")
@@ -273,87 +243,13 @@ window.logout = function(){
     window.location.href="login.html";
   });
 };
-/*
-saveBtn.addEventListener("click", async ()=>{
-  const text = contentInput.value.trim();
-  if(!text) return;
 
-  if(editingID){
-    await updateDoc(doc(db,"users",currentUID,"notes",editingID),{
-      text:text
-    });
-    editingID=null;
-    saveBtn.innerText="Lưu Ghi Chú";
-  }else{
-    await addDoc(collection(db,"users",currentUID,"notes"),{
-  text: text,
-  createdAt: serverTimestamp(),
-  color: getRandomColor(),
-  pinned: false
-});
-  }
-
-  contentInput.value="";
-}); */
-  
-/* saveBtn.addEventListener("click", async ()=>{
-  const text = 
-    const tagsRaw = document.getElementById("tags").value;
-
-const tags = tagsRaw
-  .split(",")
-  .map(t => t.trim())
-  .filter(t => t !== "");
-    contentInput.value.trim();
-  if(!text) return;
-
-  try{
-    setStatus("saving");
-
-    if(editingID){
-      await updateDoc(doc(db,"users",currentUID,"notes",editingID),{
-        text:text
-      });
-      editingID=null;
-      saveBtn.innerText="Lưu Ghi Chú";
-    }else{
-      await addDoc(collection(db,"users",currentUID,"notes"),{
-        text: text,
-        createdAt: serverTimestamp(),
-        color: getRandomColor(),
-        pinned: false,
-        tags: tags
-      });
-    }
-
-    contentInput.value="";
-    document.getElementById("tags").value="";
-    setStatus("done");
-
-  }catch(err){
-    setStatus("error");
-  }
-});
-*/ 
 saveBtn.addEventListener("click", async ()=>{
   const text = contentInput.value.trim();
   if(!text) return;
 
   const tagsRaw = document.getElementById("tags").value;
-/*
-  const tags = tagsRaw
-    .split(",")
-    .map(t => t.trim())
-    .filter(t => t !== "");
- */
-  /*
- const tags = [...new Set(
-  tagsRaw
-    .split(",")
-    .map(t => t.trim().toLowerCase()) // 🔥 lowercase
-    .filter(t => t !== "")
-)];
-  */
+
   const tags = [...new Set(
   tagsRaw
     .split(",")
@@ -621,7 +517,7 @@ if(note.pinned){
 };
     div.querySelector(".pin").style.background = note.pinned ? "#00ff88" : "#444";
     //Vuốt trái phải xoá, pin
-   // enableSwipe(noteElement, note.id);
+   enableSwipe(noteElement, note.id);
     
     container.appendChild(div);
   });
