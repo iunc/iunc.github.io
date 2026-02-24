@@ -160,20 +160,18 @@ let allNotes = [];
 let currentTagFilter = null;
 let autoSaveTimeout = null;
 let isEditingMode = false;
+let isSaving = false;
 
   
 const contentInput = document.getElementById("content");
 
-  contentInput.addEventListener("input", () => {
+ /* contentInput.addEventListener("input", () => {
 setStatus(isEditingMode ? "editing" : "typing");
   clearTimeout(autoSaveTimeout);
 
   autoSaveTimeout = setTimeout(async () => {
 
-    /*
-    const text = contentInput.value.trim();
-    if(!text) return;
-    */
+  
     const text = contentInput.value.trim();
 
 if(!text){
@@ -224,7 +222,72 @@ if(!text){
 
   },1000);
 
+}); */
+  
+contentInput.addEventListener("input", () => {
+
+  setStatus(isEditingMode ? "editing" : "typing");
+  clearTimeout(autoSaveTimeout);
+
+  autoSaveTimeout = setTimeout(async () => {
+
+    const text = contentInput.value.trim();
+    if(!text) return;
+
+    if(isSaving) return;   // 🔒 chống lưu chồng
+    isSaving = true;
+
+    const tagsRaw = document.getElementById("tags").value;
+    const tags = [...new Set(
+      tagsRaw
+        .split(",")
+        .map(t => t.trim())
+        .filter(t => t !== "")
+    )];
+
+    try{
+
+      setStatus("saving");
+
+      // 🔹 Nếu chưa có note → tạo mới 1 lần
+      if(!editingID){
+        const docRef = await addDoc(
+          collection(db,"users",currentUID,"notes"),
+          {
+            text:text,
+            createdAt: serverTimestamp(),
+            pinned:false,
+            tags:tags
+          }
+        );
+        editingID = docRef.id;
+        isEditingMode = true;
+      }
+
+      // 🔹 Nếu đã có → chỉ update
+      else{
+        await updateDoc(
+          doc(db,"users",currentUID,"notes",editingID),
+          {
+            text:text,
+            tags:tags
+          }
+        );
+      }
+
+      setStatus("done");
+
+    }catch(err){
+      console.error(err);
+      setStatus("error");
+    }
+
+    isSaving = false;
+
+  },1000);
+
 });
+  
   
 const saveBtn = document.getElementById("saveBtn");
   
@@ -273,6 +336,7 @@ window.logout = function(){
   });
 };
 
+  /*
 saveBtn.addEventListener("click", async ()=>{
   const text = contentInput.value.trim();
   if(!text) return;
@@ -313,6 +377,19 @@ saveBtn.addEventListener("click", async ()=>{
   }catch(err){
     setStatus("error");
   }
+});
+*/
+  saveBtn.addEventListener("click", () => {
+
+  // Reset về trạng thái tạo note mới
+  editingID = null;
+
+  contentInput.value = "";
+  document.getElementById("tags").value = "";
+
+  saveBtn.innerText = "Tạo ghi chú mới";
+
+  setStatus("done");
 });
   
 /*
