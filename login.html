@@ -376,20 +376,34 @@ navigator.serviceWorker.addEventListener("controllerchange", () => {
   window.location.reload();
 });
 </script>
-  <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/service-worker.js")
-    .then(reg => {
-      alert("SW registered");
+<script>
+let deferredPrompt;
 
-      if (navigator.serviceWorker.controller) {
-        alert("SW controlling page");
-      } else {
-        alert("SW NOT controlling yet");
-      }
-    })
-    .catch(() => alert("SW FAIL"));
-}
-  </script>
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const installBtn = document.createElement("button");
+  installBtn.innerText = "CÀI ỨNG DỤNG";
+  installBtn.style.position = "fixed";
+  installBtn.style.bottom = "20px";
+  installBtn.style.left = "50%";
+  installBtn.style.transform = "translateX(-50%)";
+  installBtn.style.padding = "12px 20px";
+  installBtn.style.background = "#00aaff";
+  installBtn.style.color = "#000";
+  installBtn.style.border = "none";
+  installBtn.style.borderRadius = "10px";
+  installBtn.style.zIndex = "9999";
+
+  installBtn.onclick = async () => {
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    console.log(choice);
+  };
+
+  document.body.appendChild(installBtn);
+});
+</script>
 </body>
 </html>                   
