@@ -36,6 +36,15 @@ button{
   border:1px solid #2a2a2a;
   font-family: monospace;
 }
+.note {
+  transition: transform 0.2s ease;
+  touch-action: pan-y;
+}
+
+.note.swiping {
+  transition: none;
+}
+  
 small{
   color:#00ffcc;
   font-size:12px;
@@ -482,21 +491,7 @@ function getTagColor(tag){
   for(let i=0;i<tag.length;i++){
     hash = tag.charCodeAt(i) + ((hash<<5)-hash);
   }
-
-  /*
-  const colors = [
-    "#38bdf8", // cyan
-    "#f59e0b", // amber
-    "#ef4444", // red
-    "#10b981", // emerald
-    "#8b5cf6", // violet
-    "#ec4899", // pink
-    "#22d3ee", // sky
-    "#84cc16", // lime
-    "#f97316", // orange
-    "#6366f1"  // indigo
-  ];
-  */
+  
   const tagColors = [
   "#00ffcc", // cyan neon
   "#00e5ff", // sky neon
@@ -509,6 +504,43 @@ function getTagColor(tag){
   return tagColors[Math.abs(hash) % tagColors.length];
 }
   
+function enableSwipe(noteElement, noteId) {
+  let startX = 0;
+  let currentX = 0;
+  let isSwiping = false;
+
+  noteElement.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+    isSwiping = true;
+    noteElement.classList.add("swiping");
+  });
+
+  noteElement.addEventListener("touchmove", e => {
+    if (!isSwiping) return;
+
+    currentX = e.touches[0].clientX;
+    let diff = currentX - startX;
+
+    noteElement.style.transform = `translateX(${diff}px)`;
+  });
+
+  noteElement.addEventListener("touchend", () => {
+    isSwiping = false;
+    noteElement.classList.remove("swiping");
+
+    let diff = currentX - startX;
+
+    if (diff > 80) {
+      togglePin(noteId);
+    } else if (diff < -80) {
+      deleteNote(noteId);
+    }
+
+    noteElement.style.transform = "translateX(0)";
+  });
+  }  
+
+//function renderNotes
 function renderNotes(notes){
   const filterStatus = document.getElementById("filterStatus");
 
@@ -526,12 +558,6 @@ if(currentTagFilter){
 });
   
   notes.forEach(note=>{
-    /*
-    const tagsHtml = note.tags
-  ? note.tags.map(tag =>
-      `<span class="tag-badge" onclick="filterByTag('${tag}')">#${tag}</span>`
-    ).join("")
-  : "";  */
     const tagsHtml = note.tags
   ? note.tags.map(tag => {
 
@@ -573,11 +599,7 @@ div.style.fontFamily = "monospace";
 if(note.pinned){
   div.style.boxShadow = "0 0 0 1px #00ff88";
 }
-   /* 
-    div.innerHTML=`
-  <small>${date}</small>
-  <div style="margin-top:5px;white-space:pre-wrap">${note.text}</div>
-  <div class="actions"> */
+   
   div.innerHTML=`
   <small>${date}</small>
   <div style="margin-top:5px;white-space:pre-wrap">${note.text}</div>
@@ -631,11 +653,7 @@ window.filterByTag = function(tag){
   }
 
   currentTagFilter = tag;
-/*
-  const filtered = allNotes.filter(n =>
-    n.tags && n.tags.includes(tag)
-  );
-*/
+  
   const filtered = allNotes.filter(n =>
   n.tags && n.tags.some(t => t.toLowerCase() === tag.toLowerCase())
 );
@@ -651,25 +669,6 @@ document.getElementById("search").addEventListener("input",(e)=>{
   renderNotes(filtered);
 });
 
-  /*
-  function renderTagSidebar(){
-  const tagList = document.getElementById("tagList");
-  const tagCount = {};
-
-  allNotes.forEach(note=>{
-    if(note.tags){
-      note.tags.forEach(tag=>{
-        tagCount[tag] = (tagCount[tag] || 0) + 1;
-      });
-    }
-  });
-
-  tagList.innerHTML = Object.keys(tagCount).map(tag=>
-    `<div class="sidebar-tag" onclick="filterByTag('${tag}')">
-      #${tag} (${tagCount[tag]})
-    </div>`
-  ).join("");
-  } */
 </script>
 
 </body>
