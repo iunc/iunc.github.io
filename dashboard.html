@@ -235,9 +235,21 @@ contentInput.addEventListener("input", () => {
     const text = contentInput.value.trim();
     if(!text) return;
     */
+   /* const text = contentInput.value.trim();
+
+    if(!text && !editingID) return; */
     const text = contentInput.value.trim();
 
-    if(!text && !editingID) return;
+const tagsRaw = document.getElementById("tags").value;
+const tags = [...new Set(
+  tagsRaw
+    .split(",")
+    .map(t => t.trim())
+    .filter(t => t !== "")
+)];
+
+if(!text && tags.length === 0) return;
+    
     if(isSaving) return;   // 🔒 chống lưu chồng
     isSaving = true;
 
