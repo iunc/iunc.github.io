@@ -109,7 +109,7 @@ small{
 <textarea id="content" placeholder="Nhập ghi chú..."></textarea>
 <input type="text" id="tags" placeholder="tags: dev, idea, bug">
   
-<button id="saveBtn">Lưu Ghi Chú</button>
+<button id="saveBtn">Tạo ghi chú mới</button>
 <button onclick="logout()" class="logout">Đăng xuất</button>
 <div id="syncStatus" style="font-size:13px;color:#00ffcc;margin-bottom:10px;">
   🟢 Đã đồng bộ
@@ -511,7 +511,7 @@ saveBtn.addEventListener("click", async ()=>{
   contentInput.value = "";
   document.getElementById("tags").value = "";
 
-  saveBtn.innerText = "Lưu Ghi Chú";
+  saveBtn.innerText = "Tạo ghi chú mới";
 
   setStatus("done");
 });
