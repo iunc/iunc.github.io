@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Trash</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+  margin:0;
+  padding:20px;
+  background:#0f0f0f;
+  color:white;
+  font-family:sans-serif;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:10px;
+  border:none;
+  font-weight:bold;
+}
+
+.back{
+  background:#3b82f6;
+}
+
+.note{
+  background:#1e1e1e;
+  padding:15px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #2a2a2a;
+  font-family:monospace;
+}
+
+small{
+  color:#ff6b6b;
+  font-size:12px;
+}
+
+.actions{
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+}
+
+.actions button{
+  flex:1;
+  padding:6px;
+  font-size:12px;
+  border-radius:8px;
+  opacity:0.8;
+}
+
+.restore{
+  background:#00ff88;
+}
+
+.permanent{
+  background:#ef4444;
+}
+</style>
+</head>
+
+<body>
+
+<h2 style="font-family:monospace;color:#ff6b6b;">
+🗑 Thùng rác
+</h2>
+
+<button class="back" onclick="goBack()">⬅ Quay lại Dashboard</button>
+
+<div id="notes"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  deleteDoc,
+  doc,
+  updateDoc,
+  onSnapshot,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
+  authDomain: "iunc-login.firebaseapp.com",
+  projectId: "iunc-login",
+  storageBucket: "iunc-login.firebasestorage.app",
+  messagingSenderId: "359473829379",
+  appId: "1:359473829379:web:b1102278155f598e316036"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUID = null;
+
+onAuthStateChanged(auth, (user)=>{
+  if(!user){
+    window.location.href="login.html";
+  }else{
+    currentUID = user.uid;
+    listenTrash();
+  }
+});
+
+window.goBack = function(){
+  window.location.href = "dashboard.html";
+};
+
+function listenTrash(){
+
+  const q = query(
+    collection(db,"users",currentUID,"notes"),
+    orderBy("createdAt","desc")
+  );
+
+  onSnapshot(q,(snapshot)=>{
+
+    const container = document.getElementById("notes");
+    container.innerHTML="";
+
+    let hasTrash = false;
+
+    snapshot.forEach(docSnap=>{
+      const data = docSnap.data();
+
+      if(data.deleted === true){
+        hasTrash = true;
+
+        const date = data.createdAt?.toDate?.().toLocaleString("vi-VN") || "";
+
+        const div = document.createElement("div");
+        div.className="note";
+
+        div.innerHTML=`
+          <small>Đã xoá • ${date}</small>
+          <div style="margin-top:5px;white-space:pre-wrap">
+            ${data.text}
+          </div>
+
+          <div class="actions">
+            <button class="restore">♻ Khôi phục</button>
+            <button class="permanent">❌ Xoá vĩnh viễn</button>
+          </div>
+        `;
+
+        // Restore
+        div.querySelector(".restore").onclick = async ()=>{
+          await updateDoc(
+            doc(db,"users",currentUID,"notes",docSnap.id),
+            { deleted:false }
+          );
+        };
+
+        // Delete permanent
+        div.querySelector(".permanent").onclick = async ()=>{
+          const confirmDelete = confirm("Xoá vĩnh viễn? Không thể khôi phục!");
+          if(!confirmDelete) return;
+
+          await deleteDoc(
+            doc(db,"users",currentUID,"notes",docSnap.id)
+          );
+        };
+
+        container.appendChild(div);
+      }
+    });
+
+    if(!hasTrash){
+      container.innerHTML = `
+        <div style="opacity:0.6;font-family:monospace;">
+        Thùng rác đang trống.
+        </div>
+      `;
+    }
+
+  });
+}
+</script>
+
+</body>
+</html>
