@@ -36,14 +36,6 @@ button{
   border:1px solid #2a2a2a;
   font-family: monospace;
 }
-.note {
-  transition: transform 0.2s ease;
-  touch-action: pan-y;
-}
-
-.note.swiping {
-  transition: none;
-}
   
 small{
   color:#00ffcc;
@@ -400,41 +392,8 @@ function getTagColor(tag){
   return tagColors[Math.abs(hash) % tagColors.length];
 }
   
-function enableSwipe(noteElement, noteId) {
-  let startX = 0;
-  let currentX = 0;
-  let isSwiping = false;
 
-  noteElement.addEventListener("touchstart", e => {
-    startX = e.touches[0].clientX;
-    isSwiping = true;
-    noteElement.classList.add("swiping");
-  });
 
-  noteElement.addEventListener("touchmove", e => {
-    if (!isSwiping) return;
-
-    currentX = e.touches[0].clientX;
-    let diff = currentX - startX;
-
-    noteElement.style.transform = `translateX(${diff}px)`;
-  });
-
-  noteElement.addEventListener("touchend", () => {
-    isSwiping = false;
-    noteElement.classList.remove("swiping");
-
-    let diff = currentX - startX;
-
-    if (diff > 80) {
-      togglePin(noteId);
-    } else if (diff < -80) {
-      deleteNote(noteId);
-    }
-
-    noteElement.style.transform = "translateX(0)";
-  });
-  }  
 
 //function renderNotes
 function renderNotes(notes){
@@ -516,8 +475,6 @@ if(note.pinned){
   });
 };
     div.querySelector(".pin").style.background = note.pinned ? "#00ff88" : "#444";
-    //Vuốt trái phải xoá, pin
-   enableSwipe(noteElement, note.id);
     
     container.appendChild(div);
   });
