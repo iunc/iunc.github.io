@@ -201,14 +201,11 @@ function listenTrash(){
         };
 
         // Delete permanent
-        div.querySelector(".permanent").onclick = async ()=>{
-          const confirmDelete = confirm("Xoá vĩnh viễn? Không thể khôi phục!");
-          if(!confirmDelete) return;
-
-          await deleteDoc(
-            doc(db,"users",currentUID,"notes",docSnap.id)
-          );
-        };
+          div.querySelector(".permanent").onclick = ()=>{
+  deleteID = docSnap.id;
+  document.getElementById("confirmModal").style.display = "flex";
+};
+      
 
         container.appendChild(div);
       }
@@ -224,6 +221,22 @@ function listenTrash(){
 
   });
 }
+  
+  document.getElementById("cancelDelete").onclick = ()=>{
+  document.getElementById("confirmModal").style.display="none";
+  deleteID = null;
+};
+
+document.getElementById("confirmDelete").onclick = async ()=>{
+  if(deleteID){
+    await deleteDoc(
+      doc(db,"users",currentUID,"notes",deleteID)
+    );
+  }
+
+  document.getElementById("confirmModal").style.display="none";
+  deleteID = null;
+};
 </script>
 <div id="confirmModal" class="modal">
   <div class="modal-box">
