@@ -172,9 +172,18 @@ setStatus(isEditingMode ? "editing" : "typing");
 
   autoSaveTimeout = setTimeout(async () => {
 
+    /*
     const text = contentInput.value.trim();
     if(!text) return;
+    */
+    const text = contentInput.value.trim();
 
+if(!text){
+  editingID = null;
+  isEditingMode = false;
+  return;
+  }
+    
     const tagsRaw = document.getElementById("tags").value;
     
     const tags = [...new Set(
