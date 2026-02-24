@@ -264,7 +264,6 @@ saveBtn.addEventListener("click", async ()=>{
       await addDoc(collection(db,"users",currentUID,"notes"),{
         text: text,
         createdAt: serverTimestamp(),
-        color: getRandomColor(),
         pinned: false,
         tags: tags
       });
