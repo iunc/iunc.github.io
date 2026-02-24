@@ -620,6 +620,8 @@ if(note.pinned){
   });
 };
     div.querySelector(".pin").style.background = note.pinned ? "#00ff88" : "#444";
+    //Vuốt trái phải xoá, pin
+    enableSwipe(noteElement, note.id);
     
     container.appendChild(div);
   });
