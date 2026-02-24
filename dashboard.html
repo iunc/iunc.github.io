@@ -104,6 +104,10 @@ small{
   
 <button id="saveBtn">Tạo ghi chú mới</button>
 <button onclick="logout()" class="logout">Đăng xuất</button>
+<button onclick="window.location.href='trash.html'" 
+style="background:#111;color:#ff6b6b;">
+🗑 Thùng rác
+</button>
 <div id="syncStatus" style="font-size:13px;color:#00ffcc;margin-bottom:10px;">
   🟢 Đã đồng bộ
 </div>
@@ -158,64 +162,6 @@ let isSaving = false;
   
 const contentInput = document.getElementById("content");
 
- /* contentInput.addEventListener("input", () => {
-setStatus(isEditingMode ? "editing" : "typing");
-  clearTimeout(autoSaveTimeout);
-
-  autoSaveTimeout = setTimeout(async () => {
-
-  
-    const text = contentInput.value.trim();
-
-if(!text){
-  editingID = null;
-  isEditingMode = false;
-  return;
-  }
-    
-    const tagsRaw = document.getElementById("tags").value;
-    
-    const tags = [...new Set(
-  tagsRaw
-    .split(",")
-    .map(t => t.trim())
-    .filter(t => t !== "")
-)];
-    
-    try{
-      setStatus("saving");
-
-      // 🔥 Nếu đang chỉnh sửa
-      if(editingID){
-        await updateDoc(doc(db,"users",currentUID,"notes",editingID),{
-          text:text,
-          tags:tags
-        });
-      }
-      // 🔥 Nếu chưa có note → tạo draft
-      else{
-        const docRef = await addDoc(
-          collection(db,"users",currentUID,"notes"),
-          {
-            text:text,
-            createdAt: serverTimestamp(),
-            pinned:false,
-            tags:tags
-          }
-        );
-
-        editingID = docRef.id; // lưu lại id để update tiếp
-      }
-
-      setStatus("done");
-
-    }catch(err){
-      setStatus("error");
-    }
-
-  },1000);
-
-}); */
   
 contentInput.addEventListener("input", () => {
 
@@ -362,7 +308,8 @@ try {
         text:text,
         createdAt: serverTimestamp(),
         pinned:false,
-        tags:tags
+        tags:tags,
+        deleted: false
       }
     );
 
@@ -546,13 +493,24 @@ function listenNotes(){
       //setStatus("saving");
 
       allNotes=[];
+      /* 
       snapshot.forEach(docSnap=>{
         allNotes.push({
           id:docSnap.id,
           ...docSnap.data()
         });
       });
+      */
+      snapshot.forEach(docSnap=>{
+  const data = docSnap.data();
 
+  if(!data.deleted){
+    allNotes.push({
+      id:docSnap.id,
+      ...data
+    });
+  }
+});
       /*renderNotes(allNotes);*/
       // Nếu đang lọc theo tag thì kiểm tra tag còn tồn tại không
 if(currentTagFilter){
@@ -840,7 +798,11 @@ div.addEventListener("touchend", async () => {
 
   if (diff < -100) {
     if (navigator.vibrate) navigator.vibrate(30);
-    await deleteDoc(doc(db,"users",currentUID,"notes",note.id));
+   // await deleteDoc(doc(db,"users",currentUID,"notes",note.id));
+    await updateDoc(
+  doc(db,"users",currentUID,"notes",note.id),
+  { deleted:true }
+);
   }
 
   else if (diff > 100) {
@@ -859,8 +821,16 @@ div.addEventListener("touchend", async () => {
   });
 }
 
+/*
 window.deleteNote = async function(id){
   await deleteDoc(doc(db,"users",currentUID,"notes",id));
+};
+*/
+window.deleteNote = async function(id){
+  await updateDoc(
+    doc(db,"users",currentUID,"notes",id),
+    { deleted:true }
+  );
 };
 
 window.editNote = function(id,text,tags){
