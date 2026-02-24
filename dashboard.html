@@ -238,7 +238,7 @@ contentInput.addEventListener("input", () => {
    /* const text = contentInput.value.trim();
 
     if(!text && !editingID) return; */
-   const text = contentInput.value.trim();
+  /* const text = contentInput.value.trim();
 
 const tagsRaw = document.getElementById("tags").value;
 const tags = [...new Set(
@@ -299,7 +299,7 @@ if(!text && tags.length === 0) return;
     }
 
     isSaving = false; */
-    try {
+   /* try {
 
   setStatus("saving");
 
@@ -336,6 +336,59 @@ catch(err){
 }
 finally{
   isSaving = false;   // 🔥 LUÔN chạy dù có lỗi hay không
+} */
+    const text = contentInput.value.trim();
+
+const tagsRaw = document.getElementById("tags").value;
+const tags = [...new Set(
+  tagsRaw
+    .split(",")
+    .map(t => t.trim())
+    .filter(t => t !== "")
+)];
+
+if(!text && tags.length === 0) return;
+
+if(isSaving) return;
+isSaving = true;
+
+try {
+
+  setStatus("saving");
+
+  if(!editingID){
+    const docRef = await addDoc(
+      collection(db,"users",currentUID,"notes"),
+      {
+        text:text,
+        createdAt: serverTimestamp(),
+        pinned:false,
+        tags:tags
+      }
+    );
+
+    editingID = docRef.id;
+    isEditingMode = true;
+  }
+  else{
+    await updateDoc(
+      doc(db,"users",currentUID,"notes",editingID),
+      {
+        text:text,
+        tags:tags
+      }
+    );
+  }
+
+  setStatus("done");
+
+}
+catch(err){
+  console.error("Autosave error:", err);
+  setStatus("error");
+}
+finally{
+  isSaving = false;
 }
 
   },1000);
