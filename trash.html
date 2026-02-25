@@ -109,7 +109,13 @@ small{
 </h2>
 
 <button class="back" onclick="goBack()">⬅ Quay lại Dashboard</button>
-
+<button id="deleteAll" style="
+  background:#ff4d4f;
+  color:white;
+  margin-bottom:15px;
+">
+🧨 Xoá toàn bộ thùng rác
+</button>
 <div id="notes"></div>
 
 <script type="module">
@@ -123,7 +129,8 @@ import {
   updateDoc,
   onSnapshot,
   query,
-  orderBy
+  orderBy,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -332,6 +339,24 @@ document.getElementById("confirmDelete").onclick = async ()=>{
   }
   document.getElementById("confirmModal").style.display="none";
   deleteID = null;
+};
+document.getElementById("deleteAll").onclick = async ()=>{
+  const confirmAll = confirm("Xoá toàn bộ thùng rác?");
+  if(!confirmAll) return;
+
+  const q = query(
+    collection(db,"users",currentUID,"notes")
+  );
+
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach(async(docSnap)=>{
+    if(docSnap.data().deleted === true){
+      await deleteDoc(
+        doc(db,"users",currentUID,"notes",docSnap.id)
+      );
+    }
+  });
 };
   
 </script>
