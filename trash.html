@@ -33,9 +33,10 @@ button{
   border-radius:8px;
   border:1px solid #2a2a2a;
   font-family:monospace;
-  text-align:left !important;
 }
-
+.note-text{
+  text-align:left;
+}
 small{
   color:#ff6b6b;
   font-size:12px;
@@ -333,17 +334,7 @@ function listenTrash(){
   document.getElementById("confirmModal").style.display="none";
   deleteID = null;
 };
-/*
-document.getElementById("confirmDelete").onclick = async ()=>{
-  if(deleteID){
-    await deleteDoc(
-      doc(db,"users",currentUID,"notes",deleteID)
-    );
-  }
-  document.getElementById("confirmModal").style.display="none";
-  deleteID = null;
-};
-*/
+
 document.getElementById("confirmDelete").onclick = async ()=>{
 
   if(deleteMode === "single" && deleteID){
@@ -372,26 +363,7 @@ document.getElementById("confirmDelete").onclick = async ()=>{
   deleteID = null;
   deleteMode = null;
 };
-/*
-document.getElementById("deleteAll").onclick = async ()=>{
-  const confirmAll = confirm("Xoá toàn bộ thùng rác?");
-  if(!confirmAll) return;
 
-  const q = query(
-    collection(db,"users",currentUID,"notes")
-  );
-
-  const snapshot = await getDocs(q);
-
-  snapshot.forEach(async(docSnap)=>{
-    if(docSnap.data().deleted === true){
-      await deleteDoc(
-        doc(db,"users",currentUID,"notes",docSnap.id)
-      );
-    }
-  });
-};
-*/
 document.getElementById("deleteAll").onclick = ()=>{
   deleteMode = "all";
   document.getElementById("confirmModal").style.display = "flex";
