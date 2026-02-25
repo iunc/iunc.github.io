@@ -164,13 +164,20 @@ function listenTrashCount(){
 ///////
 
 ///////
-function getDaysLeft(deletedAt){
+function getTimeLeft(deletedAt){
   const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
   const deletedTime = deletedAt.toDate().getTime();
   const now = Date.now();
   const diff = THIRTY_DAYS - (now - deletedTime);
-  if(diff <= 0) return 0;
-  return Math.ceil(diff / (24 * 60 * 60 * 1000));
+  if(diff <= 0) return "0 ngày";
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+  if(days >= 1){
+    return days + " ngày";
+  }
+  const hours = Math.floor(diff / (60 * 60 * 1000));
+  const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+  const seconds = Math.floor((diff % (60 * 1000)) / 1000);
+  return `${hours}h ${minutes}m ${seconds}s`;
 }
 ///////
   
@@ -207,23 +214,26 @@ function listenTrash(){
       if(data.deleted === true){
         hasTrash = true;
         const date = data.createdAt?.toDate?.().toLocaleString("vi-VN") || "";
-        let daysLeftText = "";
+        let timeLeftText = "";
 
         if(data.deletedAt){
-        const daysLeft = getDaysLeft(data.deletedAt);
-        const color = daysLeft <= 3 ? "#ef4444" : "#facc15";
+        const timeLeft = getTimeLeft(data.deletedAt);
+        const isUrgent = !timeLeft.includes("ngày");
+        const color = isUrgent ? "#ef4444" : "#facc15";
 
-                   daysLeftText = `
-                   <div style="
-                   font-size:11px;
-                   color:${color};
-                   margin-top:6px;
-                   font-family:monospace;
-                   opacity:0.9;
-                   ">
-                   ⚠️ Tự động xoá sau ${daysLeft} ngày
-                   </div>
-         `;
+             timeLeftText = `
+             <div 
+              id="countdown-${docSnap.id}"
+              style="
+              font-size:11px;
+              color:${color};
+              margin-top:6px;
+              font-family:monospace;
+              opacity:0.9;
+               ">
+              ⚠ Tự động xoá sau ${timeLeft}
+            </div>
+            `;
         }
         const div = document.createElement("div");
         div.className="note";
@@ -232,7 +242,7 @@ function listenTrash(){
           <div style="margin-top:5px;white-space:pre-wrap">
             ${data.text}
           </div>
-          ${daysLeftText}
+          ${timeLeftText}
           <div class="actions">
             <button class="restore">♻ Khôi phục</button>
             <button class="permanent">❌ Xoá vĩnh viễn</button>
@@ -251,6 +261,17 @@ function listenTrash(){
   document.getElementById("confirmModal").style.display = "flex";
 };      
         container.appendChild(div);
+        if(data.deletedAt){
+  setInterval(()=>{
+    const el = document.getElementById("countdown-${docSnap.id}");
+    if(el){
+      const timeLeft = getTimeLeft(data.deletedAt);
+      const isUrgent = !timeLeft.includes("ngày");
+      el.style.color = isUrgent ? "#ef4444" : "#facc15";
+      el.innerText = "⚠ Tự động xoá sau " + timeLeft;
+    }
+  },1000);
+      }
       }
     });
     if(!hasTrash){
