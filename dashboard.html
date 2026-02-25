@@ -274,37 +274,16 @@ setTimeout(()=>{
 }
 
 
-//đếm số note trong thùng rác  
-function listenTrashCount(){
-  const q = query(
-    collection(db,"users",currentUID,"notes")
-  );
-  onSnapshot(q, (snapshot)=>{
-    let count = 0;
-    snapshot.forEach(docSnap=>{
-      const data = docSnap.data();
-      if(data.deleted){
-        count++;
-      }
-    });
-    const el = document.getElementById("trashCount");
-    if(el){
-      el.textContent = count;
-    }
-  });
-}
 
   
 const contentInput = document.getElementById("content");  
 contentInput.addEventListener("input", () => {
-
   //setStatus(isEditingMode ? "editing" : "typing");
   if(isEditingMode){
   setStatus("editing");
 }else{
   setStatus("typing");
   }
-  
   clearTimeout(autoSaveTimeout);
 
   autoSaveTimeout = setTimeout(async () => {
@@ -445,18 +424,24 @@ function listenNotes(){
     (snapshot)=>{
 
       allNotes=[];
-      
+
+      let trashCount = 0;
       snapshot.forEach(docSnap=>{
   const data = docSnap.data();
 
   if(!data.deleted){
+    trashCount++;
+  }else{
     allNotes.push({
       id:docSnap.id,
       ...data
     });
   }
 });
-      
+const el = document.getElementById("trashCount");
+if(el){
+  el.textContent = trashCount;
+}    
       // Nếu đang lọc theo tag thì kiểm tra tag còn tồn tại không
 if(currentTagFilter){
   
