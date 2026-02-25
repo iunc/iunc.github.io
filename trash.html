@@ -107,7 +107,10 @@ small{
 <body>
 
 <h2 style="font-family:monospace;color:#ff6b6b;">
-🗑 Thùng rác (<span id="trashCount">0</span>)
+🗑 Thùng rác (
+<span id="trashCount">0</span> • 
+<span id="trashSize">0 KB</span>
+)
 </h2>
 
 <button class="back" onclick="goBack()">⬅ Quay lại Dashboard</button>
@@ -153,7 +156,19 @@ let deleteID = null;
 let deleteMode = null; // "single" hoặc "all"
 
 ///////
-function listenTrashCount(){
+  function formatSize(bytes){
+  const units = ["B","KB","MB","GB","TB"];
+  let i = 0;
+  while(bytes >= 1024 && i < units.length - 1){
+    bytes /= 1024;
+    i++;
+  }
+  return bytes.toFixed(1) + " " + units[i];
+  }
+///////
+  
+///////
+/*function listenTrashCount(){
   const q = query(
     collection(db,"users",currentUID,"notes")
   );
@@ -171,6 +186,31 @@ function listenTrashCount(){
     }
   });
 }
+*/
+  function listenTrashCount(){
+  const q = query(
+    collection(db,"users",currentUID,"notes")
+  );
+  onSnapshot(q, (snapshot)=>{
+    let count = 0;
+    let totalChars = 0;
+    snapshot.forEach(docSnap=>{
+      const data = docSnap.data();
+      if(data.deleted){
+        count++;
+        if(data.text){
+          totalChars += data.text.length;
+        }
+      }
+    });
+    // Tính KB
+    const formattedSize = formatSize(totalChars);
+    const countEl = document.getElementById("trashCount");
+    const sizeEl = document.getElementById("trashSize");
+    if(countEl) countEl.textContent = count;
+    sizeEl.textContent = formattedSize;
+  });
+  }
 ///////
 
 ///////
@@ -196,21 +236,17 @@ function getTimeLeft(deletedAt){
 function startCountdown(){
   setInterval(()=>{
     const elements = document.querySelectorAll(".countdown");
-
     elements.forEach(el=>{
       const deletedTime = parseInt(el.dataset.deleted);
       const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
       //const THIRTY_DAYS = 3 * 60 *1000;
       const diff = THIRTY_DAYS - (Date.now() - deletedTime);
-
       if(diff <= 0){
         el.innerText = "⚠ Đang xoá...";
         el.style.color = "#ef4444";
         return;
       }
-
       const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-
       if(days >= 1){
         el.innerText = "⚠ Tự động xoá sau " + days + " ngày";
         el.style.color = "#facc15";
@@ -218,12 +254,10 @@ function startCountdown(){
         const hours = Math.floor(diff / (60 * 60 * 1000));
         const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
         const seconds = Math.floor((diff % (60 * 1000)) / 1000);
-
         el.innerText = `⚠ Tự động xoá sau ${hours}h ${minutes}m ${seconds}s`;
         el.style.color = "#ef4444";
       }
     });
-
   },1000);
 }  
 ///////
