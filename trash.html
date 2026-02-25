@@ -294,6 +294,7 @@ window.goBack = function(){
 function listenTrash(){
   const q = query(
     collection(db,"users",currentUID,"notes"),
+    orderBy("deletedAt","desc")
   );
   onSnapshot(q,(snapshot)=>{
     const container = document.getElementById("notes");
