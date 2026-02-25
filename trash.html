@@ -25,6 +25,7 @@ button{
 .back{
   background:#3b82f6;
   color: white;
+  margin-bottom:15px;
 }
 
 .note{
@@ -126,6 +127,9 @@ small{
   background:#1e1e1e;
   color:white;
   font-size:13px;
+  display:block;
+  margin-bottom:15px;
+  width:100%;
 }
 </style>
 </head>
@@ -139,12 +143,7 @@ small{
     <span id="trashSize">0 KB</span>
   </span>
 </h2>
-<select id="sortSelect" class="trash-sort">
-  <option value="deleted_desc">🕒 Gần đây</option>
-  <option value="deleted_asc">🗓 Lâu nhất</option>
-  <option value="expire_soon">⏳ Sắp xoá</option>
-  <option value="longest">📏 Dài nhất</option>
-</select>
+
 <button class="back" onclick="goBack()">⬅ Quay lại Dashboard</button>
 <button id="deleteAll" style="
   background:#ff4d4f;
@@ -185,8 +184,7 @@ const db = getFirestore(app);
 
 let currentUID = null;
 let deleteID = null;
-let deleteMode = null; // "single" hoặc "all"
-let sortMode = "deleted_desc";
+let deleteMode = null; // "single" hoặc "all
 
 ///////
   function formatSize(bytes){
@@ -285,10 +283,6 @@ onAuthStateChanged(auth, (user)=>{
     listenTrash();
     listenTrashCount();
     startCountdown();
-    document.getElementById("sortSelect").onchange = (e)=>{
-    sortMode = e.target.value;
-    listenTrash();
-    };
   }
 });
 ///////
