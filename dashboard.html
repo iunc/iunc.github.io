@@ -649,7 +649,7 @@ document.getElementById("search").addEventListener("input",(e)=>{
 document.getElementById("undoBtn").onclick = ()=>{
   clearTimeout(undoTimeout);
   pendingDeleteID = null;
-  document.getElementById("undoBar").style.display = "none";
+  document.getElementById("undoBar").classList.remove("show");
 };
 </script>
 
