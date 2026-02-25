@@ -143,7 +143,7 @@ style="background:transparent;
        border:1px solid #ff4d4f;
        color:#ff4d4f;
        font-weight:600;">
-🗑 Thùng rác
+🗑 Thùng rác (<span id=trashCount>0</span>)
 </button>
 <div id="syncStatus" style="font-size:13px;color:#00ffcc;margin-bottom:10px;">
   🟢 Đã đồng bộ
@@ -246,14 +246,11 @@ let pendingDeleteID = null;
 
 
 function triggerDelete(id){
-
-  // Nếu đang có 1 undo trước đó → huỷ nó
+ // Nếu đang có 1 undo trước đó → huỷ nó
   if(undoTimeout){
     clearTimeout(undoTimeout);
   }
-
   pendingDeleteID = id;
-
   //document.getElementById("undoBar").style.display = "flex";
   document.getElementById("undoBar").classList.add("show");
   undoTimeout = setTimeout(async ()=>{
@@ -263,25 +260,42 @@ function triggerDelete(id){
         { deleted:true }
       );
     }
-
     //document.getElementById("undoBar").style.display = "none";
     document.getElementById("undoBar").classList.remove("show");
     pendingDeleteID = null;
-
   }, 3000);
   const bar = document.getElementById("undoProgress");
 bar.style.transition = "none";
 bar.style.transform = "scaleX(1)";
-
 setTimeout(()=>{
   bar.style.transition = "transform 3s linear";
   bar.style.transform = "scaleX(0)";
 },10);
 }
-  
-const contentInput = document.getElementById("content");
+
+
+//đếm số note trong thùng rác  
+function listenTrashCount(){
+  const q = query(
+    collection(db,"users",currentUID,"notes")
+  );
+  onSnapshot(q, (snapshot)=>{
+    let count = 0;
+    snapshot.forEach(docSnap=>{
+      const data = docSnap.data();
+      if(data.deleted){
+        count++;
+      }
+    });
+    const el = document.getElementById("trashCount");
+    if(el){
+      el.textContent = count;
+    }
+  });
+}
 
   
+const contentInput = document.getElementById("content");  
 contentInput.addEventListener("input", () => {
 
   //setStatus(isEditingMode ? "editing" : "typing");
@@ -397,6 +411,7 @@ onAuthStateChanged(auth, (user)=>{
   }else{
     currentUID = user.uid;
     listenNotes();
+    listenTrashCount();
   }
 });
 
@@ -720,10 +735,8 @@ document.getElementById("search").addEventListener("input",(e)=>{
 });
 
 document.getElementById("undoBtn").onclick = ()=>{
-  clearTimeout(undoTimeout);
-  pendingDeleteID = null;
-  document.getElementById("undoBar").classList.remove("show");
-};
+
+  
 </script>
 
 </body>
