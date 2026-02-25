@@ -185,25 +185,6 @@ let deleteMode = null; // "single" hoặc "all"
 ///////
   
 ///////
-/*function listenTrashCount(){
-  const q = query(
-    collection(db,"users",currentUID,"notes")
-  );
-  onSnapshot(q, (snapshot)=>{
-    let count = 0;
-    snapshot.forEach(docSnap=>{
-      const data = docSnap.data();
-      if(data.deleted){
-        count++;
-      }
-    });
-    const el = document.getElementById("trashCount");
-    if(el){
-      el.textContent = count;
-    }
-  });
-}
-*/
   function listenTrashCount(){
   const q = query(
     collection(db,"users",currentUID,"notes")
@@ -302,7 +283,7 @@ window.goBack = function(){
 function listenTrash(){
   const q = query(
     collection(db,"users",currentUID,"notes"),
-    orderBy("createdAt","desc")
+    orderBy("deletedAt","desc")
   );
   onSnapshot(q,(snapshot)=>{
     const container = document.getElementById("notes");
