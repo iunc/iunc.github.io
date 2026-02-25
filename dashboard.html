@@ -654,34 +654,38 @@ document.getElementById("undoBtn").onclick = ()=>{
   left:50%;
   transform:translateX(-50%);
   background:#2563eb;
-  padding:10px 18px;
+  padding:8px 16px;
   border-radius:999px;
   display:none;
   align-items:center;
-  gap:14px;
+  gap:12px;
   z-index:9999;
   box-shadow:0 10px 30px rgba(0,0,0,0.6);
   font-family:monospace;
-  white-space:nowrap;
 ">
 
   <span style="
     font-size:13px;
     color:white;
+    line-height:1;
+    display:flex;
+    align-items:center;
   ">
-     Đã xoá
+    Đã xoá
   </span>
 
   <button id="undoBtn" style="
-    width:auto;
+    all:unset;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+    padding:4px 10px;
+    border-radius:999px;
     background:white;
     color:#2563eb;
-    border:none;
-    padding:6px 14px;
-    border-radius:999px;
-    cursor:pointer;
-    font-weight:600;
-    font-size:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   ">
     Hoàn tác
   </button>
