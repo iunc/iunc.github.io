@@ -101,18 +101,38 @@ small{
   background:#ff4d4f;
   color:white;
 }
+.trash-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-family:monospace;
+  color:#ff6b6b;
+  font-size:18px;
+}
+
+.trash-info{
+  font-size:13px;
+  opacity:0.8;
+}
 </style>
 </head>
 
 <body>
-
+<!--
 <h2 style="font-family:monospace;color:#ff6b6b;">
 🗑 Thùng rác (
 <span id="trashCount">0</span> • 
 <span id="trashSize">0 KB</span>
 )
 </h2>
-
+-->
+<h2 class="trash-title">
+  <span>🗑 Thùng rác</span>
+  <span class="trash-info">
+    <span id="trashCount">0</span> • 
+    <span id="trashSize">0 KB</span>
+  </span>
+</h2>
 <button class="back" onclick="goBack()">⬅ Quay lại Dashboard</button>
 <button id="deleteAll" style="
   background:#ff4d4f;
