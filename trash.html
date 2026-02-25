@@ -118,6 +118,15 @@ small{
   font-size:13px;
   opacity:0.8;
 }
+.trash-sort{
+  margin-top:10px;
+  padding:6px 10px;
+  border-radius:8px;
+  border:none;
+  background:#1e1e1e;
+  color:white;
+  font-size:13px;
+}
 </style>
 </head>
 
@@ -130,6 +139,10 @@ small{
     <span id="trashSize">0 KB</span>
   </span>
 </h2>
+<option value="deleted_desc">🕒 Gần đây</option>
+<option value="deleted_asc">🗓 Lâu nhất</option>
+<option value="expire_soon">⏳ Sắp xoá</option>
+<option value="longest">📏 Dài nhất</option>
 <button class="back" onclick="goBack()">⬅ Quay lại Dashboard</button>
 <button id="deleteAll" style="
   background:#ff4d4f;
