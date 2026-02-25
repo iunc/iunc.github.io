@@ -429,7 +429,7 @@ function listenNotes(){
       snapshot.forEach(docSnap=>{
   const data = docSnap.data();
 
-  if(!data.deleted){
+  if(data.deleted){
     trashCount++;
   }else{
     allNotes.push({
