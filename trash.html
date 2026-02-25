@@ -148,6 +148,7 @@ const db = getFirestore(app);
 
 let currentUID = null;
 let deleteID = null;
+let deleteMode = null; // "single" hoặc "all"
 
 ///////
 function listenTrashCount(){
@@ -300,6 +301,7 @@ function listenTrash(){
         };
         // Delete permanent
           div.querySelector(".permanent").onclick = ()=>{
+            deleteMode = "single";
   deleteID = docSnap.id;
   document.getElementById("confirmModal").style.display = "flex";
 };      
@@ -330,7 +332,7 @@ function listenTrash(){
   document.getElementById("confirmModal").style.display="none";
   deleteID = null;
 };
-
+/*
 document.getElementById("confirmDelete").onclick = async ()=>{
   if(deleteID){
     await deleteDoc(
@@ -340,6 +342,36 @@ document.getElementById("confirmDelete").onclick = async ()=>{
   document.getElementById("confirmModal").style.display="none";
   deleteID = null;
 };
+*/
+document.getElementById("confirmDelete").onclick = async ()=>{
+
+  if(deleteMode === "single" && deleteID){
+    await deleteDoc(
+      doc(db,"users",currentUID,"notes",deleteID)
+    );
+  }
+
+  if(deleteMode === "all"){
+    const q = query(
+      collection(db,"users",currentUID,"notes")
+    );
+
+    const snapshot = await getDocs(q);
+
+    snapshot.forEach(async(docSnap)=>{
+      if(docSnap.data().deleted === true){
+        await deleteDoc(
+          doc(db,"users",currentUID,"notes",docSnap.id)
+        );
+      }
+    });
+  }
+
+  document.getElementById("confirmModal").style.display="none";
+  deleteID = null;
+  deleteMode = null;
+};
+/*
 document.getElementById("deleteAll").onclick = async ()=>{
   const confirmAll = confirm("Xoá toàn bộ thùng rác?");
   if(!confirmAll) return;
@@ -357,6 +389,11 @@ document.getElementById("deleteAll").onclick = async ()=>{
       );
     }
   });
+};
+*/
+document.getElementById("deleteAll").onclick = ()=>{
+  deleteMode = "all";
+  document.getElementById("confirmModal").style.display = "flex";
 };
   
 </script>
