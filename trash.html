@@ -105,7 +105,7 @@ small{
 <body>
 
 <h2 style="font-family:monospace;color:#ff6b6b;">
-🗑 Thùng rác
+🗑 Thùng rác (<span id="trashCount">0</span>)
 </h2>
 
 <button class="back" onclick="goBack()">⬅ Quay lại Dashboard</button>
@@ -142,12 +142,33 @@ const db = getFirestore(app);
 let currentUID = null;
 let deleteID = null;
 
+function listenTrashCount(){
+  const q = query(
+    collection(db,"users",currentUID,"notes")
+  );
+  onSnapshot(q, (snapshot)=>{
+    let count = 0;
+    snapshot.forEach(docSnap=>{
+      const data = docSnap.data();
+      if(data.deleted){
+        count++;
+      }
+    });
+    const el = document.getElementById("trashCount");
+    if(el){
+      el.textContent = count;
+    }
+  });
+}
+
+  
 onAuthStateChanged(auth, (user)=>{
   if(!user){
     window.location.href="login.html";
   }else{
     currentUID = user.uid;
     listenTrash();
+    listenTrashCount();
   }
 });
 
