@@ -565,7 +565,7 @@ let hasMoved = false;
   }
 
   document.getElementById("swipeHint")?.remove();
-
+/*
   if (diff < -100) {
     if (navigator.vibrate) navigator.vibrate(30);
    // await deleteDoc(doc(db,"users",currentUID,"notes",note.id));
@@ -574,7 +574,12 @@ let hasMoved = false;
   { deleted:true }
 );
   }
-
+*/
+  if (diff < -100) {
+  if (navigator.vibrate) navigator.vibrate(30);
+  triggerDelete(note.id);
+  }
+    
   else if (diff > 100) {
     if (navigator.vibrate) navigator.vibrate(30);
     await updateDoc(doc(db,"users",currentUID,"notes",note.id),{
@@ -590,14 +595,18 @@ let hasMoved = false;
     //Vuốt
   });
 }
-
+/*
 window.deleteNote = async function(id){
   await updateDoc(
     doc(db,"users",currentUID,"notes",id),
     { deleted:true }
   );
 };
-
+*/
+window.deleteNote = function(id){
+  triggerDelete(id);
+};
+  
 window.editNote = function(id,text,tags){
   editingID=id;
   isEditingMode = true;
@@ -638,6 +647,11 @@ document.getElementById("search").addEventListener("input",(e)=>{
   renderNotes(filtered);
 });
 
+document.getElementById("undoBtn").onclick = ()=>{
+  clearTimeout(undoTimeout);
+  pendingDeleteID = null;
+  document.getElementById("undoBar").style.display = "none";
+};
 </script>
 
 <div id="undoBar" style="
