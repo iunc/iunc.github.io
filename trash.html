@@ -207,6 +207,24 @@ function listenTrash(){
       if(data.deleted === true){
         hasTrash = true;
         const date = data.createdAt?.toDate?.().toLocaleString("vi-VN") || "";
+        let daysLeftText = "";
+
+        if(data.deletedAt){
+        const daysLeft = getDaysLeft(data.deletedAt);
+        const color = daysLeft <= 3 ? "#ef4444" : "#facc15";
+
+                   daysLeftText = `
+                   <div style="
+                   font-size:11px;
+                   color:${color};
+                   margin-top:6px;
+                   font-family:monospace;
+                   opacity:0.9;
+                   ">
+                   🗑 Tự động xoá sau ${daysLeft} ngày
+                   </div>
+         `;
+        }
         const div = document.createElement("div");
         div.className="note";
         div.innerHTML=`
@@ -214,6 +232,7 @@ function listenTrash(){
           <div style="margin-top:5px;white-space:pre-wrap">
             ${data.text}
           </div>
+          ${daysLeftText}
           <div class="actions">
             <button class="restore">♻ Khôi phục</button>
             <button class="permanent">❌ Xoá vĩnh viễn</button>
