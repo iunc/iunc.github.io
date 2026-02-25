@@ -142,6 +142,7 @@ const db = getFirestore(app);
 let currentUID = null;
 let deleteID = null;
 
+///////
 function listenTrashCount(){
   const q = query(
     collection(db,"users",currentUID,"notes")
@@ -160,8 +161,20 @@ function listenTrashCount(){
     }
   });
 }
+///////
 
+///////
+function getDaysLeft(deletedAt){
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  const deletedTime = deletedAt.toDate().getTime();
+  const now = Date.now();
+  const diff = THIRTY_DAYS - (now - deletedTime);
+  if(diff <= 0) return 0;
+  return Math.ceil(diff / (24 * 60 * 60 * 1000));
+}
+///////
   
+///////
 onAuthStateChanged(auth, (user)=>{
   if(!user){
     window.location.href="login.html";
@@ -171,48 +184,41 @@ onAuthStateChanged(auth, (user)=>{
     listenTrashCount();
   }
 });
+///////
 
+///////
 window.goBack = function(){
   window.location.href = "dashboard.html";
 };
+///////
 
+///////
 function listenTrash(){
-
   const q = query(
     collection(db,"users",currentUID,"notes"),
     orderBy("createdAt","desc")
   );
-
   onSnapshot(q,(snapshot)=>{
-
     const container = document.getElementById("notes");
     container.innerHTML="";
-
     let hasTrash = false;
-
     snapshot.forEach(docSnap=>{
       const data = docSnap.data();
-
       if(data.deleted === true){
         hasTrash = true;
-
         const date = data.createdAt?.toDate?.().toLocaleString("vi-VN") || "";
-
         const div = document.createElement("div");
         div.className="note";
-
         div.innerHTML=`
           <small>Đã xoá • ${date}</small>
           <div style="margin-top:5px;white-space:pre-wrap">
             ${data.text}
           </div>
-
           <div class="actions">
             <button class="restore">♻ Khôi phục</button>
             <button class="permanent">❌ Xoá vĩnh viễn</button>
           </div>
         `;
-
         // Restore
         div.querySelector(".restore").onclick = async ()=>{
           await updateDoc(
@@ -220,18 +226,14 @@ function listenTrash(){
             { deleted:false }
           );
         };
-
         // Delete permanent
           div.querySelector(".permanent").onclick = ()=>{
   deleteID = docSnap.id;
   document.getElementById("confirmModal").style.display = "flex";
-};
-      
-
+};      
         container.appendChild(div);
       }
     });
-
     if(!hasTrash){
       container.innerHTML = `
         <div style="opacity:0.6;font-family:monospace;">
@@ -239,10 +241,8 @@ function listenTrash(){
         </div>
       `;
     }
-
   });
-}
-  
+}  
   document.getElementById("cancelDelete").onclick = ()=>{
   document.getElementById("confirmModal").style.display="none";
   deleteID = null;
@@ -254,10 +254,10 @@ document.getElementById("confirmDelete").onclick = async ()=>{
       doc(db,"users",currentUID,"notes",deleteID)
     );
   }
-
   document.getElementById("confirmModal").style.display="none";
   deleteID = null;
 };
+  
 </script>
 <div id="confirmModal" class="modal">
   <div class="modal-box">
