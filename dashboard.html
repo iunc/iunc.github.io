@@ -217,7 +217,8 @@ import {
   onSnapshot,
   serverTimestamp,
   query,
-  orderBy
+  orderBy,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -244,7 +245,7 @@ let undoTimeout = null;
 let pendingDeleteID = null;
 
 
-
+///////
 function triggerDelete(id){
  // Nếu đang có 1 undo trước đó → huỷ nó
   if(undoTimeout){
@@ -272,10 +273,8 @@ setTimeout(()=>{
   bar.style.transform = "scaleX(0)";
 },10);
 }
-
-
-
-  
+///////
+ 
 const contentInput = document.getElementById("content");  
 contentInput.addEventListener("input", () => {
   //setStatus(isEditingMode ? "editing" : "typing");
@@ -285,12 +284,8 @@ contentInput.addEventListener("input", () => {
   setStatus("typing");
   }
   clearTimeout(autoSaveTimeout);
-
-  autoSaveTimeout = setTimeout(async () => {
-
-   
+  autoSaveTimeout = setTimeout(async () => {  
     const text = contentInput.value.trim();
-
 const tagsRaw = document.getElementById("tags").value;
 const tags = [...new Set(
   tagsRaw
@@ -298,16 +293,11 @@ const tags = [...new Set(
     .map(t => t.trim())
     .filter(t => t !== "")
 )];
-
 if(!text && tags.length === 0) return;
-
 if(isSaving) return;
 isSaving = true;
-
 try {
-
   setStatus("saving");
-
   if(!editingID){
     const docRef = await addDoc(
       collection(db,"users",currentUID,"notes"),
@@ -319,7 +309,6 @@ try {
         deleted: false
       }
     );
-
     editingID = docRef.id;
    // isEditingMode = true;
   }
@@ -332,9 +321,7 @@ try {
       }
     );
   }
-
   setStatus("done");
-
 }
 catch(err){
   console.error("Autosave error:", err);
@@ -343,55 +330,71 @@ catch(err){
 finally{
   isSaving = false;
 }
-
   },1000);
-
 });
 
 document.getElementById("tags").addEventListener("input", () => {
   contentInput.dispatchEvent(new Event("input"));
 });
   
-const saveBtn = document.getElementById("saveBtn");
-  
+const saveBtn = document.getElementById("saveBtn"); 
 const syncStatus = document.getElementById("syncStatus");
-
-  function setStatus(type){
-
+function setStatus(type){
   if(type==="typing"){
     syncStatus.innerText="✍️ Đang nhập...";
     syncStatus.style.color="#38bdf8";
   }
-
   else if(type==="editing"){
     syncStatus.innerText="📝 Đang chỉnh sửa...";
     syncStatus.style.color="#f59e0b";
   }
-
   else if(type==="saving"){
     syncStatus.innerText="🟡 Đang lưu...";
     syncStatus.style.color="#facc15";
   }
-
   else if(type==="done"){
     syncStatus.innerText="🟢 Đã đồng bộ";
     syncStatus.style.color="#00ff88";
   }
-
   else if(type==="error"){
     syncStatus.innerText="🔴 Lỗi kết nối";
     syncStatus.style.color="#ef4444";
   }
   }
+///////
   
+///////
+async function cleanupOldTrash(){
+  //const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  const THIRTY_DAYS = 60 * 1000; // 1 phút
+  const now = Date.now();
+  const snapshot = await getDocs(
+    collection(db,"users",currentUID,"notes")
+  );
+  snapshot.forEach(async (docSnap)=>{
+    const data = docSnap.data();
+    if(data.deleted && data.deletedAt){
+      const deletedTime = data.deletedAt.toDate().getTime();
+      if(now - deletedTime > THIRTY_DAYS){
+        await deleteDoc(doc(db,"users",currentUID,"notes",docSnap.id));
+      }
+    }
+  });
+}
+////////
+
+////////
 onAuthStateChanged(auth, (user)=>{
   if(!user){
     window.location.href="login.html";
   }else{
     currentUID = user.uid;
+    await cleanupOldTrash(); 
     listenNotes();
   }
 });
+////////
+
 
 window.logout = function(){
   signOut(auth).then(()=>{
