@@ -101,6 +101,15 @@ small{
 .tag-badge:hover{
   background:#38bdf822;
 }
+#undoBar{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translate(-50%,20px);
+  opacity:0;
+  pointer-events:none;
+  transition:all 0.25s ease;
+}
 #undoBar.show{
   opacity:1;
   transform:translate(-50%,0);
@@ -142,12 +151,12 @@ style="background:transparent;
   position:fixed;
   bottom:24px;
   left:50%;
-  transform:translate(-50%,20px);
+  /*transform:translate(-50%,20px);*/
   background:#2563eb;
   padding:8px 16px;
   border-radius:999px;
-  opacity:0;
-  pointer-events:none;
+  /*opacity:0;
+  pointer-events:none;*/
   display:flex;
   align-items:center;
   gap:12px;
