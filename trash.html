@@ -197,7 +197,7 @@ let deleteMode = null; // "single" hoặc "all
 ///////
   function listenTrashCount(){
   const q = query(
-    collection(db,"users",currentUID,"notes")
+    collection(db,"users",currentUID,"notes"),
     orderBy("deletedAt","desc")
   );
   onSnapshot(q, (snapshot)=>{
