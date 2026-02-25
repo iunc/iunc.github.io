@@ -108,12 +108,22 @@ small{
   transform:translate(-50%,20px);
   opacity:0;
   pointer-events:none;
-  transition:all 0.25s ease;
+ /* transition:all 0.25s ease; */
+  transition: all 0.2s cubic-bezier(.4,0,.2,1);
 }
 #undoBar.show{
   opacity:1;
   transform:translate(-50%,0);
   pointer-events:auto;
+}
+#undoProgress{
+  position:absolute;
+  bottom:0;
+  left:0;
+  height:3px;
+  background:rgba(255,255,255,0.4);
+  width:100%;
+  transform-origin:left;
 }
 </style>
 </head>
@@ -191,7 +201,7 @@ style="background:transparent;
   ">
     Hoàn tác
   </button>
-
+<div id="undoProgress"></div>
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -258,6 +268,14 @@ function triggerDelete(id){
     pendingDeleteID = null;
 
   }, 3000);
+  const bar = document.getElementById("undoProgress");
+bar.style.transition = "none";
+bar.style.transform = "scaleX(1)";
+
+setTimeout(()=>{
+  bar.style.transition = "transform 3s linear";
+  bar.style.transform = "scaleX(0)";
+},10);
 }
   
 const contentInput = document.getElementById("content");
