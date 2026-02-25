@@ -181,6 +181,42 @@ function getTimeLeft(deletedAt){
   return `${hours}h ${minutes}m ${seconds}s`;
 }
 ///////
+
+///////
+function startCountdown(){
+  setInterval(()=>{
+    const elements = document.querySelectorAll(".countdown");
+
+    elements.forEach(el=>{
+      const deletedTime = parseInt(el.dataset.deleted);
+      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+
+      const diff = THIRTY_DAYS - (Date.now() - deletedTime);
+
+      if(diff <= 0){
+        el.innerText = "⚠ Đang xoá...";
+        el.style.color = "#ef4444";
+        return;
+      }
+
+      const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+
+      if(days >= 1){
+        el.innerText = "⚠ Tự động xoá sau " + days + " ngày";
+        el.style.color = "#facc15";
+      }else{
+        const hours = Math.floor(diff / (60 * 60 * 1000));
+        const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+        const seconds = Math.floor((diff % (60 * 1000)) / 1000);
+
+        el.innerText = `⚠ Tự động xoá sau ${hours}h ${minutes}m ${seconds}s`;
+        el.style.color = "#ef4444";
+      }
+    });
+
+  },1000);
+}  
+///////
   
 ///////
 onAuthStateChanged(auth, (user)=>{
@@ -190,6 +226,7 @@ onAuthStateChanged(auth, (user)=>{
     currentUID = user.uid;
     listenTrash();
     listenTrashCount();
+    startCountdown();
   }
 });
 ///////
@@ -221,20 +258,18 @@ function listenTrash(){
         const timeLeft = getTimeLeft(data.deletedAt);
         const isUrgent = !timeLeft.includes("ngày");
         const color = isUrgent ? "#ef4444" : "#facc15";
-
              timeLeftText = `
-             <div 
-              id="countdown-${docSnap.id}"
-              style="
-              font-size:11px;
-              color:${color};
-              margin-top:6px;
-              font-family:monospace;
-              opacity:0.9;
-               ">
-              ⚠ Tự động xoá sau ${timeLeft}
-            </div>
-            `;
+  <div 
+    class="countdown"
+    data-deleted="${data.deletedAt.toDate().getTime()}"
+    style="
+      font-size:11px;
+      margin-top:6px;
+      font-family:monospace;
+      opacity:0.9;
+    ">
+  </div>
+`;
         }
         const div = document.createElement("div");
         div.className="note";
