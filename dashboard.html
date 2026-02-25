@@ -101,7 +101,11 @@ small{
 .tag-badge:hover{
   background:#38bdf822;
 }
-
+#undoBar.show{
+  opacity:1;
+  transform:translate(-50%,0);
+  pointer-events:auto;
+}
 </style>
 </head>
 <body>
@@ -185,8 +189,8 @@ function triggerDelete(id){
 
   pendingDeleteID = id;
 
-  document.getElementById("undoBar").style.display = "flex";
-
+  //document.getElementById("undoBar").style.display = "flex";
+  document.getElementById("undoBar").classList.add("show");
   undoTimeout = setTimeout(async ()=>{
     if(pendingDeleteID){
       await updateDoc(
@@ -195,7 +199,8 @@ function triggerDelete(id){
       );
     }
 
-    document.getElementById("undoBar").style.display = "none";
+    //document.getElementById("undoBar").style.display = "none";
+    document.getElementById("undoBar").classList.remove("show");
     pendingDeleteID = null;
 
   }, 5000);
@@ -652,16 +657,19 @@ document.getElementById("undoBtn").onclick = ()=>{
   position:fixed;
   bottom:24px;
   left:50%;
-  transform:translateX(-50%);
+  transform:translate(-50%,20px);
   background:#2563eb;
   padding:8px 16px;
   border-radius:999px;
-  display:none;
+  opacity:0;
+  pointer-events:none;
+  display:flex;
   align-items:center;
   gap:12px;
   z-index:9999;
   box-shadow:0 10px 30px rgba(0,0,0,0.6);
   font-family:monospace;
+  transition:all 0.25s ease;
 ">
 
   <span style="
