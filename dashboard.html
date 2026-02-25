@@ -161,7 +161,35 @@ let currentTagFilter = null;
 let autoSaveTimeout = null;
 let isEditingMode = false;
 let isSaving = false;
+let undoTimeout = null;
+let pendingDeleteID = null;
 
+
+
+function triggerDelete(id){
+
+  // Nếu đang có 1 undo trước đó → huỷ nó
+  if(undoTimeout){
+    clearTimeout(undoTimeout);
+  }
+
+  pendingDeleteID = id;
+
+  document.getElementById("undoBar").style.display = "flex";
+
+  undoTimeout = setTimeout(async ()=>{
+    if(pendingDeleteID){
+      await updateDoc(
+        doc(db,"users",currentUID,"notes",pendingDeleteID),
+        { deleted:true }
+      );
+    }
+
+    document.getElementById("undoBar").style.display = "none";
+    pendingDeleteID = null;
+
+  }, 5000);
+}
   
 const contentInput = document.getElementById("content");
 
@@ -179,112 +207,7 @@ contentInput.addEventListener("input", () => {
 
   autoSaveTimeout = setTimeout(async () => {
 
-    /*
-    const text = contentInput.value.trim();
-    if(!text) return;
-    */
-   /* const text = contentInput.value.trim();
-
-    if(!text && !editingID) return; */
-  /* const text = contentInput.value.trim();
-
-const tagsRaw = document.getElementById("tags").value;
-const tags = [...new Set(
-  tagsRaw
-    .split(",")
-    .map(t => t.trim())
-    .filter(t => t !== "")
-)];
-
-if(!text && tags.length === 0) return;
-    
-    if(isSaving) return;   // 🔒 chống lưu chồng
-    isSaving = true;
-
-   /* const tagsRaw = document.getElementById("tags").value;
-    const tags = [...new Set(
-      tagsRaw
-        .split(",")
-        .map(t => t.trim())
-        .filter(t => t !== "")
-    )]; */
-
-    /* try{
-
-      setStatus("saving");
-
-      // 🔹 Nếu chưa có note → tạo mới 1 lần
-      if(!editingID){
-        const docRef = await addDoc(
-          collection(db,"users",currentUID,"notes"),
-          {
-            text:text,
-            createdAt: serverTimestamp(),
-            pinned:false,
-            tags:tags
-          }
-        );
-        editingID = docRef.id;
-        isEditingMode = true;
-      }
-
-      // 🔹 Nếu đã có → chỉ update
-      else{
-        await updateDoc(
-          doc(db,"users",currentUID,"notes",editingID),
-          {
-            text:text,
-            tags:tags
-          }
-        );
-      }
-
-      setStatus("done");
-
-    }catch(err){
-      console.error(err);
-      setStatus("error");
-    }
-
-    isSaving = false; */
-   /* try {
-
-  setStatus("saving");
-
-  if(!editingID){
-    const docRef = await addDoc(
-      collection(db,"users",currentUID,"notes"),
-      {
-        text:text,
-        createdAt: serverTimestamp(),
-        pinned:false,
-        tags:tags
-      }
-    );
-
-    editingID = docRef.id;
-    isEditingMode = true;
-  }
-  else{
-    await updateDoc(
-      doc(db,"users",currentUID,"notes",editingID),
-      {
-        text:text,
-        tags:tags
-      }
-    );
-  }
-
-  setStatus("done");
-
-}
-catch(err){
-  console.error("Autosave error:", err);
-  setStatus("error");
-}
-finally{
-  isSaving = false;   // 🔥 LUÔN chạy dù có lỗi hay không
-} */
+   
     const text = contentInput.value.trim();
 
 const tagsRaw = document.getElementById("tags").value;
@@ -395,63 +318,7 @@ window.logout = function(){
   });
 };
 
-  /*
-saveBtn.addEventListener("click", async ()=>{
-  const text = contentInput.value.trim();
-  if(!text) return;
-
-  const tagsRaw = document.getElementById("tags").value;
-
-  const tags = [...new Set(
-  tagsRaw
-    .split(",")
-    .map(t => t.trim())
-    .filter(t => t !== "")
-)];
   
-  try{
-    setStatus("saving");
-
-    if(editingID){
-      await updateDoc(doc(db,"users",currentUID,"notes",editingID),{
-        text:text,
-        tags: tags
-      });
-      editingID=null;
-      isEditingMode = false;
-      saveBtn.innerText="Lưu Ghi Chú";
-    }else{
-      await addDoc(collection(db,"users",currentUID,"notes"),{
-        text: text,
-        createdAt: serverTimestamp(),
-        pinned: false,
-        tags: tags
-      });
-    }
-
-    contentInput.value="";
-    document.getElementById("tags").value="";
-    setStatus("done");
-
-  }catch(err){
-    setStatus("error");
-  }
-});
-*/
-  /*
-  saveBtn.addEventListener("click", () => {
-
-  // Reset về trạng thái tạo note mới
-  editingID = null;
-
-  contentInput.value = "";
-  document.getElementById("tags").value = "";
-
-  saveBtn.innerText = "Tạo ghi chú mới";
-
-  setStatus("done");
-});
-  */
   saveBtn.addEventListener("click", () => {
 
   editingID = null;
@@ -464,25 +331,7 @@ saveBtn.addEventListener("click", async ()=>{
 
   setStatus("done");
 });
-/*
-function listenNotes(){
-  const q = query(
-    collection(db,"users",currentUID,"notes"),
-    orderBy("createdAt","desc")
-  );
 
-  onSnapshot(q,(snapshot)=>{
-    allNotes=[];
-    snapshot.forEach(docSnap=>{
-      allNotes.push({
-        id:docSnap.id,
-        ...docSnap.data()
-      });
-    });
-    renderNotes(allNotes);
-  });
-}
-*/
 function listenNotes(){
   const q = query(
     collection(db,"users",currentUID,"notes"),
@@ -492,18 +341,8 @@ function listenNotes(){
   onSnapshot(q,
     (snapshot)=>{
 
-      // 🟡 BẮT ĐẦU ĐỒNG BỘ
-      //setStatus("saving");
-
       allNotes=[];
-      /* 
-      snapshot.forEach(docSnap=>{
-        allNotes.push({
-          id:docSnap.id,
-          ...docSnap.data()
-        });
-      });
-      */
+      
       snapshot.forEach(docSnap=>{
   const data = docSnap.data();
 
@@ -514,14 +353,10 @@ function listenNotes(){
     });
   }
 });
-      /*renderNotes(allNotes);*/
+      
       // Nếu đang lọc theo tag thì kiểm tra tag còn tồn tại không
 if(currentTagFilter){
-  /*
-  const stillExist = allNotes.some(n =>
-    n.tags && n.tags.includes(currentTagFilter)
-  );
-  */
+  
   const stillExist = allNotes.some(n =>
   n.tags && n.tags.some(t => 
     t.toLowerCase() === currentTagFilter.toLowerCase()
@@ -535,11 +370,7 @@ if(currentTagFilter){
 
 // Render đúng theo trạng thái hiện tại
 if(currentTagFilter){
-  /*
-  const filtered = allNotes.filter(n =>
-    n.tags && n.tags.includes(currentTagFilter)
-  );
-  */
+
   const filtered = allNotes.filter(n =>
   n.tags && n.tags.some(t => 
     t.toLowerCase() === currentTagFilter.toLowerCase()
@@ -551,17 +382,7 @@ if(currentTagFilter){
   renderNotes(allNotes);
 }
       
-      // 🟢 XONG
-      /*
-      setTimeout(()=>{
-        setStatus("done");
-      },300);
-      */
-     /* setTimeout(()=>{
-  if(!document.activeElement || document.activeElement.id !== "content"){
-    setStatus("done");
-  }
-},300); */
+      
       setStatus("done");
 
     },
@@ -699,23 +520,7 @@ editBtn.addEventListener("touchstart", (e) => {
     let startX = null;
 let currentX = 0;
 let hasMoved = false;
-/*div.addEventListener("touchstart", (e) => {
-  startX = e.touches[0].clientX;
-});
-*/
-   /* div.addEventListener("touchstart", (e) => {
 
-  // ❌ Nếu bấm vào tag hoặc nút thì không swipe
-  if (
-    e.target.classList.contains("tag-badge") ||
-    e.target.closest(".actions")
-  ) {
-    startX = null;
-    return;
-  }
-
-  startX = e.touches[0].clientX;
-}); */
     div.addEventListener("touchstart", (e) => {
 
   if (
@@ -730,21 +535,7 @@ let hasMoved = false;
   hasMoved = false;
 });
     
-  /*  
-div.addEventListener("touchmove", (e) => {
-  currentX = e.touches[0].clientX;
-  const diff = currentX - startX;
 
-  div.style.transform = `translateX(${diff}px)`;
-
-  if (diff < -50) {
-    div.style.background = "#3f1d1d"; // đỏ chuẩn bị xoá
-  }
-  else if (diff > 50) {
-    div.style.background = "#0f2f1f"; // xanh chuẩn bị ghim
-  }
-});
-*/
     div.addEventListener("touchmove", (e) => {
 
   if(startX === null) return;
@@ -759,31 +550,7 @@ div.addEventListener("touchmove", (e) => {
 
 });
 
-/*
-div.addEventListener("touchend", async () => {
-  if(startX === null) return;
-  const diff = currentX - startX;
 
-  // xoá hint sau lần vuốt đầu
-  document.getElementById("swipeHint")?.remove();
-
-  if (diff < -100) {
-    if (navigator.vibrate) navigator.vibrate(30);
-
-    await deleteDoc(doc(db,"users",currentUID,"notes",note.id));
-  }
-
-  else if (diff > 100) {
-    if (navigator.vibrate) navigator.vibrate(30);
-
-    await updateDoc(doc(db,"users",currentUID,"notes",note.id),{
-      pinned: !note.pinned
-    });
-  }
-
-  div.style.transform = "translateX(0)";
-  div.style.background = "#1e1e1e";
-}); */
     div.addEventListener("touchend", async () => {
 
   if(startX === null) return;
@@ -824,11 +591,6 @@ div.addEventListener("touchend", async () => {
   });
 }
 
-/*
-window.deleteNote = async function(id){
-  await deleteDoc(doc(db,"users",currentUID,"notes",id));
-};
-*/
 window.deleteNote = async function(id){
   await updateDoc(
     doc(db,"users",currentUID,"notes",id),
@@ -877,6 +639,34 @@ document.getElementById("search").addEventListener("input",(e)=>{
 });
 
 </script>
+
+<div id="undoBar" style="
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#1e1e1e;
+  padding:12px 16px;
+  border-radius:12px;
+  display:none;
+  align-items:center;
+  gap:15px;
+  z-index:9999;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  font-family:monospace;
+">
+  <span>Đã xoá</span>
+  <button id="undoBtn" style="
+    background:#3b82f6;
+    border:none;
+    color:white;
+    padding:6px 12px;
+    border-radius:8px;
+    cursor:pointer;
+  ">
+    Hoàn tác
+  </button>
+</div>
 
 </body>
 </html>
