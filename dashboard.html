@@ -143,7 +143,7 @@ style="background:transparent;
        border:1px solid #ff4d4f;
        color:#ff4d4f;
        font-weight:600;">
-🗑 Thùng rác (<span id=trashCount>0</span>)
+🗑 Thùng rác
 </button>
 <div id="syncStatus" style="font-size:13px;color:#00ffcc;margin-bottom:10px;">
   🟢 Đã đồng bộ
@@ -390,7 +390,6 @@ onAuthStateChanged(auth, (user)=>{
   }else{
     currentUID = user.uid;
     listenNotes();
-    listenTrashCount();
   }
 });
 
@@ -424,14 +423,11 @@ function listenNotes(){
     (snapshot)=>{
 
       allNotes=[];
-
-      let trashCount = 0;
+      
       snapshot.forEach(docSnap=>{
   const data = docSnap.data();
 
-  if(data.deleted){
-    trashCount++;
-  }else{
+  if(!data.deleted){
     allNotes.push({
       id:docSnap.id,
       ...data
