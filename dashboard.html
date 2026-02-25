@@ -5,6 +5,16 @@
 <title>Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+@keyframes slideUp{
+  from{
+    opacity:0;
+    transform:translate(-50%,20px);
+  }
+  to{
+    opacity:1;
+    transform:translate(-50%,0);
+  }
+}
 body{
   margin:0;
   padding:20px;
@@ -565,16 +575,7 @@ let hasMoved = false;
   }
 
   document.getElementById("swipeHint")?.remove();
-/*
-  if (diff < -100) {
-    if (navigator.vibrate) navigator.vibrate(30);
-   // await deleteDoc(doc(db,"users",currentUID,"notes",note.id));
-    await updateDoc(
-  doc(db,"users",currentUID,"notes",note.id),
-  { deleted:true }
-);
-  }
-*/
+
   if (diff < -100) {
   if (navigator.vibrate) navigator.vibrate(30);
   triggerDelete(note.id);
@@ -595,14 +596,7 @@ let hasMoved = false;
     //Vuốt
   });
 }
-/*
-window.deleteNote = async function(id){
-  await updateDoc(
-    doc(db,"users",currentUID,"notes",id),
-    { deleted:true }
-  );
-};
-*/
+
 window.deleteNote = function(id){
   triggerDelete(id);
 };
@@ -656,30 +650,42 @@ document.getElementById("undoBtn").onclick = ()=>{
 
 <div id="undoBar" style="
   position:fixed;
-  bottom:20px;
+  bottom:24px;
   left:50%;
   transform:translateX(-50%);
-  background:#1e1e1e;
-  padding:12px 16px;
-  border-radius:12px;
+  background:#111827;
+  padding:10px 16px;
+  border-radius:999px;
   display:none;
   align-items:center;
-  gap:15px;
+  gap:14px;
   z-index:9999;
-  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  box-shadow:0 8px 30px rgba(0,0,0,0.5);
   font-family:monospace;
+  animation:slideUp 0.25s ease;
 ">
-  <span>Đã xoá</span>
+
+  <span style="
+    white-space:nowrap;
+    font-size:13px;
+    color:#e5e7eb;
+  ">
+    🗑 Đã xoá
+  </span>
+
   <button id="undoBtn" style="
     background:#3b82f6;
     border:none;
     color:white;
-    padding:6px 12px;
-    border-radius:8px;
+    padding:6px 14px;
+    border-radius:999px;
     cursor:pointer;
+    font-weight:600;
+    font-size:13px;
   ">
     Hoàn tác
   </button>
+
 </div>
 
 </body>
