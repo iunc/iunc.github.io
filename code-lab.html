@@ -221,6 +221,7 @@ body.hidden{
   <button onclick="taomoi()">🆕New</button>
   <button onclick="copyCode()">📋Copy</button>
   <button onclick="runCode()">Run▶</button>
+  <button onclick="exportProject()">📥Export</button>
   <button onclick="reloadPreview()">⟳Reload</button>
 </div>
   
@@ -331,6 +332,8 @@ const snippets = {
 |
 </body>
 </html>`,
+    "div.": `<div class="|"></div>`,
+    "div#": `<div id="|"></div>`,
     "h1": `<h1>|</h1>`,
     "h2": `<h2>|</h2>`,
     "h3": `<h3>|</h3>`,
@@ -364,8 +367,41 @@ align-items:center;|`,
 justify-content:center;
 align-items:center;
 height:100vh;|`,
-    "fs": `font-size:|`,
+    "fz": `font-size:|`,
     "fw": `font-weight:|`,
+    "ff": `font-family:|`,
+    "bg": `background:|`,
+    "bgc": `background-color:|`,
+    "bgr": `background-repeat:|`,
+    "bgp": `background-position:|`,
+    "bgs": `background-size:|`,
+    "d": `display:|`,
+    "di": `display:inline;|`,
+    "db": `display:block;|`,
+    "dib": `display:inline-block;|`,
+    "df": `display:flex;|`,
+    "dg": `display:grid;|`,
+    "dn": `display:none;|`,
+    "jc": `justify-content:|`,
+    "ai": `align-items:|`,
+    "ai-c": `align-items:center;|`,
+    "ai-fs": `align-items:flex-start;|`,
+    "ai-fe": `align-items:flex-end;|`,
+    "ai-b": `align-items: baseline;|`,
+    "ai-s": `align-items: stretch;|`,
+    "p": `padding:|`,
+    "pt": `padding-top:|`,
+    "pb": `padding-bottom:|`,
+    "pl": `padding-left:|`,
+    "pr": `padding-right:|`,
+    "bdrs": `border-radius:|`,
+    "m": `margin:|`,
+    "mt": `margin-top:|`,
+    "mb": `margin-bottom:|`,
+    "ml": `margin-left:|`,
+    "mr": `margin-right:|`,
+    
+    
   },
 
   js: {
@@ -426,25 +462,21 @@ if(autoPairs[lastChar]){
   
 // New tạo project mới
 const modal = document.getElementById("modal");
-
 function taomoi(){
   modal.style.display="flex";
 }
-
 function closeModal(){
   modal.style.display="none";
 }
-
 function confirmNew(){
-
   htmlEl.value="";
   cssEl.value="";
   jsEl.value="";
   consoleBox.innerHTML="";
   preview.srcdoc="";
-
   modal.style.display="none";
 }
+  
 //Copy code
 function copyCode(){
   const activeTab =
@@ -454,6 +486,40 @@ function copyCode(){
   navigator.clipboard.writeText(activeTab.value);
 }
 
+//Export
+function exportProject(){
+
+  const fullCode = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>My Project</title>
+<style>
+${cssEl.value}
+</style>
+</head>
+<body>
+${htmlEl.value}
+
+<script>
+${jsEl.value}
+</script>
+</body>
+</html>
+`; 
+
+  const blob = new Blob([fullCode], { type: "text/html" });
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "my-project.html";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
 </script>
 
 </body>
