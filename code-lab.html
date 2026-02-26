@@ -1,61 +1,72 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Code Lab</title>
 
 <style>
 body{
   margin:0;
-  font-family: sans-serif;
-  background:#111;
+  background:#0f0f0f;
   color:white;
+  font-family:monospace;
   display:flex;
   flex-direction:column;
   height:100vh;
 }
 
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px;
+  background:#111;
+  border-bottom:1px solid #222;
+}
+
+button{
+  background:#222;
+  border:none;
+  color:#38bdf8;
+  padding:6px 10px;
+  border-radius:8px;
+}
+
 .tabs{
   display:flex;
-  background:#1e1e1e;
 }
 
 .tabs button{
   flex:1;
-  padding:10px;
-  border:none;
-  background:#1e1e1e;
-  color:white;
-  font-weight:bold;
+  background:#111;
 }
 
 .tabs button.active{
-  background:#333;
+  background:#1f2937;
+}
+
+.editor{
+  height:40vh;
 }
 
 textarea{
   width:100%;
-  height:40vh;
-  background:#0d0d0d;
+  height:100%;
+  background:#0a0a0a;
   color:#00ff88;
   border:none;
-  padding:10px;
   resize:none;
+  padding:10px;
   font-family:monospace;
+  font-size:14px;
 }
 
-.controls{
-  display:flex;
-}
-
-.controls button{
+.preview{
   flex:1;
-  padding:12px;
-  border:none;
-  background:#00aa66;
-  color:white;
-  font-weight:bold;
+  display:flex;
+  flex-direction:column;
+  border-top:1px solid #222;
 }
 
 iframe{
@@ -63,10 +74,26 @@ iframe{
   border:none;
   background:white;
 }
+
+.console{
+  height:120px;
+  background:black;
+  color:#00ff88;
+  overflow:auto;
+  padding:6px;
+  font-size:12px;
+  border-top:1px solid #222;
+}
 </style>
 </head>
 
 <body>
+
+<div class="topbar">
+  <button onclick="location.href='dashboard.html'">← Hub</button>
+  <div>Code Lab</div>
+  <button onclick="runCode()">▶ Run</button>
+</div>
 
 <div class="tabs">
   <button onclick="switchTab('html')" id="btn-html" class="active">HTML</button>
@@ -74,26 +101,25 @@ iframe{
   <button onclick="switchTab('js')" id="btn-js">JS</button>
 </div>
 
-<textarea id="html"></textarea>
-<textarea id="css" style="display:none;"></textarea>
-<textarea id="js" style="display:none;"></textarea>
-
-<div class="controls">
-  <button onclick="runCode()">▶ Run Code</button>
+<div class="editor">
+  <textarea id="html"></textarea>
+  <textarea id="css" style="display:none"></textarea>
+  <textarea id="js" style="display:none"></textarea>
 </div>
 
-<iframe id="preview"></iframe>
+<div class="preview">
+  <iframe id="preview"></iframe>
+  <div class="console" id="console"></div>
+</div>
 
 <script>
+let autoRun;
+
 function switchTab(tab){
-  document.getElementById("html").style.display="none";
-  document.getElementById("css").style.display="none";
-  document.getElementById("js").style.display="none";
-
-  document.getElementById("btn-html").classList.remove("active");
-  document.getElementById("btn-css").classList.remove("active");
-  document.getElementById("btn-js").classList.remove("active");
-
+  ["html","css","js"].forEach(id=>{
+    document.getElementById(id).style.display="none";
+    document.getElementById("btn-"+id).classList.remove("active");
+  });
   document.getElementById(tab).style.display="block";
   document.getElementById("btn-"+tab).classList.add("active");
 }
@@ -111,14 +137,38 @@ function runCode(){
   <body>
   ${html}
   <script>
-  ${js}
+  const log = (...args)=>{
+    parent.postMessage({type:'log',data:args.join(" ")},'*')
+  }
+  console.log = log;
+  try{
+    ${js}
+  }catch(err){
+    log("Error: " + err.message)
+  }
   <\/script>
   </body>
   </html>
   `;
 
+  document.getElementById("console").innerHTML="";
   document.getElementById("preview").srcdoc = output;
 }
+
+window.addEventListener("message",(e)=>{
+  if(e.data.type==="log"){
+    const c = document.getElementById("console");
+    c.innerHTML += e.data.data + "<br>";
+    c.scrollTop = c.scrollHeight;
+  }
+});
+
+["html","css","js"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",()=>{
+    clearTimeout(autoRun);
+    autoRun = setTimeout(runCode,1000);
+  });
+});
 </script>
 
 </body>
