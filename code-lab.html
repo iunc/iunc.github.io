@@ -133,6 +133,58 @@ iframe{
 body.hidden{
   display:none;
 }
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.modal-box{
+  background:#0f172a;
+  padding:20px;
+  width:85%;
+  max-width:320px;
+  border-radius:14px;
+  border:1px solid #1f2937;
+  box-shadow:0 0 20px rgba(56,189,248,0.3);
+  text-align:center;
+}
+
+.modal-box h3{
+  margin:0 0 10px;
+  color:#38bdf8;
+}
+
+.modal-box p{
+  font-size:14px;
+  color:#94a3b8;
+}
+
+.modal-actions{
+  margin-top:15px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.modal-actions button{
+  flex:1;
+  margin:0 5px;
+  padding:8px;
+  border:none;
+  border-radius:8px;
+  background:#1f2937;
+  color:#38bdf8;
+  font-weight:bold;
+}
+
+.modal-actions button.danger{
+  background:#0ea5e9;
+  color:black;
+}
 </style>
 </head>
 
@@ -174,9 +226,18 @@ body.hidden{
   
 <div class="preview">
   <iframe id="preview"></iframe>
-  <div class="console" id="console"></div>
+  <!--<div class="console" id="console"></div> -->
 </div>
-
+<div id="modal" class="modal">
+  <div class="modal-box">
+    <h3>Tạo project mới?</h3>
+    <p>Code hiện tại sẽ bị xoá.</p>
+    <div class="modal-actions">
+      <button onclick="closeModal()">Huỷ</button>
+      <button class="danger" onclick="confirmNew()">Tạo mới</button>
+    </div>
+  </div>
+</div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -364,15 +425,21 @@ if(autoPairs[lastChar]){
   
 // New tạo project mới
 function taomoi(){
-  if(!confirm("Tạo project mới? Code hiện tại sẽ bị xoá.")){
-    return;
-  }
-  htmlEl.value = "";
-  cssEl.value = "";
-  jsEl.value = "";
-  consoleBox.innerHTML = "";
-  preview.srcdoc = "";
+  document.getElementById("modal").style.display="flex";
 }
+
+function closeModal(){
+  document.getElementById("modal").style.display="none";
+}
+
+function confirmNew(){
+  htmlEl.value="";
+  cssEl.value="";
+  jsEl.value="";
+  consoleBox.innerHTML="";
+  preview.srcdoc="";
+  closeModal();
+  }
 
 //Copy code
 function copyCode(){
