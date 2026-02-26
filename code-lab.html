@@ -243,8 +243,10 @@ body.hidden{
 <div class="control-bar">
   <button onclick="taomoi()">🆕New</button>
   <button onclick="copyCode()">📋Copy</button>
-  <button onclick="runCode()">Run▶</button>
+  <button onclick="runCode()">▶Run</button>
   <button onclick="exportProject()">📥Export</button>
+  <button onclick="importProject()">📂Import</button>
+  <input type="file" id="importFile" accept=".html" style="display:none">
   <button onclick="reloadPreview()">⟳Reload</button>
 </div>
   
@@ -538,11 +540,51 @@ ${jsEl.value}
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = "my-project.html";
+  a.download = "iunc.html";
   a.click();
 
   URL.revokeObjectURL(url);
 }
+
+//Import
+function importProject(){
+  document.getElementById("importFile").click();
+}
+
+document.getElementById("importFile").addEventListener("change", function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(event){
+    const content = event.target.result;
+
+    // Tách CSS
+    const cssMatch = content.match(/<style>([\s\S]*?)<\/style>/);
+    const css = cssMatch ? cssMatch[1].trim() : "";
+
+    // Tách JS
+    const jsMatch = content.match(/<script>([\s\S]*?)<\/script>/);
+    const js = jsMatch ? jsMatch[1].trim() : "";
+
+    // Tách HTML (loại bỏ style + script)
+    let html = content
+      .replace(/<!DOCTYPE[\s\S]*?<body>/i, "")
+      .replace(/<\/body>[\s\S]*/i, "")
+      .replace(/<style>[\s\S]*?<\/style>/i, "")
+      .replace(/<script>[\s\S]*?<\/script>/i, "")
+      .trim();
+
+    htmlEl.value = html;
+    cssEl.value = css;
+    jsEl.value = js;
+
+    runCode();
+  };
+
+  reader.readAsText(file);
+});
 </script>
 
 </body>
