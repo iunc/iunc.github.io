@@ -6,67 +6,78 @@
 <title>Code Lab</title>
 
 <style>
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  background:#0f0f0f;
+  background:#0b0f14;
   color:white;
   font-family:monospace;
+  height:100vh;
   display:flex;
   flex-direction:column;
-  height:100vh;
+  overflow:hidden;
 }
 
 .topbar{
+  height:50px;
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  padding:10px;
-  background:#111;
-  border-bottom:1px solid #222;
+  justify-content:space-between;
+  padding:0 15px;
+  background:#111827;
+  border-bottom:1px solid #1f2937;
 }
 
-button{
-  background:#222;
+.topbar button{
+  background:#1f2937;
   border:none;
   color:#38bdf8;
-  padding:6px 10px;
+  padding:6px 12px;
   border-radius:8px;
 }
 
 .tabs{
   display:flex;
+  height:40px;
+  background:#0f172a;
 }
 
 .tabs button{
   flex:1;
-  background:#111;
+  border:none;
+  background:none;
+  color:#94a3b8;
+  font-weight:bold;
 }
 
 .tabs button.active{
-  background:#1f2937;
+  color:#38bdf8;
+  border-bottom:2px solid #38bdf8;
 }
 
 .editor{
-  height:40vh;
+  height:45%;
+  background:#0b0f14;
 }
 
 textarea{
   width:100%;
   height:100%;
-  background:#0a0a0a;
-  color:#00ff88;
   border:none;
   resize:none;
-  padding:10px;
-  font-family:monospace;
+  padding:12px;
+  background:#0b0f14;
+  color:#00ff88;
   font-size:14px;
+  overflow:auto;
 }
 
 .preview{
-  flex:1;
+  height:55%;
   display:flex;
   flex-direction:column;
-  border-top:1px solid #222;
+  border-top:1px solid #1f2937;
 }
 
 iframe{
@@ -76,13 +87,13 @@ iframe{
 }
 
 .console{
-  height:120px;
-  background:black;
+  height:90px;
+  background:#000;
   color:#00ff88;
+  padding:8px;
   overflow:auto;
-  padding:6px;
   font-size:12px;
-  border-top:1px solid #222;
+  border-top:1px solid #1f2937;
 }
 </style>
 </head>
@@ -92,13 +103,13 @@ iframe{
 <div class="topbar">
   <button onclick="location.href='dashboard.html'">← Hub</button>
   <div>Code Lab</div>
-  <button onclick="runCode()">▶ Run</button>
+  <button onclick="runCode()">Run ▶</button>
 </div>
 
 <div class="tabs">
-  <button onclick="switchTab('html')" id="btn-html" class="active">HTML</button>
-  <button onclick="switchTab('css')" id="btn-css">CSS</button>
-  <button onclick="switchTab('js')" id="btn-js">JS</button>
+  <button id="btn-html" class="active" onclick="switchTab('html')">HTML</button>
+  <button id="btn-css" onclick="switchTab('css')">CSS</button>
+  <button id="btn-js" onclick="switchTab('js')">JS</button>
 </div>
 
 <div class="editor">
@@ -125,48 +136,45 @@ function switchTab(tab){
 }
 
 function runCode(){
-  const html = document.getElementById("html").value;
-  const css = document.getElementById("css").value;
-  const js = document.getElementById("js").value;
+  const html = htmlEl.value;
+  const css = cssEl.value;
+  const js = jsEl.value;
 
   const output = `
   <html>
-  <head>
-  <style>${css}</style>
-  </head>
+  <head><style>${css}</style></head>
   <body>
   ${html}
   <script>
-  const log = (...args)=>{
-    parent.postMessage({type:'log',data:args.join(" ")},'*')
-  }
+  const log = (...a)=>parent.postMessage({type:'log',data:a.join(" ")},'*');
   console.log = log;
-  try{
-    ${js}
-  }catch(err){
-    log("Error: " + err.message)
-  }
+  try{ ${js} }catch(e){ log("Error: "+e.message) }
   <\/script>
   </body>
   </html>
   `;
 
-  document.getElementById("console").innerHTML="";
-  document.getElementById("preview").srcdoc = output;
+  consoleBox.innerHTML="";
+  preview.srcdoc = output;
 }
 
 window.addEventListener("message",(e)=>{
   if(e.data.type==="log"){
-    const c = document.getElementById("console");
-    c.innerHTML += e.data.data + "<br>";
-    c.scrollTop = c.scrollHeight;
+    consoleBox.innerHTML += e.data.data+"<br>";
+    consoleBox.scrollTop = consoleBox.scrollHeight;
   }
 });
 
-["html","css","js"].forEach(id=>{
-  document.getElementById(id).addEventListener("input",()=>{
+const htmlEl = document.getElementById("html");
+const cssEl = document.getElementById("css");
+const jsEl = document.getElementById("js");
+const preview = document.getElementById("preview");
+const consoleBox = document.getElementById("console");
+
+[htmlEl,cssEl,jsEl].forEach(el=>{
+  el.addEventListener("input",()=>{
     clearTimeout(autoRun);
-    autoRun = setTimeout(runCode,1000);
+    autoRun=setTimeout(runCode,800);
   });
 });
 </script>
