@@ -377,7 +377,8 @@ height:100vh;|`,
 };
   
 [htmlEl, cssEl, jsEl].forEach(el=>{
-  el.addEventListener("input", function(){
+  el.addEventListener("input", function(event){
+    if(event.inputType === "deleteContentBackward") return;
     const tab =
       el === htmlEl ? "html" :
       el === cssEl ? "css" : "js";
