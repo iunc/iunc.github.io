@@ -221,41 +221,6 @@ const consoleBox = document.getElementById("console");
 });
 
 //Gợi ý code
-[htmlEl, cssEl, jsEl].forEach(el=>{
-  el.addEventListener("keydown",(e)=>{
-    if(e.key === " "){
-      const tab =
-        el === htmlEl ? "html" :
-        el === cssEl ? "css" : "js";
-      const words = el.value.split(/\s+/);
-      const lastWord = words[words.length - 1];
-      if(snippets[tab][lastWord]){
-        e.preventDefault();
-        words.pop();
-        el.value = words.join(" ") + 
-                   (words.length ? " " : "") +
-                   snippets[tab][lastWord] + " ";
-        runCode();
-      }
-    }
-  });
-});
-  
-// New tạo project mới
-function taomoi(){
-  location.reload();
-}
-
-//Copy code
-function copyCode(){
-  const activeTab =
-    htmlEl.style.display !== "none" ? htmlEl :
-    cssEl.style.display !== "none" ? cssEl :
-    jsEl;
-  navigator.clipboard.writeText(activeTab.value);
-}
-
-//Gợi ý 
 const snippets = {
   html: {
     "!html": `<!DOCTYPE html>
@@ -288,6 +253,42 @@ height:100vh;`
 }`
   }
 };
+  
+[htmlEl, cssEl, jsEl].forEach(el=>{
+  el.addEventListener("keydown",(e)=>{
+    if(e.key === " "){
+      const tab =
+        el === htmlEl ? "html" :
+        el === cssEl ? "css" : "js";
+      const words = el.value.split(/\s+/);
+      const lastWord = words[words.length - 1];
+     // if(snippets[tab][lastWord]){
+      if(snippets[tab] && snippets[tab][lastWord]){
+        e.preventDefault();
+        words.pop();
+        el.value = words.join(" ") + 
+                   (words.length ? " " : "") +
+                   snippets[tab][lastWord] + " ";
+        runCode();
+      }
+    }
+  });
+});
+  
+// New tạo project mới
+function taomoi(){
+  location.reload();
+}
+
+//Copy code
+function copyCode(){
+  const activeTab =
+    htmlEl.style.display !== "none" ? htmlEl :
+    cssEl.style.display !== "none" ? cssEl :
+    jsEl;
+  navigator.clipboard.writeText(activeTab.value);
+}
+
 </script>
 
 </body>
