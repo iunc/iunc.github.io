@@ -276,6 +276,11 @@ const snippets = {
     "h4": `<h4></h4>`,
     "h5": `<h5></h5>`,
     "h6": `<h6></h6>`,
+    "(": `()`,
+    "[": `[]`,
+    "{": `{}`,
+    "\"": `""`,
+    "'": `'`,
     "p": `<p></p>`,
     "div": `<div></div>`,
     "btn": `<button></button>`,
@@ -323,29 +328,6 @@ height:100vh;`,
   });
 });
 
-[htmlEl, cssEl, jsEl].forEach(el=>{
-  el.addEventListener("keydown",(e)=>{  
-    const pairs = {
-      "(": ")",
-      "{": "}",
-      "[": "]",
-      "\"": "\"",
-      "'": "'"
-    };
-    if(pairs[e.key]){
-      e.preventDefault();
-      const start = el.selectionStart;
-      const end = el.selectionEnd;
-      const value = el.value;
-      el.value =
-        value.substring(0,start) +
-        e.key +
-        pairs[e.key] +
-        value.substring(end);
-      el.selectionStart = el.selectionEnd = start + 1;
-    }
-  });
-});
   
 // New tạo project mới
 function taomoi(){
