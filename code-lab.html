@@ -137,7 +137,7 @@ iframe{
 
 <div class="topbar">
   <button onclick="location.href='dashboard.html'" style="font-weight: bold"> ◀ Back</button>
-  <div class="title" onclick="reloadPage()">CODE LAB</div>
+  <div class="title" >CODE LAB</div>
   <button style="font-weight: bold">Go ▶</button>
 </div>
 
@@ -154,7 +154,7 @@ iframe{
 </div>
 
 <div class="control-bar">
-  <button onclick="newProject()">🆕New</button>
+  <button onclick="taomoi()">🆕New</button>
   <button onclick="copyCode()">📋Copy</button>
   <button onclick="runCode()">Run▶</button>
   <button onclick="reloadPreview()">⟳Reload</button>
@@ -219,8 +219,9 @@ const consoleBox = document.getElementById("console");
     autoRun=setTimeout(runCode,800);
   });
 });
-  
-function reloadPage(){
+
+// New tạo project mới
+function taomoi(){
   location.reload();
 }
 
