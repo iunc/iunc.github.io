@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CODE LAB</title>
+<title>Code lab</title>
 
 <style>
 *{box-sizing:border-box}
@@ -17,10 +17,6 @@ body{
   display:flex;
   flex-direction:column;
   overflow:hidden;
-}
-
-title{
-  font-weight: bold;
 }
   
 .topbar{
@@ -99,6 +95,16 @@ iframe{
   font-size:12px;
   border-top:1px solid #1f2937;
 }
+  .title{
+  cursor:pointer;
+  font-weight:bold;
+  letter-spacing:1px;
+  color:#38bdf8;
+}
+
+.title:active{
+  opacity:0.6;
+}
 </style>
 </head>
 
@@ -106,7 +112,7 @@ iframe{
 
 <div class="topbar">
   <button onclick="location.href='dashboard.html'">← Hub</button>
-  <div>Code Lab</div>
+  <div class="title" onclick="reloadPage()">CODE LAB</div>
   <button onclick="runCode()">Run ▶</button>
 </div>
 
@@ -181,6 +187,10 @@ const consoleBox = document.getElementById("console");
     autoRun=setTimeout(runCode,800);
   });
 });
+  
+function reloadPage(){
+  location.reload();
+}
 </script>
 
 </body>
