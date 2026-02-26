@@ -424,23 +424,26 @@ if(autoPairs[lastChar]){
 
   
 // New tạo project mới
+const modal = document.getElementById("modal");
+
 function taomoi(){
-  document.getElementById("modal").style.display="flex";
+  modal.style.display="flex";
 }
 
 function closeModal(){
-  document.getElementById("modal").style.display="none";
+  modal.style.display="none";
 }
 
 function confirmNew(){
+
   htmlEl.value="";
   cssEl.value="";
   jsEl.value="";
   consoleBox.innerHTML="";
   preview.srcdoc="";
-  closeModal();
-  }
 
+  modal.style.display="none";
+}
 //Copy code
 function copyCode(){
   const activeTab =
