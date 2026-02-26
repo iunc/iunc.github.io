@@ -364,7 +364,14 @@ if(autoPairs[lastChar]){
   
 // New tạo project mới
 function taomoi(){
-  location.reload();
+  if(!confirm("Tạo project mới? Code hiện tại sẽ bị xoá.")){
+    return;
+  }
+  htmlEl.value = "";
+  cssEl.value = "";
+  jsEl.value = "";
+  consoleBox.innerHTML = "";
+  preview.srcdoc = "";
 }
 
 //Copy code
