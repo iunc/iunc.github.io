@@ -90,7 +90,7 @@ iframe{
 }
 
 .console{
-  height:110px;
+  height:80px;
   background:#05080c;
   color:#22c55e;
   padding:10px;
@@ -581,6 +581,7 @@ document.getElementById("importFile").addEventListener("change", function(e){
     jsEl.value = js;
 
     runCode();
+    e.target.value = "";
   };
 
   reader.readAsText(file);
