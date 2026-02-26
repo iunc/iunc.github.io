@@ -260,7 +260,10 @@ const snippets = {
 <body>
 
 </body>
-</html>`
+</html>`,
+    "div": `<div></div>`,
+    "btn": `<button></button>`,
+    "span": `<span></span>
   },
 
   css: {
@@ -271,7 +274,9 @@ align-items:center;`,
     "center": `display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;`
+height:100vh;`,
+    "fs": `font-size:`,
+    "fw": `font-weight:`
   },
 
   js: {
@@ -298,6 +303,30 @@ height:100vh;`
       const after = el.value.substring(cursor);
       el.value = before + snippet + " " + after;
       runCode();
+    }
+  });
+});
+
+[htmlEl, cssEl, jsEl].forEach(el=>{
+  el.addEventListener("keydown",(e)=>{  
+    const pairs = {
+      "(": ")",
+      "{": "}",
+      "[": "]",
+      "\"": "\"",
+      "'": "'"
+    };
+    if(pairs[e.key]){
+      e.preventDefault();
+      const start = el.selectionStart;
+      const end = el.selectionEnd;
+      const value = el.value;
+      el.value =
+        value.substring(0,start) +
+        e.key +
+        pairs[e.key] +
+        value.substring(end);
+      el.selectionStart = el.selectionEnd = start + 1;
     }
   });
 });
