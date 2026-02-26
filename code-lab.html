@@ -255,20 +255,18 @@ height:100vh;`
 };
   
 [htmlEl, cssEl, jsEl].forEach(el=>{
-  el.addEventListener("keydown", function(e){
-    if(e.key !== " ") return;
+  el.addEventListener("input", function(){
     const tab =
       el === htmlEl ? "html" :
       el === cssEl ? "css" : "js";
     const cursor = el.selectionStart;
     const textBefore = el.value.substring(0, cursor);
-    const match = textBefore.match(/(\S+)$/);
+    const match = textBefore.match(/(\S+)\s$/);
     if(!match) return;
     const lastWord = match[1];
     if(snippets[tab] && snippets[tab][lastWord]){
-      e.preventDefault();
       const snippet = snippets[tab][lastWord];
-      const before = textBefore.slice(0, -lastWord.length);
+      const before = textBefore.slice(0, -(lastWord.length + 1));
       const after = el.value.substring(cursor);
       el.value = before + snippet + " " + after;
       runCode();
