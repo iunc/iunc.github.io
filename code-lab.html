@@ -499,6 +499,7 @@ function confirmNew(){
   jsEl.value="";
   consoleBox.innerHTML="";
   preview.srcdoc="";
+  document.getElementById("importFile").value=""; 
   modal.style.display="none";
 }
   
@@ -548,7 +549,9 @@ ${jsEl.value}
 
 //Import
 function importProject(){
-  document.getElementById("importFile").click();
+  const input = document.getElementById("importFile");
+  input.value = "";     // reset trước khi mở
+  input.click();
 }
 
 document.getElementById("importFile").addEventListener("change", function(e){
