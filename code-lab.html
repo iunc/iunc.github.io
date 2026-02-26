@@ -57,7 +57,7 @@ body{
 }
 
 .editor{
-  height:45%;
+  height:42%;
   background:#0b0f14;
 }
 
@@ -72,9 +72,9 @@ textarea{
   font-size:14px;
   overflow:auto;
 }
-
+  
 .preview{
-  height:55%;
+  flex:1;
   display:flex;
   flex-direction:column;
   border-top:1px solid #1f2937;
@@ -106,6 +106,30 @@ iframe{
 .title:active{
   opacity:0.6;
 }
+  
+.control-bar{
+  height:45px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  background:#111827;
+  border-top:1px solid #1f2937;
+  border-bottom:1px solid #1f2937;
+}
+
+.control-bar button{
+  background:none;
+  border:none;
+  color:#38bdf8;
+  font-size:18px;
+  cursor:pointer;
+  transition:0.15s;
+}
+
+.control-bar button:active{
+  transform:scale(0.9);
+  opacity:0.6;
+}
 </style>
 </head>
 
@@ -114,7 +138,7 @@ iframe{
 <div class="topbar">
   <button onclick="location.href='dashboard.html'" style="font-weight: bold"> ◀ Back</button>
   <div class="title" onclick="reloadPage()">CODE LAB</div>
-  <button onclick="runCode()" style="font-weight: bold">Run ▶</button>
+  <!--<button onclick="runCode()" style="font-weight: bold">Run ▶</button>-->
 </div>
 
 <div class="tabs">
@@ -129,6 +153,13 @@ iframe{
   <textarea id="js" style="display:none"></textarea>
 </div>
 
+<div class="control-bar">
+  <button onclick="newProject()">🆕New</button>
+  <button onclick="copyCode()">📋Copy</button>
+  <button onclick="runCode()">Run▶</button>
+  <button onclick="reloadPreview()">⟳Reload</button>
+</div>
+  
 <div class="preview">
   <iframe id="preview"></iframe>
   <div class="console" id="console"></div>
@@ -191,6 +222,14 @@ const consoleBox = document.getElementById("console");
   
 function reloadPage(){
   location.reload();
+}
+
+function copyCode(){
+  const activeTab =
+    htmlEl.style.display !== "none" ? htmlEl :
+    cssEl.style.display !== "none" ? cssEl :
+    jsEl;
+  navigator.clipboard.writeText(activeTab.value);
 }
 </script>
 
