@@ -276,11 +276,18 @@ const snippets = {
     "h4": `<h4>|</h4>`,
     "h5": `<h5>|</h5>`,
     "h6": `<h6>|</h6>`,
-    "(": `(|)`,
-    "[": `[|]`,
-    "{": `{|}`,
-    "\"": `"|"`,
-    "'": `'|'`,
+    "h1.": `<h1 class="|"></h1>`,
+    "h2.": `<h2 class="|"></h2>`,
+    "h3.": `<h3 class="|"></h3>`,
+    "h4.": `<h4 class="|"></h4>`,
+    "h5.": `<h5 class="|"></h5>`,
+    "h6.": `<h6 class="|"></h6>`,
+    "h1#": `<h1 id="|"></h1>`,
+    "h2#": `<h2 id="|"></h2>`,
+    "h3#": `<h3 id="|"></h3>`,
+    "h4#": `<h4 id="|"></h4>`,
+    "h5#": `<h5 id="|"></h5>`,
+    "h6#": `<h6 id="|"></h6>`,
     "p": `<p>|</p>`,
     "div": `<div>|</div>`,
     "btn": `<button>|</button>`,
@@ -298,11 +305,6 @@ align-items:center;
 height:100vh;|`,
     "fs": `font-size:|`,
     "fw": `font-weight:|`,
-    "(": `(|)`,
-    "[": `[|]`,
-    "{": `{|}`,
-    "\"": `"|"`,
-    "'": `'|'`,
   },
 
   js: {
@@ -310,11 +312,6 @@ height:100vh;|`,
     "func": `function myFunction(){
   |
 }`,
-    "(": `(|)`,
-    "[": `[|]`,
-    "{": `{|}`,
-    "\"": `"|"`,
-    "'": `'|'`,
   }
 };
   
@@ -325,6 +322,26 @@ height:100vh;|`,
       el === cssEl ? "css" : "js";
     const cursor = el.selectionStart;
     const textBefore = el.value.substring(0, cursor);
+    // ===== AUTO PAIR =====
+const lastChar = textBefore.slice(-1);
+const autoPairs = {
+  "{": "{|}",
+  "(": "(|)",
+  "[": "[|]",
+  "\"": "\"|\"",
+  "'": "'|'"
+};
+if(autoPairs[lastChar]){
+  let snippet = autoPairs[lastChar];
+  const before = textBefore.slice(0,-1);
+  const after = el.value.substring(cursor);
+  const cursorMarker = snippet.indexOf("|");
+  snippet = snippet.replace("|","");
+  el.value = before + snippet + after;
+  el.selectionStart = el.selectionEnd =
+    before.length + cursorMarker;
+  return; // rất quan trọng
+      }
     const match = textBefore.match(/(\S+)\s$/);
     if(!match) return;
     const lastWord = match[1];
