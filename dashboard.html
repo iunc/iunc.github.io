@@ -91,6 +91,37 @@ body{
 <div class="footer">
 IUNC v2 – Góc sân nho nhỏ
 </div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+  onSnapshot,
+  serverTimestamp,
+  query,
+  orderBy,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
+  authDomain: "iunc-login.firebaseapp.com",
+  projectId: "iunc-login",
+  storageBucket: "iunc-login.firebasestorage.app",
+  messagingSenderId: "359473829379",
+  appId: "1:359473829379:web:b1102278155f598e316036"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+
+</script>
 </body>
 </html>
