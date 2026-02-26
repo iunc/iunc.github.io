@@ -267,54 +267,54 @@ const snippets = {
   <title>Document</title>
 </head>
 <body>
-
+|
 </body>
 </html>`,
-    "h1": `<h1></h1>`,
-    "h2": `<h2></h2>`,
-    "h3": `<h3></h3>`,
-    "h4": `<h4></h4>`,
-    "h5": `<h5></h5>`,
-    "h6": `<h6></h6>`,
-    "(": `()`,
-    "[": `[]`,
-    "{": `{}`,
-    "\"": `""`,
-    "'": `''`,
-    "p": `<p></p>`,
-    "div": `<div></div>`,
-    "btn": `<button></button>`,
-    "span": `<span></span>`,
+    "h1": `<h1>|</h1>`,
+    "h2": `<h2>|</h2>`,
+    "h3": `<h3>|</h3>`,
+    "h4": `<h4>|</h4>`,
+    "h5": `<h5>|</h5>`,
+    "h6": `<h6>|</h6>`,
+    "(": `(|)`,
+    "[": `[|]`,
+    "{": `{|}`,
+    "\"": `"|"`,
+    "'": `'|'`,
+    "p": `<p>|</p>`,
+    "div": `<div>|</div>`,
+    "btn": `<button>|</button>`,
+    "span": `<span>|</span>`,
   },
 
   css: {
     "flex": `display:flex;
 justify-content:center;
-align-items:center;`,
+align-items:center;|`,
     
     "center": `display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;`,
-    "fs": `font-size:`,
-    "fw": `font-weight:`,
-    "(": `()`,
-    "[": `[]`,
-    "{": `{}`,
-    "\"": `""`,
-    "'": `''`,
+height:100vh;|`,
+    "fs": `font-size:|`,
+    "fw": `font-weight:|`,
+    "(": `(|)`,
+    "[": `[|]`,
+    "{": `{|}`,
+    "\"": `"|"`,
+    "'": `'|'`,
   },
 
   js: {
-    "log": `console.log();`,
+    "log": `console.log(|);`,
     "func": `function myFunction(){
-  
+  |
 }`,
-    "(": `()`,
-    "[": `[]`,
-    "{": `{}`,
-    "\"": `""`,
-    "'": `''`,
+    "(": `(|)`,
+    "[": `[|]`,
+    "{": `{|}`,
+    "\"": `"|"`,
+    "'": `'|'`,
   }
 };
   
@@ -329,11 +329,17 @@ height:100vh;`,
     if(!match) return;
     const lastWord = match[1];
     if(snippets[tab] && snippets[tab][lastWord]){
-      const snippet = snippets[tab][lastWord];
-      const before = textBefore.slice(0, -(lastWord.length + 1));
-      const after = el.value.substring(cursor);
-      el.value = before + snippet + " " + after;
-      runCode();
+    let snippet = snippets[tab][lastWord];
+    const before = textBefore.slice(0, -(lastWord.length + 1));
+    const after = el.value.substring(cursor);
+    const cursorMarker = snippet.indexOf("|");
+    snippet = snippet.replace("|","");
+    el.value = before + snippet + after;
+    if(cursorMarker !== -1){
+    const newPos = before.length + cursorMarker;
+    el.selectionStart = el.selectionEnd = newPos;
+  }
+  runCode();
     }
   });
 });
