@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IUNC Hub</title>
+
+<style>
+body{
+  margin:0;
+  padding:20px;
+  background:#0f0f0f;
+  color:white;
+  font-family:sans-serif;
+}
+
+.title{
+  font-family:monospace;
+  font-size:20px;
+  letter-spacing:3px;
+  margin-bottom:25px;
+  color:#38bdf8;
+}
+
+.app-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
+}
+
+.app-item{
+  background:#1a1a1a;
+  border-radius:20px;
+  padding:30px 10px;
+  text-align:center;
+  font-size:32px;
+  cursor:pointer;
+  transition:0.2s;
+  border:1px solid #222;
+}
+
+.app-item span{
+  display:block;
+  font-size:13px;
+  margin-top:10px;
+  font-family:monospace;
+  color:#38bdf8;
+}
+
+.app-item:active{
+  transform:scale(0.95);
+}
+
+.footer{
+  margin-top:40px;
+  font-size:11px;
+  opacity:0.5;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="title">IUNC</div>
+
+<div class="app-grid">
+
+  <div class="app-item" onclick="location.href='notes.html'">
+    📝
+    <span>Notes</span>
+  </div>
+
+  <div class="app-item" onclick="location.href='code-lab.html'">
+    💻
+    <span>Code Lab</span>
+  </div>
+
+  <div class="app-item" onclick="location.href='trash.html'">
+    🗑
+    <span>Trash</span>
+  </div>
+
+  <div class="app-item" onclick="location.href='apps.html'">
+    ➕
+    <span>More Apps</span>
+  </div>
+
+</div>
+
+<div class="footer">
+IUNC v2 – Personal App Hub
+</div>
+
+</body>
+</html>
