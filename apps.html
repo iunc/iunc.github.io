@@ -74,6 +74,31 @@ body{
   </div>
 
 </div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
+  authDomain: "iunc-login.firebaseapp.com",
+  projectId: "iunc-login",
+  storageBucket: "iunc-login.firebasestorage.app",
+  messagingSenderId: "359473829379",
+  appId: "1:359473829379:web:b1102278155f598e316036"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    document.body.style.display = "block";
+  }
+});
+
+</script>
 
 </body>
 </html>
