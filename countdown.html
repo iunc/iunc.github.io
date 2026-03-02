@@ -13,23 +13,23 @@
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:#0b1220;
+  background:linear-gradient(160deg,#0b1220,#0f1c3f);
   color:white;
   display:flex;
   flex-direction:column;
   height:100vh;
 }
 
-/* Top bar */
+/* Header */
 .header{
   padding:20px;
+  text-align:center;
   font-size:20px;
   font-weight:600;
-  text-align:center;
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  border-bottom:1px solid rgba(255,255,255,0.08);
 }
 
-/* Main area */
+/* Main */
 .main{
   flex:1;
   display:flex;
@@ -39,17 +39,37 @@ body{
   padding:20px;
 }
 
-/* Big numbers */
-#result{
-  font-size:36px;
-  font-weight:700;
-  letter-spacing:2px;
+/* Countdown grid */
+.countdown{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:15px;
+  width:100%;
+  max-width:400px;
   margin-bottom:40px;
+}
+
+.time-box{
+  background:rgba(255,255,255,0.05);
+  border-radius:16px;
+  padding:20px;
   text-align:center;
+  backdrop-filter:blur(6px);
+}
+
+.time-number{
+  font-size:32px;
+  font-weight:700;
   color:#38bdf8;
 }
 
-/* Input area */
+.time-label{
+  font-size:14px;
+  opacity:0.7;
+  margin-top:5px;
+}
+
+/* Controls */
 .controls{
   width:100%;
   max-width:400px;
@@ -81,21 +101,37 @@ button{
 
 button:active{
   transform:scale(0.97);
-  background:#2563eb;
 }
-
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  Countdown
-</div>
+<div class="header">Countdown</div>
 
 <div class="main">
 
-  <div id="result">Select a date</div>
+  <div class="countdown">
+    <div class="time-box">
+      <div class="time-number" id="days">0</div>
+      <div class="time-label">Days</div>
+    </div>
+
+    <div class="time-box">
+      <div class="time-number" id="hours">0</div>
+      <div class="time-label">Hours</div>
+    </div>
+
+    <div class="time-box">
+      <div class="time-number" id="minutes">0</div>
+      <div class="time-label">Minutes</div>
+    </div>
+
+    <div class="time-box">
+      <div class="time-number" id="seconds">0</div>
+      <div class="time-label">Seconds</div>
+    </div>
+  </div>
 
   <div class="controls">
     <input type="date" id="dateInput">
@@ -106,29 +142,37 @@ button:active{
 
 <script>
 const input = document.getElementById("dateInput");
-const result = document.getElementById("result");
+
+const daysEl = document.getElementById("days");
+const hoursEl = document.getElementById("hours");
+const minutesEl = document.getElementById("minutes");
+const secondsEl = document.getElementById("seconds");
 
 let interval;
 
-function startCD() {
+function startCD(){
 
   const target = new Date(input.value);
 
-  if (!input.value) {
-    result.innerText = "Please select a date";
+  if(!input.value){
+    alert("Select a date");
     return;
   }
 
   clearInterval(interval);
 
-  interval = setInterval(function () {
+  interval = setInterval(function(){
 
     const now = new Date();
     const diff = target - now;
 
-    if (diff <= 0) {
-      result.innerText = "You are home! 🎉";
+    if(diff <= 0){
       clearInterval(interval);
+      daysEl.innerText = 0;
+      hoursEl.innerText = 0;
+      minutesEl.innerText = 0;
+      secondsEl.innerText = 0;
+      alert("You are home! 🎉");
       return;
     }
 
@@ -137,13 +181,12 @@ function startCD() {
     const minutes = Math.floor((diff % 3600000) / 60000);
     const seconds = Math.floor((diff % 60000) / 1000);
 
-    result.innerText =
-      days + "d " +
-      hours + "h " +
-      minutes + "m " +
-      seconds + "s";
+    daysEl.innerText = days;
+    hoursEl.innerText = hours;
+    minutesEl.innerText = minutes;
+    secondsEl.innerText = seconds;
 
-  }, 1000);
+  },1000);
 }
 </script>
 
