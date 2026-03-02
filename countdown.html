@@ -187,16 +187,15 @@ const secondsEl = document.getElementById("seconds");
 let interval;
 
 function startCD(){
-
-  const target = new Date(input.value);
-
   if(!input.value){
-    alert("Chọn ngày nè!");
+    alert("Chọn ngày tháng đi bạn ơi!");
     return;
   }
 
+  const [year,month,day] = input.value.split("-");
+  const target = new Date(Number(year),Number(month)-1,Number(day),0,0,0);
+  
   clearInterval(interval);
-
   interval = setInterval(function(){
 
     const now = new Date();
@@ -208,7 +207,7 @@ function startCD(){
       hoursEl.innerText = 0;
       minutesEl.innerText = 0;
       secondsEl.innerText = 0;
-      alert("Bạn đang tận hưởng rồi hè! 🎉");
+      alert("Ngày đó đã tới rồi bạn ơi! 🎉");
       return;
     }
 
