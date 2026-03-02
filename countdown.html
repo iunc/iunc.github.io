@@ -107,35 +107,35 @@ button:active{
 
 <body>
 
-<div class="header">Countdown</div>
+<div class="header">ĐẾM NGƯỢC</div>
 
 <div class="main">
 
   <div class="countdown">
     <div class="time-box">
       <div class="time-number" id="days">0</div>
-      <div class="time-label">Days</div>
+      <div class="time-label">Ngày</div>
     </div>
 
     <div class="time-box">
       <div class="time-number" id="hours">0</div>
-      <div class="time-label">Hours</div>
+      <div class="time-label">Giờ</div>
     </div>
 
     <div class="time-box">
       <div class="time-number" id="minutes">0</div>
-      <div class="time-label">Minutes</div>
+      <div class="time-label">Phút</div>
     </div>
 
     <div class="time-box">
       <div class="time-number" id="seconds">0</div>
-      <div class="time-label">Seconds</div>
+      <div class="time-label">Giây</div>
     </div>
   </div>
 
   <div class="controls">
     <input type="date" id="dateInput">
-    <button onclick="startCD()">Start</button>
+    <button onclick="startCD()">Bắt đầu</button>
   </div>
 
 </div>
@@ -155,7 +155,7 @@ function startCD(){
   const target = new Date(input.value);
 
   if(!input.value){
-    alert("Select a date");
+    alert("Chọn ngày nè!");
     return;
   }
 
@@ -172,7 +172,7 @@ function startCD(){
       hoursEl.innerText = 0;
       minutesEl.innerText = 0;
       secondsEl.innerText = 0;
-      alert("You are home! 🎉");
+      alert("Bạn đang tận hưởng rồi hè! 🎉");
       return;
     }
 
