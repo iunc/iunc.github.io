@@ -26,7 +26,8 @@ body{
   font-family: 'Orbitron', sans-serif;
   text-align:center;
   padding:18px 0;
-  font-size:18px;
+  font-size:28px;
+  font-weight:bold;
   letter-spacing:3px;
   color:#38bdf8;
 
@@ -56,6 +57,11 @@ body{
   width:100%;
   max-width:400px;
   margin-bottom:40px;
+  transition:0.4s; 
+}
+/*dùng cho khi ẩn hiện days chia lại thành 3 cột*/
+.three-columns{
+  grid-template-columns:repeat(3, 1fr);
 }
 
 .time-box{
@@ -115,6 +121,37 @@ button,
 div {
   -webkit-tap-highlight-color: transparent;
   }
+
+/* Hiệu ứng nhấp nháy */
+@keyframes blink {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* Khi sắp hết giờ */
+.danger-seconds {
+  color: #ff4d4d;
+  text-shadow: 0 0 8px rgba(255,0,0,0.7);
+  animation: blink 0.8s infinite;
+}
+/*Thanh chạy % */
+.progress{
+  width:100%;
+  max-width:400px;
+  height:8px;
+  background:rgba(255,255,255,0.1);
+  border-radius:10px;
+  overflow:hidden;
+  margin-bottom:30px;
+}
+
+.progress-bar{
+  height:100%;
+  width:100%;
+  background:linear-gradient(90deg,#38bdf8,#1d4ed8);
+  transition:width 0.2s linear;
+}
 </style>
 </head>
 
@@ -146,8 +183,14 @@ div {
     </div>
   </div>
 
+  <!-- Thanh Progress -->
+<div class="progress">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- khu vực điều khiển -->
   <div class="controls">
-    <input type="date" id="dateInput">
+    <input type="datetime-local" id="dateInput" step="1">
     <button onclick="startCD()">Bắt đầu</button>
   </div>
 
@@ -178,51 +221,103 @@ onAuthStateChanged(auth, (user) => {
     </script>
 <script>
 const input = document.getElementById("dateInput");
-
+const progressBar = document.getElementById("progressBar");
 const daysEl = document.getElementById("days");
 const hoursEl = document.getElementById("hours");
 const minutesEl = document.getElementById("minutes");
 const secondsEl = document.getElementById("seconds");
 
 let interval;
+let totalTime;
 
-function startCD(){
-  if(!input.value){
-    alert("Chọn ngày tháng đi bạn ơi!");
-    return;
-  }
-
-  const [year,month,day] = input.value.split("-");
-  const target = new Date(Number(year),Number(month)-1,Number(day),0,0,0);
-  
-  clearInterval(interval);
-  interval = setInterval(function(){
-
-    const now = new Date();
-    const diff = target - now;
-
-    if(diff <= 0){
-      clearInterval(interval);
-      daysEl.innerText = 0;
-      hoursEl.innerText = 0;
-      minutesEl.innerText = 0;
-      secondsEl.innerText = 0;
-      alert("Ngày đó đã tới rồi bạn ơi! 🎉");
-      return;
-    }
-
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const minutes = Math.floor((diff % 3600000) / 60000);
-    const seconds = Math.floor((diff % 60000) / 1000);
-
-    daysEl.innerText = days;
-    hoursEl.innerText = hours;
-    minutesEl.innerText = minutes;
-    secondsEl.innerText = seconds;
-
-  },1000);
+//Hiện 2 số 00:00:00
+function pad(num){
+  return num.toString().padStart(2,"0");
 }
+
+//Hàm countdown
+function startCD(){
+//Kiểm tra ngày tháng nhập chưa
+if (!input.value){
+alert("Chọn ngày tháng đi bạn ơi!")
+return;
+}
+/*
+const [year, month, day] = input.value.split("-"); 
+// Xoá dấu - giữa ngày tháng năm Vd: 2026-03-03
+const target = new Date(
+    Number(year),
+    Number(month) - 1,// -1 vì tính từ 0
+    Number(day),
+    0,0,0 // là 0 giờ 0 phút 0 giây
+  );
+*/ //cái này dùng khi không chọn giờ phút giây được
+
+const target = new Date(input.value);
+totalTime = target - new Date(); // tổng thời gian 
+
+clearInterval(interval); 
+/* Xoá interval cũ tránh việc ấn nút
+  start nhiều lần làm tăng countdown*/
+interval = setInterval( function (){
+
+const now = new Date();
+const diff = target - now;
+
+//Tính ra % đểm thêm vào width cho progressBar
+let percent = 0;
+if(totalTime <= 0){
+percent = 0;
+}else{
+percent = (diff/totalTime)*100;
+}
+percent = Math.min(Math.max(percent,0),100);
+/*Không cho phần trăm nhỏ hơn 0 hoặc lớn hơn 100
+  tránh vỡ layout (Clamp function)*/
+progressBar.style.width = percent + "%";
+
+if(diff<=0){
+clearInterval(interval);
+progressBar.style.width = "0%";
+daysEl.innerText = 0;
+hoursEl.innerText = 0;
+minutesEl.innerText = 0;
+secondsEl.innerText = 0;
+alert("Ngày đó đã tới rồi bạn ơi!");
+return;
+}
+
+const days=Math.floor(diff/86400000);//ngày thì lấy phần lớn
+const hours=Math.floor((diff%86400000)/3600000);// lấy phần dư chia cho 1h = 3600000ms
+const minutes=Math.floor((diff%3600000)/60000);//lấy phần dư chia cho 1m = 60000ms
+const seconds=Math.floor((diff%60000)/1000);//lấy phần dư chia cho 1s = 1000ms
+
+//Kiểm tra ngày nếu < 0 thì ẩn đi và chia lại cột 
+const grid = document.querySelector(".countdown"); //lấy thẻ đầu tiên là thẻ ngày
+if(days > 0){
+  daysEl.parentElement.style.display = "block"; // hiện ngày
+  grid.classList.remove("three-columns"); // giữ nguyên 2 cột
+}else{
+  daysEl.parentElement.style.display = "none"; // ẩn ngày
+  grid.classList.add("three-columns"); // chuyển sang 3 cột
+}
+
+
+//hiệu ứng nhấp nháy và đổi màu khi còn <= 10 giây
+if(days === 0 && hours === 0 && minutes == 0 && seconds <= 10){
+secondsEl.classList.add("danger-seconds"); //hiện
+} 
+else{
+secondsEl.classList.remove("danger-seconds"); // ẩn
+}
+
+daysEl.innerText = days;
+hoursEl.innerText = pad(hours);
+minutesEl.innerText = pad(minutes);
+secondsEl.innerText = pad(seconds);
+
+},200);
+   }
 </script>
 
 </body>
