@@ -500,7 +500,7 @@ window.addEventListener("touchmove", function (suKien) {
   viTriHienTaiY = suKien.touches[0].clientY;
   let khoangCachKeo = viTriHienTaiY - viTriBatDauY;
   // Nếu kéo xuống hơn 80px
-  if (khoangCachKeo > 80) {
+  if (khoangCachKeo > 60) {
     dangVuot = false;
     location.reload();
   }
