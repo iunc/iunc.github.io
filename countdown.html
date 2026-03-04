@@ -135,7 +135,13 @@ div {
   text-shadow: 0 0 8px rgba(255,0,0,0.7);
   animation: blink 0.8s infinite;
 }
-/*Thanh chạy % */
+
+.progress-wrapper{
+  width:100%;
+  max-width:400px;
+  margin-bottom:30px;
+}
+
 .progress{
   width:100%;
   max-width:400px;
@@ -147,16 +153,105 @@ div {
 }
 
 .progress-bar{
+  position: relative;
   height:100%;
   width:100%;
   background:linear-gradient(90deg,#38bdf8,#1d4ed8);
   transition:width 0.2s linear;
 }
+
+/* Hiển thị % của thanh progress*/
+.progress-percent{
+  text-align:right;
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:6px;
+  color:#38bdf8;
+  transition:0.3s;
+}
+
+/*Đổi màu khi còn <= 10 giây*/
+.progress-bar.danger{
+  background:linear-gradient(90deg,#ff4d4d,#b30000,#ff4d4d);
+  background-size:200% 100%;
+  box-shadow:0 0 12px rgba(255,0,0,0.8);
+}
+
+/* Css cho phần thông báo */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(6px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  opacity:0;
+  pointer-events:none;
+  transition:0.3s;
+}
+
+/* Cái này là để hiện ra thông báo nè */
+.modal-overlay.active{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.modal-box{
+  background:#0f1c3f;
+  border-radius:16px;
+  padding:25px;
+  width:90%;
+  max-width:320px;
+  text-align:center;
+  box-shadow:0 0 20px rgba(56,189,248,0.3);
+  animation:pop 0.25s ease;
+}
+
+.modal-box h3{
+  margin:0 0 10px;
+  color:#38bdf8;
+}
+
+.modal-box p{
+  margin:0 0 20px;
+  opacity:0.8;
+}
+
+.modal-box button{
+  background:#1d4ed8;
+  border:none;
+  padding:10px 20px;
+  border-radius:10px;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* icon đổi màu theo biến */
+.modal-icon{
+  width:60px;
+  height:60px;
+  margin:0 auto 15px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  background:rgba(255,255,255,0.05);
+  border:2px solid currentColor;
+  color:currentColor;
+  box-shadow:0 0 15px currentColor;
+}
+
+@keyframes pop{
+  from{ transform:scale(0.8); opacity:0; }
+  to{ transform:scale(1); opacity:1; }
+  }
 </style>
 </head>
 
 <body>
-
 <div class="header">COUNTDOWN</div>
 
 <div class="main">
@@ -183,9 +278,12 @@ div {
     </div>
   </div>
 
-  <!-- Thanh Progress -->
-<div class="progress">
-  <div class="progress-bar" id="progressBar"></div>
+<!-- Thanh Progress -->
+<div class="progress-wrapper">
+  <div class="progress-percent" id="progressText">100%</div>
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
 </div>
 
 <!-- khu vực điều khiển -->
@@ -193,6 +291,18 @@ div {
     <input type="datetime-local" id="dateInput" step="1">
     <button onclick="startCD()">Bắt đầu</button>
   </div>
+
+</div>
+
+<!-- Khu vực thông báo -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modalIcon">✔</div>
+    <h3 id="modalTitle">Thông báo</h3>
+    <p id="modalMessage">Nội dung</p>
+    <button onclick="closeModal()">OK</button>
+  </div>
+</div>
 
 </div>
 <script type="module">
@@ -226,9 +336,33 @@ const daysEl = document.getElementById("days");
 const hoursEl = document.getElementById("hours");
 const minutesEl = document.getElementById("minutes");
 const secondsEl = document.getElementById("seconds");
+const modal = document.getElementById("modal");
+const modalMessage = document.getElementById("modalMessage");
+const modalIcon = document.getElementById("modalIcon");
+const modalTitle = document.getElementById("modalTitle");
 
 let interval;
 let totalTime;
+
+//Hiện thông báo nhập theo biến
+function showModal({
+  title = "Thông báo",
+  message = "",
+  icon = "✔",
+  color = "#38bdf8"
+}) {
+  modalTitle.innerText = title;
+  modalMessage.innerText = message;
+  modalIcon.innerText = icon;
+  modalIcon.style.color = color;
+
+  modal.classList.add("active");
+}
+
+//Tắt thông báo khi ấn OK
+function closeModal(){
+  modal.classList.remove("active");
+}
 
 //Hiện 2 số 00:00:00
 function pad(num){
@@ -239,12 +373,16 @@ function pad(num){
 function startCD(){
 //Kiểm tra ngày tháng nhập chưa
 if (!input.value){
-alert("Chọn ngày tháng đi bạn ơi!")
+showModal({
+  title: "Lỗi",
+  message: "Bạn chưa chọn ngày.",
+  icon: "⚠",
+  color: "#facc15"
+});
 return;
 }
 /*
-const [year, month, day] = input.value.split("-"); 
-// Xoá dấu - giữa ngày tháng năm Vd: 2026-03-03
+const [year, month, day] = input.value.split("-"); // Xoá dấu - giữa ngày tháng năm Vd: 2026-03-03
 const target = new Date(
     Number(year),
     Number(month) - 1,// -1 vì tính từ 0
@@ -256,9 +394,7 @@ const target = new Date(
 const target = new Date(input.value);
 totalTime = target - new Date(); // tổng thời gian 
 
-clearInterval(interval); 
-/* Xoá interval cũ tránh việc ấn nút
-  start nhiều lần làm tăng countdown*/
+clearInterval(interval); // Xoá interval cũ tránh việc ấn nút start nhiều lần làm tăng countdown
 interval = setInterval( function (){
 
 const now = new Date();
@@ -271,10 +407,9 @@ percent = 0;
 }else{
 percent = (diff/totalTime)*100;
 }
-percent = Math.min(Math.max(percent,0),100);
-/*Không cho phần trăm nhỏ hơn 0 hoặc lớn hơn 100
-  tránh vỡ layout (Clamp function)*/
+percent = Math.min(Math.max(percent,0),100); //Không cho phần trăm nhỏ hơn 0 hoặc lớn hơn 100 tránh vỡ layout (Clamp function)
 progressBar.style.width = percent + "%";
+progressText.innerText = Math.floor(percent) + "%";
 
 if(diff<=0){
 clearInterval(interval);
@@ -283,24 +418,24 @@ daysEl.innerText = 0;
 hoursEl.innerText = 0;
 minutesEl.innerText = 0;
 secondsEl.innerText = 0;
-alert("Ngày đó đã tới rồi bạn ơi!");
+showModal({
+  title: "Hoàn thành",
+  message: "Ngày đó đã tới rồi bạn ơi!",
+  icon: "✔",
+  color: "#38bdf8"
+});
 return;
 }
 
-const days=Math.floor(diff/86400000);
-  //ngày thì lấy phần lớn
-const hours=Math.floor((diff%86400000)/3600000);
-  // lấy phần dư chia cho 1h = 3600000ms
-const minutes=Math.floor((diff%3600000)/60000);
-  //lấy phần dư chia cho 1m = 60000ms
-const seconds=Math.floor((diff%60000)/1000);
-  //lấy phần dư chia cho 1s = 1000ms
+const days=Math.floor(diff/86400000);//ngày thì lấy phần lớn
+const hours=Math.floor((diff%86400000)/3600000);// lấy phần dư chia cho 1h = 3600000ms
+const minutes=Math.floor((diff%3600000)/60000);//lấy phần dư chia cho 1m = 60000ms
+const seconds=Math.floor((diff%60000)/1000);//lấy phần dư chia cho 1s = 1000ms
 
 //Kiểm tra ngày nếu < 0 thì ẩn đi và chia lại cột 
-const grid = document.querySelector(".countdown");
-  //lấy thẻ đầu tiên là thẻ ngày
+const grid = document.querySelector(".countdown"); //lấy thẻ đầu tiên là thẻ ngày
 if(days > 0){
-  daysEl.parentElement.style.display = "block";// hiện ngày
+  daysEl.parentElement.style.display = "block"; // hiện ngày
   grid.classList.remove("three-columns"); // giữ nguyên 2 cột
 }else{
   daysEl.parentElement.style.display = "none"; // ẩn ngày
@@ -309,11 +444,15 @@ if(days > 0){
 
 
 //hiệu ứng nhấp nháy và đổi màu khi còn <= 10 giây
-if(days === 0 && hours === 0 && minutes == 0 && seconds <= 10){
+if(days === 0 && hours === 0 && minutes === 0 && seconds <= 10){
 secondsEl.classList.add("danger-seconds"); //hiện
+progressBar.classList.add("danger");
+progressText.style.color = "#ff4d4d";
 } 
 else{
 secondsEl.classList.remove("danger-seconds"); // ẩn
+progressBar.classList.remove("danger");
+progressText.style.color = "#38bdf8";
 }
 
 daysEl.innerText = days;
@@ -322,7 +461,13 @@ minutesEl.innerText = pad(minutes);
 secondsEl.innerText = pad(seconds);
 
 },200);
-   }
+showModal({
+  title: "Thành công",
+  message: "Đã bắt đầu đếm ngược!",
+  icon: "🚀",
+  color: "#38bdf8"
+});
+  }
 </script>
 
 </body>
