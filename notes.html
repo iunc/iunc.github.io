@@ -194,6 +194,18 @@ small{
   background:rgba(255,255,255,0.4);
   transform-origin:left;
 }
+.code-block{
+  background:#0f172a;
+  color:#38bdf8;
+  padding:14px;
+  border-radius:12px;
+  font-family:monospace;
+  font-size:14px;
+  overflow-x:auto;
+  line-height:1.5;
+  border:1px solid #1e293b;
+  margin-top:8px;
+}
 </style>
 </head>
 <body>
@@ -566,7 +578,15 @@ function getTagColor(tag){
 }
   
 
+function formatNote(text){
+  // Nếu người dùng bọc bằng ```
+  if(text.startsWith("```") && text.endsWith("```")){
+    const clean = text.slice(3, -3).trim();
+    return `<pre class="code-block">${clean}</pre>`;
+  }
 
+  return text.replace(/\n/g,"<br>");
+}
 
 //function renderNotes
 function renderNotes(notes){
@@ -630,7 +650,7 @@ if(note.pinned){
    
   div.innerHTML=`
   <small>${date}</small>
-  <div class="note-text">${note.text}</div>
+  <div class="note-text">${formatNote(note.text)}</div>
   <div style="margin-top:6px">${tagsHtml}</div>
   <div class="actions">
     <button class="pin">${note.pinned ? "📌" : "📍"}</button>
