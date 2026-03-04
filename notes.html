@@ -19,10 +19,13 @@
 *{
   box-sizing:border-box;
 }
+
+.container{
+  padding:20px;
+}
   
 body{
   margin:0;
-  padding:20px;
   background:#0f0f0f;
   color:white;
   font-family:sans-serif;
@@ -193,6 +196,7 @@ small{
 </style>
 </head>
 <body>
+<div class="container">
 <h2 class="dashboard-title">IUNC</h2>
 <button onclick="location.href='dashboard.html'" 
 style="background:#222;margin-bottom:15px;">
@@ -270,6 +274,7 @@ style="background:transparent;
     Hoàn tác
   </button>
 <div id="undoProgress"></div>
+</div>
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
