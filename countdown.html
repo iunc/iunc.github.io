@@ -287,15 +287,20 @@ alert("Ngày đó đã tới rồi bạn ơi!");
 return;
 }
 
-const days=Math.floor(diff/86400000);//ngày thì lấy phần lớn
-const hours=Math.floor((diff%86400000)/3600000);// lấy phần dư chia cho 1h = 3600000ms
-const minutes=Math.floor((diff%3600000)/60000);//lấy phần dư chia cho 1m = 60000ms
-const seconds=Math.floor((diff%60000)/1000);//lấy phần dư chia cho 1s = 1000ms
+const days=Math.floor(diff/86400000);
+  //ngày thì lấy phần lớn
+const hours=Math.floor((diff%86400000)/3600000);
+  // lấy phần dư chia cho 1h = 3600000ms
+const minutes=Math.floor((diff%3600000)/60000);
+  //lấy phần dư chia cho 1m = 60000ms
+const seconds=Math.floor((diff%60000)/1000);
+  //lấy phần dư chia cho 1s = 1000ms
 
 //Kiểm tra ngày nếu < 0 thì ẩn đi và chia lại cột 
-const grid = document.querySelector(".countdown"); //lấy thẻ đầu tiên là thẻ ngày
+const grid = document.querySelector(".countdown");
+  //lấy thẻ đầu tiên là thẻ ngày
 if(days > 0){
-  daysEl.parentElement.style.display = "block"; // hiện ngày
+  daysEl.parentElement.style.display = "block";// hiện ngày
   grid.classList.remove("three-columns"); // giữ nguyên 2 cột
 }else{
   daysEl.parentElement.style.display = "none"; // ẩn ngày
