@@ -52,6 +52,29 @@ button{
   transition: transform 0.2s ease;
   touch-action: pan-y;
 }
+
+.note {
+  background:#1a1a1a;
+  border:1px solid #2a2a2a;
+  border-radius:14px;
+  padding:16px;
+  margin-top:12px;
+  transition:0.2s;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+
+.note:hover{
+  transform:translateY(-2px);
+}
+
+.note-text{
+  margin-top:6px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  line-height:1.5;
+  font-size:14px;
+  color:#e5e5e5;
+}
   
 small{
   color:#00ffcc;
@@ -567,7 +590,7 @@ if(note.pinned){
    
   div.innerHTML=`
   <small>${date}</small>
-  <div style="margin-top:5px;white-space:pre-wrap">${note.text}</div>
+  <div class="note-text">${note.text}</div>
   <div style="margin-top:6px">${tagsHtml}</div>
   <div class="actions">
     <button class="pin">${note.pinned ? "📌" : "📍"}</button>
