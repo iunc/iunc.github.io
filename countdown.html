@@ -372,6 +372,17 @@ function pad(num){
 
 //Hàm countdown
 function startCD(){
+/*Kiểm tra interval để tránh ấn Bắt đầu 
+progress bị reset lại*/
+if (interval) {
+  showModal({
+    title: "Đang chạy",
+    message: "Đang hoạt động rồi bạn ơi!",
+    icon: "⚠",
+    color: "#facc15"
+  });
+  return;
+}
 //Kiểm tra ngày tháng nhập chưa
 if (!input.value){
 showModal({
@@ -419,6 +430,9 @@ daysEl.innerText = 0;
 hoursEl.innerText = 0;
 minutesEl.innerText = 0;
 secondsEl.innerText = 0;
+interval = null;
+/* set null để khi hoàn thành có thể 
+bắt đầu chọn ngày khác */
 showModal({
   title: "Hoàn thành",
   message: "Ngày đó đã tới rồi bạn ơi!",
