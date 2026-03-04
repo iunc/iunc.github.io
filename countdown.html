@@ -478,27 +478,29 @@ secondsEl.innerText = pad(seconds);
 },200);
 }
 
-//Dùng cho việc reload trang khu vuốt trên điện thoại
+//Dùng cho việc reload trang khi vuốt trên điện thoại
 let viTriBatDauY = 0; 
   // Vị trí Y khi bắt đầu chạm
 let viTriHienTaiY = 0;     
   // Vị trí Y khi đang kéo
 let dangVuot = false;     
-  // Có đang thực hiện vuốt không
-  
+  // Có đang thực hiện vuốt không  
 // Khi người dùng chạm vào màn hình
-window.addEventListener("touchstart", function (suKien) {
+window.addEventListener("touchstart", function (e) {
   // Chỉ cho phép vuốt khi đang ở đầu trang
   if (window.scrollY === 0) {
-    viTriBatDauY = suKien.touches[0].clientY;
+    viTriBatDauY = e.touches[0].clientY;
     dangVuot = true;
   }
+  /* e là tên sự kiện mình đặt
+     touches[0] là ngón tay đầu tiên
+     clientY là vị trí dọc
+     dangVuot là công tắc */
 });
-
 // Khi người dùng kéo tay
-window.addEventListener("touchmove", function (suKien) {
+window.addEventListener("touchmove", function (e) {
   if (!dangVuot) return;
-  viTriHienTaiY = suKien.touches[0].clientY;
+  viTriHienTaiY= e.touches[0].clientY;
   let khoangCachKeo = viTriHienTaiY - viTriBatDauY;
   // Nếu kéo xuống hơn 60px
   if (khoangCachKeo > 60) {
@@ -506,7 +508,6 @@ window.addEventListener("touchmove", function (suKien) {
     location.reload();
   }
 });
-
 // Khi người dùng thả tay
 window.addEventListener("touchend", function () {
   dangVuot = false;
