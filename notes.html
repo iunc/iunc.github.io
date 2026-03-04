@@ -27,17 +27,46 @@ body{
   color:white;
   font-family:sans-serif;
 }
-textarea,input,button{
+input,button{
   width:100%;
   padding:12px;
   margin-bottom:10px;
   border-radius:10px;
   border:none;
 }
-textarea,input{
+
+input{
   background:#262626;
   color:white;
 }
+
+textarea{
+  background:#111827;  /* xanh đen */
+  color:#e5f3ff;
+  min-height:160px;    /* cao hơn */
+  font-size:16px;      /* chữ to hơn */
+  line-height:1.6;
+  border:1px solid #1e3a8a;
+}
+
+textarea:focus{
+  outline:none;
+  border:1px solid #38bdf8;
+  box-shadow:0 0 12px #38bdf855;
+}
+
+#tags{
+  background:#0f172a;
+  color:#38bdf8;
+  border:1px solid #1e40af;
+}
+
+#tags:focus{
+  outline:none;
+  border:1px solid #38bdf8;
+  box-shadow:0 0 8px #38bdf855;
+}
+  
 button{
   background:#3b82f6;
   color:white;
@@ -109,14 +138,18 @@ small{
   
 .delete{ background:#ef4444; }
 .edit{ background:#f59e0b; }
+  
 .dashboard-title{
-  font-family: 'Orbitron', sans-serif;
-  text-align: left;
-  font-size: 18px;
-  letter-spacing: 3px;
-  margin-bottom: 25px;
-  text-shadow: 0 0 10px #00aaff;
-}  
+  font-family:'Orbitron', sans-serif;
+  font-size:32px;             /* to lên */
+  letter-spacing:4px;
+  color:#38bdf8;
+  text-shadow:
+    0 0 6px #38bdf8,
+    0 0 18px #0ea5e9;
+  margin-bottom:30px;
+}
+
 .tag-badge{
   display:inline-block;
   background:#111827;
