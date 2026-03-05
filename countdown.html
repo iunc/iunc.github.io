@@ -94,7 +94,7 @@ input{
   width:100%;
   padding:14px;
   font-size:16px;
-  border:none;
+  border:1px solid #38bdf8;
   border-radius:12px;
   background:#162032;
   color:white;
@@ -333,6 +333,7 @@ onAuthStateChanged(auth, (user) => {
 <script>
 const input = document.getElementById("dateInput");
 const progressBar = document.getElementById("progressBar");
+const progressText = document.getElementById("progressText");
 const daysEl = document.getElementById("days");
 const hoursEl = document.getElementById("hours");
 const minutesEl = document.getElementById("minutes");
@@ -393,6 +394,9 @@ showModal({
 });
 return;
 }
+//Lưu giá trị người đùng nhập vào localStorage 
+localStorage.setItem("countdown_target", input.value);
+  
 /*
 const [year, month, day] = input.value.split("-"); // Xoá dấu - giữa ngày tháng năm Vd: 2026-03-03
 const target = new Date(
@@ -433,6 +437,8 @@ secondsEl.innerText = 0;
 interval = null;
 /* set null để khi hoàn thành có thể 
 bắt đầu chọn ngày khác */
+localStorage.removeItem("countdown_target");
+//Xoá localStorage 
 showModal({
   title: "Hoàn thành",
   message: "Ngày đó đã tới rồi bạn ơi!",
@@ -478,6 +484,16 @@ secondsEl.innerText = pad(seconds);
 },200);
 }
 
+//Hàm lấy localStorage khi reload trang
+window.addEventListener("load", function(){
+  const saved = localStorage.getItem("countdown_target");
+  //lấy localStorage 
+  if(saved){
+    input.value = saved;
+    startCD();
+  }
+});
+  
 //Gesture: Hành động tay trên màn hình
 //Dùng cho việc reload trang khi vuốt trên điện thoại
 let viTriBatDauY = 0; 
