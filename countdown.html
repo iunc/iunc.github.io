@@ -424,6 +424,8 @@ function runCountdown(target){
 clearInterval(interval); 
 /* Xoá interval cũ tránh việc ấn nút 
 start nhiều lần làm tăng countdown */
+//  👇 chạy lần đầu không animation
+progressBar.style.transition = "none";
 //Hàm update giao diện
 function update(){
 
@@ -509,8 +511,6 @@ if(days > 0){
   document.title = "⏳ " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds) +" còn lại";
 }
 }
-//  👇 chạy lần đầu không animation
-progressBar.style.transition = "none";
 // 👇 chạy ngay lập tức
 update();
 //  👇 sau 50ms transition chạy lại
@@ -587,8 +587,12 @@ document.addEventListener("visibilitychange", function(){
     clearInterval(interval);
   }else{
     const savedTarget = localStorage.getItem("countdown_target");
-    if(savedTarget){
-      runCountdown(Number(savedTarget));
+    const savedStart = localStorage.getItem("countdown_start");
+  if(savedTarget && savedStart){
+    const target = Number(savedTarget);
+    startTime = Number(savedStart);
+    totalTime = target - startTime;
+    runCountdown(target);
     }
   }
 });
