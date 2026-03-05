@@ -509,8 +509,14 @@ if(days > 0){
   document.title = "⏳ " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds) +" còn lại";
 }
 }
-  // 👇 chạy ngay lập tức
+//  👇 chạy lần đầu không animation
+progressBar.style.transition = "none";
+// 👇 chạy ngay lập tức
 update();
+//  👇 sau 50ms transition chạy lại
+setTimeout(()=>{
+  progressBar.style.transition = "width 0.2s linear";
+},50);
   // 👇 chạy sau mỗi giây
 interval = setInterval(update,200);
 }
