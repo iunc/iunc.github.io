@@ -586,10 +586,9 @@ document.addEventListener("visibilitychange", function(){
   if(document.hidden){
     clearInterval(interval);
   }else{
-    if(localStorage.getItem("countdown_target")){
-      startCD(false);
-      /*Thêm false để khi chuyển tab không hiện 
-      thông báo đang chạy */
+    const savedTarget = localStorage.getItem("countdown_target");
+    if(savedTarget){
+      runCountdown(Number(savedTarget));
     }
   }
 });
