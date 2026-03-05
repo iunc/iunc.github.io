@@ -374,8 +374,8 @@ function pad(num){
 
 /* Hàm startCD dùng để kiểm tra và lưu 
 vào localStorage*/
-function startCD(){
-if (interval) {
+function startCD(laNhanNut = true){
+if (interval && laNhanNut) {
   showModal({
     title: "Đang chạy",
     message: "Countdown đang hoạt động rồi!",
@@ -575,7 +575,7 @@ document.addEventListener("visibilitychange", function(){
     clearInterval(interval);
   }else{
     if(localStorage.getItem("countdown_target")){
-      startCD();
+      startCD(false);
     }
   }
 });
