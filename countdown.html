@@ -511,7 +511,17 @@ window.addEventListener("load", function(){
     const target = Number(savedTarget);
     startTime = Number(savedStart);
     totalTime = target - startTime;
-    input.value = new Date(target).toISOString().slice(0,16);
+    //input.value = new Date(target).toISOString().slice(0,16);
+    //Dùng ISO sẽ bị lệch múi giờ khi reload
+    const d = new Date(target);
+    const year = d.getFullYear();
+    const month = String(d.getMonth()+1).padStart(2,"0");
+    //String để ép kiểu chuỗi giống hàm num.toString()
+    const day = String(d.getDate()).padStart(2,"0");
+    const hours = String(d.getHours()).padStart(2,"0");
+    const minutes = String(d.getMinutes()).padStart(2,"0");
+    input.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    //trả lại input dạng như này 2026-03-03T21:20 
     runCountdown(target);
   }
 });
