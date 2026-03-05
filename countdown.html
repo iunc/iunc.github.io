@@ -449,6 +449,7 @@ minutesEl.innerText = 0;
 secondsEl.innerText = 0;
 interval = null;
 localStorage.removeItem("countdown_target"); //Xoá localStorage
+document.title = "🔔 Countdown hoàn thành!";
 showModal({
   title: "Hoàn thành",
   message: "Ngày đó đã tới rồi bạn ơi!",
@@ -498,6 +499,13 @@ hoursEl.innerText = pad(hours);
 minutesEl.innerText = pad(minutes);
 secondsEl.innerText = pad(seconds);
 
+//Sửa title HTML
+if(days > 0){
+  document.title = "⏳ " + days + "d " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds) +"còn lại";
+}else{
+  document.title = "⏳ " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds) +"còn lại";
+}
+
 },200);
 }
 
@@ -526,13 +534,13 @@ window.addEventListener("load", function(){
   }
 });
 
+//Hàm reload khi vuốt
 let viTriBatDauY = 0;  
 // Vị trí Y khi bắt đầu chạm
 let viTriHienTaiY = 0;    
 // Vị trí Y khi đang kéo
 let dangVuot = false;      
 // Có đang thực hiện vuốt không
-
 // Khi người dùng chạm vào màn hình
 window.addEventListener("touchstart", function (e) {
   // Chỉ cho phép vuốt khi đang ở đầu trang
@@ -545,7 +553,6 @@ window.addEventListener("touchstart", function (e) {
     // dangVuot như công tắc vậy, khi chạm là nó bật
   }
 });
-
 // Khi người dùng kéo tay
 window.addEventListener("touchmove", function (e) {
   if (!dangVuot) return;
@@ -557,10 +564,20 @@ window.addEventListener("touchmove", function (e) {
     location.reload();
   }
 });
-
 // Khi người dùng thả tay
 window.addEventListener("touchend", function () {
   dangVuot = false;
+});
+
+//Hàm này dùng để tự động dừng khi tab bị ẩn
+document.addEventListener("visibilitychange", function(){
+  if(document.hidden){
+    clearInterval(interval);
+  }else{
+    if(localStorage.getItem("countdown_target")){
+      startCD();
+    }
+  }
 });
 </script>
 
