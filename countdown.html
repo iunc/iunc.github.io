@@ -586,6 +586,7 @@ document.addEventListener("visibilitychange", function(){
   if(document.hidden){
     clearInterval(interval);
   }else{
+    // 👇 đoạn này giúp khi chuyển tab hay ẩn tab không bị chạy lại progress từ đầu
     const savedTarget = localStorage.getItem("countdown_target");
     const savedStart = localStorage.getItem("countdown_start");
   if(savedTarget && savedStart){
