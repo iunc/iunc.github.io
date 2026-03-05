@@ -424,23 +424,11 @@ function runCountdown(target){
 clearInterval(interval); 
 /* Xoá interval cũ tránh việc ấn nút 
 start nhiều lần làm tăng countdown */
-interval = setInterval( function (){
+//Hàm update giao diện
+function update(){
 
 const now = Date.now();
 const diff = target - now;
-
-//Tính ra % đểm thêm vào width cho progressBar
-let percent = 0;
-if(totalTime <= 0){
-percent = 0;
-}else{
-percent = (diff/totalTime)*100;
-}
-percent = Math.min(Math.max(percent,0),100); 
-/*Không cho phần trăm nhỏ hơn 0 hoặc lớn hơn 
-  100 tránh vỡ layout (Clamp function)*/
-progressBar.style.width = percent + "%";
-progressText.innerText = Math.floor(percent) + "%";
 
 if(diff<=0){
 clearInterval(interval);
@@ -460,6 +448,19 @@ showModal({
 });
 return;
 }
+
+//Tính ra % đểm thêm vào width cho progressBar
+let percent = 0;
+if(totalTime <= 0){
+percent = 0;
+}else{
+percent = (diff/totalTime)*100;
+}
+percent = Math.min(Math.max(percent,0),100); 
+/*Không cho phần trăm nhỏ hơn 0 hoặc lớn hơn 
+  100 tránh vỡ layout (Clamp function)*/
+progressBar.style.width = percent + "%";
+progressText.innerText = Math.floor(percent) + "%";
 
 const motNgay = 86400000;
 const motGio = 3600000;
@@ -501,14 +502,17 @@ hoursEl.innerText = pad(hours);
 minutesEl.innerText = pad(minutes);
 secondsEl.innerText = pad(seconds);
 
-//Sửa title HTML
+//  👇 Sửa title HTML
 if(days > 0){
   document.title = "⏳ " + days + "d " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds) +" còn lại";
 }else{
   document.title = "⏳ " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds) +" còn lại";
 }
-
-},200);
+};
+  // 👇 chạy ngay lập tức
+update();
+  // 👇 chạy sau mỗi giây
+interval = setInterval(update,200);
 }
 
 /* Hàm lấy giá trị lưu trong 
