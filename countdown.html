@@ -327,6 +327,7 @@ flex:2;
       <button id="startQuick" onclick="startQuickTimer()">Bắt đầu nhanh</button>
     </div>
     <button id="startBtn" onclick="startCD()">Bắt đầu</button>
+    <button id="pauseBtn" onclick="togglePause()">Pause</button>
     <button id="resetBtn" class="reset-btn"onclick="resetCD()">Reset</button>
   </div>
 
@@ -389,14 +390,17 @@ const hourInput = document.getElementById("hourInput");
 const minuteInput = document.getElementById("minuteInput");
 const secondInput = document.getElementById("secondInput");
 const startQuick = document.getElementById("startQuick");
+const pauseBtn = document.getElementById("pauseBtn");
 
-// Khi load trang → ẩn reset
+// Khi load trang → ẩn reset và pause
 resetBtn.style.display = "none"; 
+pauseBtn.style.display = "none";
   
 let interval;
 let totalTime;
 let startTime;
 let modalCallback = null;
+let isPaused = false;
 
 //Xử lí khi bấm nút OK
 document.getElementById("modalOK").onclick = function(){
@@ -462,6 +466,9 @@ return;
 startBtn.disabled = true;
 startQuick.disabled = true;
 resetBtn.style.display = "block";
+pauseBtn.style.display = "block";
+pauseBtn.innerText = "Pause";
+isPaused = false;
 /*
 const [year, month, day] = input.value.split("-"); // Xoá dấu - giữa ngày tháng năm Vd: 2026-03-03
 const target = new Date(
@@ -509,6 +516,8 @@ interval = null;
 startQuick.disabled = false;
 startBtn.disabled = false; // hết disabled
 resetBtn.style.display = "none"; // ẩn reset
+pauseBtn.style.display = "none";
+isPaused = false;
 document.title = "🔔 Countdown hoàn thành!";
 showModal({
   title: "Hoàn thành",
@@ -640,6 +649,9 @@ localStorage.setItem("countdown_start",startTime);
 startBtn.disabled = true;
 startQuick.disabled = true;
 resetBtn.style.display = "block";
+pauseBtn.style.display = "block";
+pauseBtn.innerText = "Pause";
+isPaused = false;
 runCountdown(target);
 }
   
@@ -702,13 +714,14 @@ function resetCD(){
   message:"Bạn chắc muốn xoá countdown này?",
   icon:"⚠",
   color:"#facc15",
-
   onConfirm: function(){
     clearInterval(interval);
     interval = null;
     startQuick.disabled = false;
     startBtn.disabled = false;
     resetBtn.style.display = "none";
+    pauseBtn.style.display = "none";
+    isPaused = false;
     localStorage.removeItem("countdown_target");
     localStorage.removeItem("countdown_start");
     daysEl.innerText = 0;
@@ -726,6 +739,27 @@ function resetCD(){
     document.title = "Countdown";
   }
 });
+}
+
+//hàm PAUSE/RESUME
+function togglePause(){
+   if(!interval && !isPaused) return;
+   if(!isPaused){
+   // PAUSE
+   clearInterval(interval);
+   interval = null;
+   remainingTime = (startTime + totalTime) - Date.now();
+   pauseBtn.innerText = "Resume";
+   isPaused = true;
+   }else{
+   // RESUME
+   startTime = Date.now();
+   const target = startTime + remainingTime;
+   totalTime = remainingTime;
+   pauseBtn.innerText = "Pause";
+   isPaused = false;
+   runCountdown(target);
+}
 }
 </script>
 
