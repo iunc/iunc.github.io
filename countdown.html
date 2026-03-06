@@ -277,98 +277,6 @@ flex:2;
 @keyframes pop{
   from{ transform:scale(0.8); opacity:0; }
   to{ transform:scale(1); opacity:1; }
-  }
-
-  /* MULTI SECTION */
-
-.multi-section{
-width:100%;
-max-width:420px;
-margin-top:30px;
-}
-
-.multi-title{
-color:#38bdf8;
-margin-bottom:12px;
-text-align:center;
-}
-
-/* ADD FORM */
-
-.multi-add{
-display:flex;
-gap:8px;
-margin-bottom:15px;
-}
-
-.multi-add input{
-flex:1;
-padding:10px;
-border-radius:10px;
-border:none;
-outline:none;
-background:rgba(255,255,255,0.1);
-color:white;
-}
-
-.multi-add button{
-padding:10px 16px;
-border:none;
-border-radius:10px;
-background:#38bdf8;
-color:white;
-cursor:pointer;
-}
-
-/* LIST */
-
-.multi-list{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
-
-/* ITEM */
-
-.multi-item{
-background:rgba(255,255,255,0.06);
-padding:14px;
-border-radius:14px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-backdrop-filter:blur(8px);
-}
-
-/* LEFT */
-
-.multi-info{
-display:flex;
-flex-direction:column;
-}
-
-.multi-name{
-font-weight:600;
-}
-
-.multi-time{
-color:#38bdf8;
-font-size:18px;
-}
-
-/* BUTTONS */
-
-.multi-actions{
-display:flex;
-gap:6px;
-}
-
-.multi-actions button{
-padding:6px 10px;
-font-size:13px;
-border:none;
-border-radius:8px;
-cursor:pointer;
 }
 </style>
 </head>
@@ -423,17 +331,6 @@ cursor:pointer;
     <button id="resetBtn" class="reset-btn"onclick="resetCD()">Reset</button>
   </div>
 
-</div>
-
-<!-- Khu vực multi -->
-<div class="multi-section">
-<h2 class="multi-title">Multi Countdown</h2>
-<div class="multi-add">
-<input id="multiName" placeholder="Event name">
-<input type="number" id="multiMinutes" placeholder="Minutes">
-<button onclick="addMultiTimer()">Add</button>
-</div>
-<div id="multiList" class="multi-list"></div>
 </div>
 
 <!-- Khu vực thông báo -->
