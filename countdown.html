@@ -765,7 +765,6 @@ function togglePause(){
    // RESUME
    startTime = Date.now();
    const target = startTime + remainingTime;
-   totalTime = remainingTime;
    pauseBtn.innerText = "Pause";
    isPaused = false;
    runCountdown(target);
