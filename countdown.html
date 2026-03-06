@@ -134,6 +134,7 @@ div {
 button:disabled{
   opacity:0.5;
   cursor:not-allowed;
+  background:#475569;
 }
 /* Hiệu ứng nhấp nháy */
 @keyframes blink {
@@ -407,9 +408,10 @@ function pad(num){
   
 /* Hàm startCD dùng để kiểm tra và lưu 
 vào localStorage*/
-function startCD(laNhanNut = true){
-/* laNhanNut để chống lỗi bug khi
-  chuyển tab bị hiện thông báo */
+function startCD(){
+/*
+laNhanNut để chống lỗi bug khi
+  chuyển tab bị hiện thông báo 
 if (interval && laNhanNut) {
   showModal({
     title: "Đang chạy",
@@ -419,6 +421,7 @@ if (interval && laNhanNut) {
   });
   return;
 }
+*/
 startBtn.disable = true;
 resetBtn.style.display = "block";
 //Kiểm tra ngày tháng nhập chưa
