@@ -606,6 +606,31 @@ window.addEventListener("load", function(){
   }
 });
 
+function startQuickTimer(){
+   const h = Number(document.getElementById("hourInput").value) || 0;
+   const m = Number(document.getElementById("minuteInput").value) || 0;
+   const s = Number(document.getElementById("secondInput").value) || 0;
+   const totalMs = (h*3600 + m*60 + s) * 1000;
+   if(totalMs <= 0){
+     showModal({
+     title:"Lỗi",
+     message:"Vui lòng nhập thời gian hợp lệ",
+     icon:"⚠",
+     color:"#facc15"
+     });
+return;
+   }
+const now = Date.now();
+startTime = now;
+const target = now + totalMs;
+totalTime = target - startTime;
+localStorage.setItem("countdown_target",target);
+localStorage.setItem("countdown_start",startTime);
+startBtn.disabled = true;
+resetBtn.style.display = "block";
+runCountdown(target);
+}
+  
 //Hàm reload khi vuốt
 let viTriBatDauY = 0;  
 // Vị trí Y khi bắt đầu chạm
