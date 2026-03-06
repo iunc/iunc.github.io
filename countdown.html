@@ -493,13 +493,14 @@ const now = Date.now();
 const diff = target - now;
 if(diff<=0){
 clearInterval(interval);
+localStorage.removeItem("countdown_target");//Xoá localStorage
+localStorage.removeItem("countdown_start");
 progressBar.style.width = "0%";
 daysEl.innerText = 0;
 hoursEl.innerText = 0;
 minutesEl.innerText = 0;
 secondsEl.innerText = 0;
 interval = null;
-localStorage.removeItem("countdown_target"); //Xoá localStorage
 startQuick.disabled = false;
 startBtn.disabled = false; // hết disabled
 resetBtn.style.display = "none"; // ẩn reset
@@ -700,6 +701,7 @@ function resetCD(){
   onConfirm: function(){
     clearInterval(interval);
     interval = null;
+    startQuick.disabled = false;
     startBtn.disabled = false;
     resetBtn.style.display = "none";
     localStorage.removeItem("countdown_target");
