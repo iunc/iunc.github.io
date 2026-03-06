@@ -279,40 +279,96 @@ flex:2;
   to{ transform:scale(1); opacity:1; }
   }
 
+  /* MULTI SECTION */
+
 .multi-section{
 width:100%;
-max-width:400px;
+max-width:420px;
 margin-top:30px;
 }
 
+.multi-title{
+color:#38bdf8;
+margin-bottom:12px;
+text-align:center;
+}
+
+/* ADD FORM */
+
+.multi-add{
+display:flex;
+gap:8px;
+margin-bottom:15px;
+}
+
+.multi-add input{
+flex:1;
+padding:10px;
+border-radius:10px;
+border:none;
+outline:none;
+background:rgba(255,255,255,0.1);
+color:white;
+}
+
+.multi-add button{
+padding:10px 16px;
+border:none;
+border-radius:10px;
+background:#38bdf8;
+color:white;
+cursor:pointer;
+}
+
+/* LIST */
+
+.multi-list{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+/* ITEM */
+
 .multi-item{
-background:rgba(255,255,255,0.05);
-padding:15px;
+background:rgba(255,255,255,0.06);
+padding:14px;
 border-radius:14px;
-margin-bottom:10px;
-backdrop-filter:blur(6px);
+display:flex;
+justify-content:space-between;
+align-items:center;
+backdrop-filter:blur(8px);
+}
+
+/* LEFT */
+
+.multi-info{
+display:flex;
+flex-direction:column;
 }
 
 .multi-name{
 font-weight:600;
-margin-bottom:6px;
 }
 
 .multi-time{
-font-size:18px;
 color:#38bdf8;
-margin-bottom:8px;
+font-size:18px;
 }
 
-.multi-buttons{
+/* BUTTONS */
+
+.multi-actions{
 display:flex;
-gap:8px;
+gap:6px;
 }
 
-.multi-buttons button{
-flex:1;
-padding:8px;
-font-size:14px;
+.multi-actions button{
+padding:6px 10px;
+font-size:13px;
+border:none;
+border-radius:8px;
+cursor:pointer;
 }
 </style>
 </head>
@@ -371,13 +427,13 @@ font-size:14px;
 
 <!-- Khu vực multi -->
 <div class="multi-section">
-<h2 style="color:#38bdf8;margin-top:20px;">Multi Countdown</h2>
-<div class="quick-timer">
-<input type="text" id="multiName" placeholder="Tên sự kiện">
-<input type="number" id="multiMinutes" placeholder="Phút">
-<button onclick="addMultiTimer()">Thêm</button>
+<h2 class="multi-title">Multi Countdown</h2>
+<div class="multi-add">
+<input id="multiName" placeholder="Event name">
+<input type="number" id="multiMinutes" placeholder="Minutes">
+<button onclick="addMultiTimer()">Add</button>
 </div>
-<div id="multiList"></div>
+<div id="multiList" class="multi-list"></div>
 </div>
 
 <!-- Khu vực thông báo -->
