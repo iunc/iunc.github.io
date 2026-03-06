@@ -258,6 +258,21 @@ button:disabled{
   box-shadow:0 0 15px currentColor;
 }
 
+.quick-timer{
+display:flex;
+gap:10px;
+margin-bottom:15px;
+}
+
+.quick-timer input{
+flex:1;
+margin-bottom:0;
+text-align:center;
+}
+
+.quick-timer button{
+flex:2;
+}
 @keyframes pop{
   from{ transform:scale(0.8); opacity:0; }
   to{ transform:scale(1); opacity:1; }
@@ -303,6 +318,13 @@ button:disabled{
 <!-- khu vực điều khiển -->
   <div class="controls">
     <input type="datetime-local" id="dateInput" step="1">
+    <!-- QUICK TIMER -->
+    <div class="quick-timer">
+      <input type="number" id="hourInput" placeholder="Giờ" min="0">
+      <input type="number" id="minuteInput" placeholder="Phút" min="0">
+      <input type="number" id="secondInput" placeholder="Giây" min="0">
+      <button onclick="startQuickTimer()">Bắt đầu nhanh</button>
+    </div>
     <button id="startBtn" onclick="startCD()">Bắt đầu</button>
     <button id="resetBtn" onclick="resetCD()">Reset</button>
   </div>
