@@ -278,6 +278,42 @@ flex:2;
   from{ transform:scale(0.8); opacity:0; }
   to{ transform:scale(1); opacity:1; }
   }
+
+.multi-section{
+width:100%;
+max-width:400px;
+margin-top:30px;
+}
+
+.multi-item{
+background:rgba(255,255,255,0.05);
+padding:15px;
+border-radius:14px;
+margin-bottom:10px;
+backdrop-filter:blur(6px);
+}
+
+.multi-name{
+font-weight:600;
+margin-bottom:6px;
+}
+
+.multi-time{
+font-size:18px;
+color:#38bdf8;
+margin-bottom:8px;
+}
+
+.multi-buttons{
+display:flex;
+gap:8px;
+}
+
+.multi-buttons button{
+flex:1;
+padding:8px;
+font-size:14px;
+}
 </style>
 </head>
 
@@ -331,6 +367,17 @@ flex:2;
     <button id="resetBtn" class="reset-btn"onclick="resetCD()">Reset</button>
   </div>
 
+</div>
+
+<!-- Khu vực multi -->
+<div class="multi-section">
+<h2 style="color:#38bdf8;margin-top:20px;">Multi Countdown</h2>
+<div class="quick-timer">
+<input type="text" id="multiName" placeholder="Tên sự kiện">
+<input type="number" id="multiMinutes" placeholder="Phút">
+<button onclick="addMultiTimer()">Thêm</button>
+</div>
+<div id="multiList"></div>
 </div>
 
 <!-- Khu vực thông báo -->
