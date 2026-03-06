@@ -323,7 +323,7 @@ flex:2;
       <input type="number" id="hourInput" placeholder="Giờ" min="0">
       <input type="number" id="minuteInput" placeholder="Phút" min="0">
       <input type="number" id="secondInput" placeholder="Giây" min="0">
-      <button onclick="startQuickTimer()">Bắt đầu nhanh</button>
+      <button id="startQuick" onclick="startQuickTimer()">Bắt đầu nhanh</button>
     </div>
     <button id="startBtn" onclick="startCD()">Bắt đầu</button>
     <button id="resetBtn" onclick="resetCD()">Reset</button>
@@ -384,6 +384,10 @@ const modalIcon = document.getElementById("modalIcon");
 const modalTitle = document.getElementById("modalTitle");
 const resetBtn = document.getElementById("resetBtn");
 const startBtn = document.getElementById("startBtn");
+const hourInput = document.getElementById("hourInput");
+const minuteInput = document.getElementById("minuteInput");
+const secondInput = document.getElementById("secondInput");
+const startQuick = document.getElementById("startQuick");
 
 // Khi load trang → ẩn reset
 resetBtn.style.display = "none"; 
@@ -445,6 +449,7 @@ if (interval && laNhanNut) {
 }
 */
 startBtn.disabled = true;
+startQuick.disabled = true;
 resetBtn.style.display = "block";
 //Kiểm tra ngày tháng nhập chưa
 if (!input.value){
@@ -497,6 +502,7 @@ minutesEl.innerText = 0;
 secondsEl.innerText = 0;
 interval = null;
 localStorage.removeItem("countdown_target"); //Xoá localStorage
+startQuick.disabled = false;
 startBtn.disabled = false; // hết disabled
 resetBtn.style.display = "none"; // ẩn reset
 document.title = "🔔 Countdown hoàn thành!";
@@ -587,6 +593,7 @@ window.addEventListener("load", function(){
 //Lấy giá trị trong localStorage ra
   if(savedTarget && savedStart){
     startBtn.disabled = true;
+    startQuick.disabled = true;
     resetBtn.style.display = "block";
     const target = Number(savedTarget);
     startTime = Number(savedStart);
@@ -627,6 +634,7 @@ totalTime = target - startTime;
 localStorage.setItem("countdown_target",target);
 localStorage.setItem("countdown_start",startTime);
 startBtn.disabled = true;
+startQuick.disabled = true;
 resetBtn.style.display = "block";
 runCountdown(target);
 }
@@ -702,6 +710,9 @@ function resetCD(){
     hoursEl.innerText = 0;
     minutesEl.innerText = 0;
     secondsEl.innerText = 0;
+    hourInput.innerText = 0;
+    minuteInput.innerText = 0;
+    secondInput.innerText = 0;
     progressBar.style.width = "100%";
     progressText.innerText = "100%";
     input.value = "";
