@@ -298,8 +298,8 @@ div {
 <!-- khu vực điều khiển -->
   <div class="controls">
     <input type="datetime-local" id="dateInput" step="1">
-    <button onclick="startCD()">Bắt đầu</button>
-    <button onclick="resetCD()">Reset</button>
+    <button id="startBtn" onclick="startCD()">Bắt đầu</button>
+    <button id="resetBtn" onclick="resetCD()">Reset</button>
   </div>
 
 </div>
@@ -355,7 +355,12 @@ const modal = document.getElementById("modal");
 const modalMessage = document.getElementById("modalMessage");
 const modalIcon = document.getElementById("modalIcon");
 const modalTitle = document.getElementById("modalTitle");
+const resetBtn = document.getElementById("resetBtn");
+const startBtn = document.getElementById("startBtn");
 
+// Khi load trang → ẩn reset
+resetBtn.style.display = "none"; 
+  
 let interval;
 let totalTime;
 let startTime;
@@ -395,7 +400,7 @@ function closeModal(){
 function pad(num){
   return num.toString().padStart(2,"0");
 }
-
+  
 /* Hàm startCD dùng để kiểm tra và lưu 
 vào localStorage*/
 function startCD(laNhanNut = true){
@@ -410,6 +415,8 @@ if (interval && laNhanNut) {
   });
   return;
 }
+startBtn.disable = true;
+resetBtn.style.display = "block";
 //Kiểm tra ngày tháng nhập chưa
 if (!input.value){
 showModal({
@@ -420,7 +427,6 @@ showModal({
 });
 return;
 }
- 
 /*
 const [year, month, day] = input.value.split("-"); // Xoá dấu - giữa ngày tháng năm Vd: 2026-03-03
 const target = new Date(
@@ -430,16 +436,13 @@ const target = new Date(
     0,0,0 // là 0 giờ 0 phút 0 giây
   );
 */ //cái này dùng khi không chọn giờ phút giây được
-
 const target = new Date(input.value).getTime(); // thời gian kết thúc
 startTime = Date.now(); //Thời gian bắt đầu
-
 localStorage.setItem("countdown_target",target);
 localStorage.setItem("countdown_start", startTime);
 /*Lưu vào giá trị người dùng nhập và 
 thời gian bắt đầu vào localStorage*/
 totalTime = target - startTime; // tổng thời gian 
-
 runCountdown(target);
 }
 
@@ -465,6 +468,8 @@ minutesEl.innerText = 0;
 secondsEl.innerText = 0;
 interval = null;
 localStorage.removeItem("countdown_target"); //Xoá localStorage
+startBtn.disable = false; // hết disable
+resetBtn.style.display = "none"; // ẩn reset
 document.title = "🔔 Countdown hoàn thành!";
 showModal({
   title: "Hoàn thành",
@@ -552,6 +557,8 @@ window.addEventListener("load", function(){
   const savedStart = localStorage.getItem("countdown_start");
 //Lấy giá trị trong localStorage ra
   if(savedTarget && savedStart){
+    startBtn.disabled = true;
+    resetBtn.style.display = "block";
     const target = Number(savedTarget);
     startTime = Number(savedStart);
     totalTime = target - startTime;
@@ -633,6 +640,8 @@ function resetCD(){
   onConfirm: function(){
     clearInterval(interval);
     interval = null;
+    startBtn.disabled = false;
+    resetBtn.style.display = "none";
     localStorage.removeItem("countdown_target");
     localStorage.removeItem("countdown_start");
     daysEl.innerText = 0;
