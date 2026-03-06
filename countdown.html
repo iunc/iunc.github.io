@@ -291,6 +291,7 @@ div {
   <div class="controls">
     <input type="datetime-local" id="dateInput" step="1">
     <button onclick="startCD()">Bắt đầu</button>
+    <button onclick="resetCD()">Reset</button>
   </div>
 
 </div>
@@ -301,7 +302,11 @@ div {
     <div class="modal-icon" id="modalIcon">✔</div>
     <h3 id="modalTitle">Thông báo</h3>
     <p id="modalMessage">Nội dung</p>
-    <button onclick="closeModal()">OK</button>
+    
+    <div style="display:flex; gap:10px; justify-content:center;">
+    <button id="modalCancel" onclick="closeModal()">Huỷ</button>
+    <button id="modalOK">OK</button>
+    </div>
   </div>
 </div>
 
@@ -346,6 +351,15 @@ const modalTitle = document.getElementById("modalTitle");
 let interval;
 let totalTime;
 let startTime;
+let modalCallback = null;
+
+//Xử lí khi bấm nút OK
+document.getElementById("modalOK").onclick = function(){
+  if(modalCallback){
+    modalCallback(); // có thì chạy hàm này ra thông báo confirm
+  }
+  closeModal(); //không thì đóng modal
+};
 
 //Hiện thông báo
 function showModal({
@@ -353,12 +367,13 @@ function showModal({
   message = "",
   icon = "✔",
   color = "#38bdf8"
+  onConfirm = null
 }) {
   modalTitle.innerText = title;
   modalMessage.innerText = message;
   modalIcon.innerText = icon;
   modalIcon.style.color = color;
-
+  modalCallback = onConfirm;
   modal.classList.add("active");
 }
 
@@ -597,6 +612,31 @@ document.addEventListener("visibilitychange", function(){
     }
   }
 });
+
+// 👇 hàm reset
+function resetCD(){
+ showModal({
+  title:"Reset Countdown",
+  message:"Bạn chắc muốn xoá countdown này?",
+  icon:"⚠",
+  color:"#facc15",
+
+  onConfirm: function(){
+    clearInterval(interval);
+    interval = null;
+    localStorage.removeItem("countdown_target");
+    localStorage.removeItem("countdown_start");
+    daysEl.innerText = 0;
+    hoursEl.innerText = 0;
+    minutesEl.innerText = 0;
+    secondsEl.innerText = 0;
+    progressBar.style.width = "100%";
+    progressText.innerText = "100%";
+    input.value = "";
+    document.title = "Countdown";
+  }
+});
+}
 </script>
 
 </body>
