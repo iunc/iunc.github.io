@@ -357,6 +357,7 @@ let modalCallback = null;
 document.getElementById("modalOK").onclick = function(){
   if(modalCallback){
     modalCallback(); // có thì chạy hàm này ra thông báo confirm
+    modalCallback = null; // tránh callback cũ còn lưu
   }
   closeModal(); //không thì đóng modal
 };
@@ -366,7 +367,7 @@ function showModal({
   title = "Thông báo",
   message = "",
   icon = "✔",
-  color = "#38bdf8"
+  color = "#38bdf8",
   onConfirm = null
 }) {
   modalTitle.innerText = title;
