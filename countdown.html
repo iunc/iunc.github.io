@@ -422,7 +422,7 @@ if (interval && laNhanNut) {
   return;
 }
 */
-startBtn.disable = true;
+startBtn.disabled = true;
 resetBtn.style.display = "block";
 //Kiểm tra ngày tháng nhập chưa
 if (!input.value){
@@ -475,7 +475,7 @@ minutesEl.innerText = 0;
 secondsEl.innerText = 0;
 interval = null;
 localStorage.removeItem("countdown_target"); //Xoá localStorage
-startBtn.disable = false; // hết disable
+startBtn.disabled = false; // hết disabled
 resetBtn.style.display = "none"; // ẩn reset
 document.title = "🔔 Countdown hoàn thành!";
 showModal({
