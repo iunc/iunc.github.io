@@ -94,7 +94,7 @@ body{
   margin-top:10px;
 }
 
-.controls button:last-child{
+.reset-btn{
   background:#ef4444;
 }
   
@@ -273,6 +273,10 @@ text-align:center;
 .quick-timer button{
 flex:2;
 }
+  
+#startQuick{
+background:#0ea5e9;
+}
 @keyframes pop{
   from{ transform:scale(0.8); opacity:0; }
   to{ transform:scale(1); opacity:1; }
@@ -326,7 +330,7 @@ flex:2;
       <button id="startQuick" onclick="startQuickTimer()">Bắt đầu nhanh</button>
     </div>
     <button id="startBtn" onclick="startCD()">Bắt đầu</button>
-    <button id="resetBtn" onclick="resetCD()">Reset</button>
+    <button id="resetBtn" class="reset-btn"onclick="resetCD()">Reset</button>
   </div>
 
 </div>
