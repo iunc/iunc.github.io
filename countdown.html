@@ -743,12 +743,22 @@ function resetCD(){
 
 //hàm PAUSE/RESUME
 function togglePause(){
-   if(!interval && !isPaused) return;
+   if(!interval && !isPaused) return; //countdown chưa chạy thì return
    if(!isPaused){
    // PAUSE
    clearInterval(interval);
    interval = null;
    remainingTime = (startTime + totalTime) - Date.now();
+    /* startTime = thời gian bắt đầu
+       totalTime = tổng thời gian countdown
+       startTime + totalTime = thời gian kết thúc
+       bắt đầu = 10:00
+       tổng thời gian = 60s
+       kết thúc = 10:01
+       kết thúc - thời gian hiện tại
+       hiện tại = 10:00:40
+       remainingTime = 20s
+    */
    pauseBtn.innerText = "Resume";
    isPaused = true;
    }else{
