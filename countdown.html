@@ -496,6 +496,7 @@ clearInterval(interval);
 localStorage.removeItem("countdown_target");//Xoá localStorage
 localStorage.removeItem("countdown_start");
 progressBar.style.width = "0%";
+progressText.innerText = "0%";
 daysEl.innerText = 0;
 hoursEl.innerText = 0;
 minutesEl.innerText = 0;
@@ -715,6 +716,8 @@ function resetCD(){
     secondInput.value = "";
     progressBar.style.width = "100%";
     progressText.innerText = "100%";
+    progressBar.classList.remove("danger");
+    progressText.style.color = "#38bdf8";
     input.value = "";
     document.title = "Countdown";
   }
