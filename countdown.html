@@ -448,9 +448,6 @@ if (interval && laNhanNut) {
   return;
 }
 */
-startBtn.disabled = true;
-startQuick.disabled = true;
-resetBtn.style.display = "block";
 //Kiểm tra ngày tháng nhập chưa
 if (!input.value){
 showModal({
@@ -461,6 +458,9 @@ showModal({
 });
 return;
 }
+startBtn.disabled = true;
+startQuick.disabled = true;
+resetBtn.style.display = "block";
 /*
 const [year, month, day] = input.value.split("-"); // Xoá dấu - giữa ngày tháng năm Vd: 2026-03-03
 const target = new Date(
