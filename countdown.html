@@ -31,12 +31,9 @@ body{
   font-weight:bold;
   letter-spacing:3px;
   color:#38bdf8;
-
   background: rgba(255,255,255,0.03);
   backdrop-filter: blur(8px);
-
   border-bottom:1px solid rgba(56,189,248,0.2);
-
   text-shadow:
     0 0 6px rgba(56,189,248,0.6),
     0 0 12px rgba(14,165,233,0.4);
@@ -49,6 +46,7 @@ body{
   justify-content:center;
   align-items:center;
   padding:20px;
+  padding-bottom:80px;
 }
 
 .countdown{
@@ -287,19 +285,40 @@ position:fixed;
 bottom:0;
 left:0;
 width:100%;
-background:#0f1c3f;
+height:65px;
+background:rgba(15,28,63,0.9);
+backdrop-filter:blur(10px);
 display:flex;
 justify-content:space-around;
-padding:10px 0;
-border-top:1px solid rgba(255,255,255,0.1);
+align-items:center;
+border-top:1px solid rgba(56,189,248,0.2);
+z-index:100;
 }
 
 .bottom-nav button{
+flex:1;
+height:100%;
 background:none;
 border:none;
-color:white;
-font-size:14px;
+color:#9ca3af;
+font-size:12px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:4px;
+cursor:pointer;
+transition:0.2s;
 }
+
+.bottom-nav button:hover{
+color:#38bdf8;
+}
+
+.bottom-nav button.active{
+color:#38bdf8;
+}
+
 
 @keyframes pop{
   from{ transform:scale(0.8); opacity:0; }
@@ -386,14 +405,31 @@ Multi Countdown
 <div id="settingsPage" class="page">
 Settings
 </div>
+  
+</div>
+  
 <!-- Khu vực nav -->
 <div class="bottom-nav">
-  <button onclick="showPage('timer')">Timer</button>
-  <button onclick="showPage('stopwatch')">Stopwatch</button>
-  <button onclick="showPage('world')">World</button>
-  <button onclick="showPage('multi')">Multi</button>
-  <button onclick="showPage('settings')">Settings</button>
-</div>
+<button onclick="showPage('timer')">
+⏳
+<span>Timer</span>
+</button>
+<button onclick="showPage('stopwatch')">
+⏱
+<span>Stopwatch</span>
+</button>
+<button onclick="showPage('world')">
+🌍
+<span>World</span>
+</button>
+<button onclick="showPage('multi')">
+📅
+<span>Multi</span>
+</button>
+<button onclick="showPage('settings')">
+⚙
+<span>Settings</span>
+</button>
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -823,7 +859,12 @@ function showPage(name){
 document.querySelectorAll(".page").forEach(p=>{
 p.classList.remove("active");
 });
+document.querySelectorAll(".bottom-nav button").forEach(btn=>{
+btn.classList.remove("active");
+});
 document.getElementById(name+"Page")
+.classList.add("active");
+document.querySelector(`.bottom-nav button[onclick="showPage('${name}')"]`)
 .classList.add("active");
 }
 
