@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mini Game Hứng Quả</title>
+    <style>
+        /* CSS PHẦN GIAO DIỆN */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; /* Chặn cuộn toàn trang */
+            touch-action: none; /* Quan trọng cho PWA: chặn thao tác vuốt mặc định */
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* Giới hạn độ rộng trên máy tính */
+            height: 80vh;
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
+            border: 4px solid #333;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none; /* Để nhấn xuyên qua lớp UI vào game */
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            display: none; /* Ẩn mặc định */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="ui-layer">
+            <div class="stat-box">Điểm: <span id="scoreVal">0</span></div>
+            <div class="stat-box">Kỷ lục: <span id="highScoreVal">0</span></div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="game-over">
+            <h2>Hết lượt!</h2>
+            <p>Điểm của bạn: <span id="finalScore">0</span></p>
+            <button onclick="startGame()">Chơi lại</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreEl = document.getElementById("scoreVal");
+        const highScoreEl = document.getElementById("highScoreVal");
+        const gameOverEl = document.getElementById("game-over");
+        const finalScoreEl = document.getElementById("finalScore");
+
+        // Cấu hình Canvas thực tế theo kích thước hiển thị
+        function resize() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Biến Game
+        let score = 0;
+        let highScore = localStorage.getItem("highScore") || 0;
+        highScoreEl.innerText = highScore;
+        
+        let gameActive = true;
+        let basket = { x: 0, y: 0, w: 80, h: 40 };
+        let fruits = [];
+        let fruitSpeed = 3;
+        let spawnRate = 1000; // ms
+
+        // Khởi tạo/Reset Game
+        function startGame() {
+            score = 0;
+            scoreEl.innerText = score;
+            fruits = [];
+            fruitSpeed = 3;
+            basket.w = 80;
+            basket.x = canvas.width / 2 - basket.w / 2;
+            basket.y = canvas.height - 60;
+            gameActive = true;
+            gameOverEl.style.display = "none";
+            requestAnimationFrame(update);
+        }
+
+        // Tạo quả rơi
+        function spawnFruit() {
+            if (!gameActive) return;
+            const x = Math.random() * (canvas.width - 30) + 15;
+            fruits.push({ x: x, y: -20, r: 15, speed: fruitSpeed + Math.random() * 2 });
+            
+            // Càng về sau quả rơi càng nhanh
+            setTimeout(spawnFruit, Math.max(400, spawnRate - (score * 5)));
+        }
+
+        // Xử lý điều khiển (Chuột & Cảm ứng)
+        function moveBasket(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let relativeX = clientX - rect.left;
+            basket.x = relativeX - basket.w / 2;
+
+            // Chặn giỏ đi ra ngoài biên
+            if (basket.x < 0) basket.x = 0;
+            if (basket.x > canvas.width - basket.w) basket.x = canvas.width - basket.w;
+        }
+
+        canvas.addEventListener("mousemove", moveBasket);
+        canvas.addEventListener("touchmove", (e) => {
+            moveBasket(e);
+            e.preventDefault(); // Chặn cuộn trang khi đang chơi
+        }, { passive: false });
+
+        // Vòng lặp chính của game
+        function update() {
+            if (!gameActive) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Vẽ Giỏ (màu gỗ)
+            ctx.fillStyle = "#8B4513";
+            ctx.beginPath();
+            ctx.roundRect(basket.x, basket.y, basket.w, basket.h, 10);
+            ctx.fill();
+
+            // 2. Xử lý quả
+            for (let i = fruits.length - 1; i >= 0; i--) {
+                let f = fruits[i];
+                f.y += f.speed;
+
+                // Vẽ quả (màu đỏ)
+                ctx.fillStyle = "#FF4444";
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+                ctx.fill();
+                // Cuống quả
+                ctx.strokeStyle = "green";
+                ctx.lineWidth = 3;
+                ctx.moveTo(f.x, f.y - f.r);
+                ctx.lineTo(f.x, f.y - f.r - 5);
+                ctx.stroke();
+
+                // Kiểm tra va chạm
+                if (f.y + f.r > basket.y && f.x > basket.x && f.x < basket.x + basket.w) {
+                    fruits.splice(i, 1);
+                    score++;
+                    scoreEl.innerText = score;
+                    // Rung nhẹ điện thoại khi hứng được (chỉ Android hỗ trợ tốt)
+                    if (navigator.vibrate) navigator.vibrate(20);
+                } 
+                // Kiểm tra nếu rơi mất quả
+                else if (f.y > canvas.height) {
+                    endGame();
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        function endGame() {
+            gameActive = false;
+            finalScoreEl.innerText = score;
+            gameOverEl.style.display = "block";
+            
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem("highScore", highScore);
+                highScoreEl.innerText = highScore;
+            }
+        }
+
+        // Bắt đầu
+        startGame();
+        spawnFruit();
+    </script>
+</body>
+</html>
