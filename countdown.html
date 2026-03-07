@@ -283,25 +283,22 @@ flex:2;
 
 <body>
 <div class="header">COUNTDOWN</div>
-
 <div class="main">
-
-  <div class="countdown">
+  <!-- Countdown-->
+  <div id="timerPage" class="page">
+    <div class="countdown">
     <div class="time-box">
       <div class="time-number" id="days">0</div>
       <div class="time-label">Ngày</div>
     </div>
-
     <div class="time-box">
       <div class="time-number" id="hours">0</div>
       <div class="time-label">Giờ</div>
     </div>
-
     <div class="time-box">
       <div class="time-number" id="minutes">0</div>
       <div class="time-label">Phút</div>
     </div>
-
     <div class="time-box">
       <div class="time-number" id="seconds">0</div>
       <div class="time-label">Giây</div>
@@ -331,7 +328,6 @@ flex:2;
     <button id="resetBtn" class="reset-btn"onclick="resetCD()">Reset</button>
   </div>
 
-</div>
 
 <!-- Khu vực thông báo -->
 <div class="modal-overlay" id="modal">
@@ -346,7 +342,31 @@ flex:2;
     </div>
   </div>
 </div>
+</div>
 
+<div id="stopwatchPage" class="page">
+Stopwatch
+</div>
+
+<div id="worldPage" class="page">
+World Clock
+</div>
+
+<div id="multiPage" class="page">
+Multi Countdown
+</div>
+
+<div id="settingsPage" class="page">
+Settings
+</div>
+<!-- Khu vực nav -->
+<div class="bottom-nav">
+  <button onclick="showPage('timer')">Timer</button>
+  <button onclick="showPage('stopwatch')">Stopwatch</button>
+  <button onclick="showPage('world')">World</button>
+  <button onclick="showPage('multi')">Multi</button>
+  <button onclick="showPage('settings')">Settings</button>
+</div>
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
