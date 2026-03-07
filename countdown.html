@@ -273,7 +273,34 @@ text-align:center;
 .quick-timer button{
 flex:2;
 }
-  
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#0f1c3f;
+display:flex;
+justify-content:space-around;
+padding:10px 0;
+border-top:1px solid rgba(255,255,255,0.1);
+}
+
+.bottom-nav button{
+background:none;
+border:none;
+color:white;
+font-size:14px;
+}
+
 @keyframes pop{
   from{ transform:scale(0.8); opacity:0; }
   to{ transform:scale(1); opacity:1; }
@@ -789,6 +816,15 @@ function togglePause(){
    isPaused = false;
    runCountdown(target);
 }
+}
+
+//Chuyển trang thanh nav
+function showPage(name){
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active");
+});
+document.getElementById(name+"Page")
+.classList.add("active");
 }
 </script>
 
