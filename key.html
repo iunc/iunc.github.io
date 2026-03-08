@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Két Sắt Cá Nhân</title>
+    <script src="js/crypto-js.min.js"></script> 
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 400px; margin: 50px auto; text-align: center; }
+        textarea { width: 100%; height: 150px; margin: 10px 0; }
+        input { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
+        button { padding: 10px 20px; cursor: pointer; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h2>🔐 Két Sắt Bí Mật</h2>
+    
+    <input type="password" id="masterPass" placeholder="Nhập Master Password (chỉ mình bạn biết)">
+    <textarea id="content" placeholder="Dữ liệu mật khẩu cần lưu/đọc..."></textarea>
+    
+    <button onclick="handleEncrypt()">Mã Hóa & Lưu</button>
+    <button onclick="handleDecrypt()">Giải Mã</button>
+    <button onclick="clearAll()" style="background: red; color: white;">Xóa Sạch</button>
+
+    <script>
+        // Hàm mã hóa
+        function handleEncrypt() {
+            const pass = document.getElementById('masterPass').value;
+            const text = document.getElementById('content').value;
+            if(!pass || !text) return alert("Nhập đủ mật khẩu và nội dung!");
+
+            const encrypted = CryptoJS.AES.encrypt(text, pass).toString();
+            document.getElementById('content').value = encrypted; // Hiển thị chuỗi đã mã hóa
+            alert("Dữ liệu đã mã hóa! Bạn có thể lưu chuỗi này vào Firebase.");
+        }
+
+        // Hàm giải mã
+        function handleDecrypt() {
+            const pass = document.getElementById('masterPass').value;
+            const encryptedText = document.getElementById('content').value;
+            try {
+                const bytes = CryptoJS.AES.decrypt(encryptedText, pass);
+                const original = bytes.toString(CryptoJS.enc.Utf8);
+                if(original) {
+                    document.getElementById('content').value = original;
+                } else {
+                    alert("Sai mật khẩu hoặc dữ liệu bị hỏng!");
+                }
+            } catch(e) {
+                alert("Không thể giải mã!");
+            }
+        }
+
+        // Xóa trắng bộ nhớ
+        function clearAll() {
+            document.getElementById('masterPass').value = '';
+            document.getElementById('content').value = '';
+        }
+    </script>
+</body>
+</html>
