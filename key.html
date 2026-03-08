@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://www.gstatic.com; connect-src 'self' https://identitytoolkit.googleapis.com https://*.firebaseio.com;">
-    <title>🔐 Két Sắt Cá Nhân</title>
+    <title>🔐 Két Sắt</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" 
             integrity="sha512-a+SUDuwNzXDvzK3p37z0V4G904R1v9m8d12V2yXQG0E/fQ2h291+C2M4O5F0N2+L0q0N0L0Q==" 
@@ -31,9 +31,9 @@
     <input type="password" id="masterPass" placeholder="Master Password" autocomplete="off">
     <textarea id="content" placeholder="Nội dung mật khẩu..."></textarea>
     <div class="btn-group">
-        <button class="btn-save" onclick="handleEncryptAndSave()">Mã Hóa & Lưu</button>
-        <button class="btn-load" onclick="handleLoadAndDecrypt()">Tải & Giải Mã</button>
-        <button class="btn-clear" onclick="clearAll()">Xóa Sạch (Reset)</button>
+        <button id="btnSave" class="btn-save">Mã Hóa & Lưu</button>
+        <button id="btnLoad" class="btn-load">Tải & Giải Mã</button>
+        <button id="btnClear" class="btn-clear">Xóa Sạch</button>
     </div>
 </div>
 
@@ -56,63 +56,49 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // CHẶN TRUY CẬP TRỰC TIẾP
     onAuthStateChanged(auth, (user) => {
-        if (!user) {
-            alert("Bạn chưa đăng nhập!");
-            window.location.href = "login.html";
-        }
+        if (!user) window.location.href = "login.html";
     });
 
-    // CÁC HÀM CẦN THIẾT
-    window.saveCloud = async (data) => {
+    // Các hàm logic
+    async function saveCloud(data) {
         const user = auth.currentUser;
-        await set(ref(db, 'vaults/' + user.uid), { data: data });
-    };
+        if(user) await set(ref(db, 'vaults/' + user.uid), { data: data });
+    }
 
-    window.loadCloud = async () => {
+    async function loadCloud() {
         const user = auth.currentUser;
         const snapshot = await get(ref(db, 'vaults/' + user.uid));
         return snapshot.exists() ? snapshot.val().data : null;
-    };
-</script>
+    }
 
-<script>
-    // Tự động reset sau 5 phút
-    let timer = setTimeout(clearAll, 300000);
-    const resetTimer = () => { clearTimeout(timer); timer = setTimeout(clearAll, 300000); };
-    document.onmousemove = document.onkeypress = resetTimer;
-
-    async function handleEncryptAndSave() {
+    // Gán sự kiện vào nút (thay vì onclick trong HTML)
+    document.getElementById('btnSave').onclick = async () => {
         const pass = document.getElementById('masterPass').value;
         const text = document.getElementById('content').value;
         if(!pass || !text) return alert("Nhập mật khẩu và nội dung!");
-        
         const encrypted = CryptoJS.AES.encrypt(text, pass).toString();
         document.getElementById('content').value = encrypted;
         await saveCloud(encrypted);
         alert("Đã lưu!");
-        resetTimer();
-    }
+    };
 
-    async function handleLoadAndDecrypt() {
+    document.getElementById('btnLoad').onclick = async () => {
         const pass = document.getElementById('masterPass').value;
         const cipher = await loadCloud();
-        if(!pass || !cipher) return alert("Chưa có mật khẩu hoặc dữ liệu Cloud trống!");
-
+        if(!pass || !cipher) return alert("Chưa có dữ liệu!");
         try {
             const bytes = CryptoJS.AES.decrypt(cipher, pass);
             const original = bytes.toString(CryptoJS.enc.Utf8);
             if(original) document.getElementById('content').value = original;
             else alert("Sai mật khẩu!");
-        } catch(e) { alert("Lỗi giải mã!"); }
-        resetTimer();
-    }
+        } catch(e) { alert("Lỗi!"); }
+    };
 
-    function clearAll() {
+    document.getElementById('btnClear').onclick = () => {
         document.getElementById('masterPass').value = '';
         document.getElementById('content').value = '';
-    }
+    };
 </script>
 </body>
 </html>
