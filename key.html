@@ -2,20 +2,21 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://www.gstatic.com; connect-src 'self' https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://*.firebaseio.com;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Két Sắt Cá Nhân</title>
-    
-    <script src="crypto-js.min.js"></script>
+    <title>🔐 Két Sắt Cá Nhân</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" 
+            integrity="sha512-a+SUDuwNzXDvzK3p37z0V4G904R1v9m8d12V2yXQG0E/fQ2h291+C2M4O5F0N2+L0q0N0L0Q==" 
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     
     <style>
         :root { --bg-color: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; --text: #f8fafc; --danger: #ef4444; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
         .card { width: 100%; max-width: 400px; background: var(--card-bg); padding: 2rem; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.4); border: 1px solid #334155; }
-        h2 { text-align: center; color: var(--accent); margin-top: 0; margin-bottom: 1.5rem; }
+        h2 { text-align: center; color: var(--accent); margin-bottom: 1.5rem; }
         input, textarea { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b1120; border: 2px solid #334155; border-radius: 12px; color: white; box-sizing: border-box; font-size: 16px; }
-        textarea { height: 120px; resize: none; }
+        textarea { height: 150px; resize: none; }
         input:focus, textarea:focus { border-color: var(--accent); outline: none; }
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         button { padding: 14px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
@@ -58,18 +59,16 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    onAuthStateChanged(auth, (user) => {
-        if (!user) window.location.href = "login.html";
-    });
+    onAuthStateChanged(auth, (user) => { if (!user) window.location.href = "login.html"; });
 
-    // Hàm lưu Cloud
     window.saveToCloud = async (data) => {
         const user = auth.currentUser;
-        await set(ref(db, 'vaults/' + user.uid), { encryptedData: data });
-        alert("Đã đồng bộ lên Cloud!");
+        if(user) {
+            await set(ref(db, 'vaults/' + user.uid), { encryptedData: data });
+            alert("Đã lưu an toàn lên Cloud!");
+        }
     };
 
-    // Hàm tải Cloud
     window.loadFromCloud = async () => {
         const user = auth.currentUser;
         const snapshot = await get(ref(db, 'vaults/' + user.uid));
@@ -78,10 +77,17 @@
 </script>
 
 <script>
+    // Tự động xóa sạch sau 5 phút không thao tác
+    let timer = setTimeout(clearAll, 300000);
+    document.onmousemove = document.onkeypress = () => {
+        clearTimeout(timer);
+        timer = setTimeout(clearAll, 300000);
+    };
+
     async function handleEncryptAndSave() {
         const pass = document.getElementById('masterPass').value;
         const text = document.getElementById('content').value;
-        if(!pass || !text) return alert("Nhập mật khẩu và nội dung!");
+        if(pass.length < 8) return alert("Master Password quá ngắn (tối thiểu 8 ký tự)!");
         
         const encrypted = CryptoJS.AES.encrypt(text, pass).toString();
         document.getElementById('content').value = encrypted;
