@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://www.gstatic.com; connect-src 'self' https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://*.firebaseio.com;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://www.gstatic.com; connect-src 'self' https://identitytoolkit.googleapis.com https://*.firebaseio.com;">
     <title>🔐 Két Sắt Cá Nhân</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" 
@@ -12,19 +12,16 @@
     
     <style>
         :root { --bg-color: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; --text: #f8fafc; --danger: #ef4444; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
-        .card { width: 100%; max-width: 400px; background: var(--card-bg); padding: 2rem; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.4); border: 1px solid #334155; }
+        body { font-family: sans-serif; background-color: var(--bg-color); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .card { width: 100%; max-width: 400px; background: var(--card-bg); padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         h2 { text-align: center; color: var(--accent); margin-bottom: 1.5rem; }
-        input, textarea { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b1120; border: 2px solid #334155; border-radius: 12px; color: white; box-sizing: border-box; font-size: 16px; }
+        input, textarea { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b1120; border: 2px solid #334155; border-radius: 12px; color: white; box-sizing: border-box; }
         textarea { height: 150px; resize: none; }
-        input:focus, textarea:focus { border-color: var(--accent); outline: none; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        button { padding: 14px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .btn-save { background: var(--accent); color: #0f172a; }
-        .btn-load { background: #cbd5e1; color: #0f172a; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { padding: 12px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; color: #0f172a; }
+        .btn-save { background: var(--accent); }
+        .btn-load { background: #cbd5e1; }
         .btn-clear { background: var(--danger); color: white; grid-column: span 2; }
-        button:hover { filter: brightness(1.1); }
-        button:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
@@ -33,7 +30,6 @@
     <h2>🔐 Két Sắt</h2>
     <input type="password" id="masterPass" placeholder="Master Password" autocomplete="off">
     <textarea id="content" placeholder="Nội dung mật khẩu..."></textarea>
-    
     <div class="btn-group">
         <button class="btn-save" onclick="handleEncryptAndSave()">Mã Hóa & Lưu</button>
         <button class="btn-load" onclick="handleLoadAndDecrypt()">Tải & Giải Mã</button>
@@ -50,6 +46,7 @@
         apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
         authDomain: "iunc-login.firebaseapp.com",
         projectId: "iunc-login",
+        databaseURL: "https://iunc-login-default-rtdb.firebaseio.com",
         storageBucket: "iunc-login.firebasestorage.app",
         messagingSenderId: "359473829379",
         appId: "1:359473829379:web:b1102278155f598e316036"
@@ -59,44 +56,48 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    onAuthStateChanged(auth, (user) => { if (!user) window.location.href = "login.html"; });
-
-    window.saveToCloud = async (data) => {
-        const user = auth.currentUser;
-        if(user) {
-            await set(ref(db, 'vaults/' + user.uid), { encryptedData: data });
-            alert("Đã lưu an toàn lên Cloud!");
+    // CHẶN TRUY CẬP TRỰC TIẾP
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            alert("Bạn chưa đăng nhập!");
+            window.location.href = "login.html";
         }
+    });
+
+    // CÁC HÀM CẦN THIẾT
+    window.saveCloud = async (data) => {
+        const user = auth.currentUser;
+        await set(ref(db, 'vaults/' + user.uid), { data: data });
     };
 
-    window.loadFromCloud = async () => {
+    window.loadCloud = async () => {
         const user = auth.currentUser;
         const snapshot = await get(ref(db, 'vaults/' + user.uid));
-        return snapshot.exists() ? snapshot.val().encryptedData : null;
+        return snapshot.exists() ? snapshot.val().data : null;
     };
 </script>
 
 <script>
-    // Tự động xóa sạch sau 5 phút không thao tác
+    // Tự động reset sau 5 phút
     let timer = setTimeout(clearAll, 300000);
-    document.onmousemove = document.onkeypress = () => {
-        clearTimeout(timer);
-        timer = setTimeout(clearAll, 300000);
-    };
+    const resetTimer = () => { clearTimeout(timer); timer = setTimeout(clearAll, 300000); };
+    document.onmousemove = document.onkeypress = resetTimer;
 
     async function handleEncryptAndSave() {
         const pass = document.getElementById('masterPass').value;
         const text = document.getElementById('content').value;
-        if(pass.length < 8) return alert("Master Password quá ngắn (tối thiểu 8 ký tự)!");
+        if(!pass || !text) return alert("Nhập mật khẩu và nội dung!");
         
         const encrypted = CryptoJS.AES.encrypt(text, pass).toString();
         document.getElementById('content').value = encrypted;
-        await saveToCloud(encrypted);
+        await saveCloud(encrypted);
+        alert("Đã lưu!");
+        resetTimer();
     }
 
     async function handleLoadAndDecrypt() {
         const pass = document.getElementById('masterPass').value;
-        const cipher = await loadFromCloud();
+        const cipher = await loadCloud();
         if(!pass || !cipher) return alert("Chưa có mật khẩu hoặc dữ liệu Cloud trống!");
 
         try {
@@ -105,6 +106,7 @@
             if(original) document.getElementById('content').value = original;
             else alert("Sai mật khẩu!");
         } catch(e) { alert("Lỗi giải mã!"); }
+        resetTimer();
     }
 
     function clearAll() {
