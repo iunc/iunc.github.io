@@ -10,69 +10,18 @@
     <script src="crypto-js.min.js"></script>
     
     <style>
-        :root {
-            --bg-color: #0f172a;       /* Nền đen xanh */
-            --card-bg: #1e293b;        /* Thẻ card */
-            --accent: #38bdf8;         /* Màu Sky Blue của bạn */
-            --text: #f8fafc;
-            --danger: #ef4444;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 15px;
-        }
-
-        .card {
-            width: 100%;
-            max-width: 400px;
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-            border: 1px solid #334155;
-        }
-
+        :root { --bg-color: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; --text: #f8fafc; --danger: #ef4444; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .card { width: 100%; max-width: 400px; background: var(--card-bg); padding: 2rem; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.4); border: 1px solid #334155; }
         h2 { text-align: center; color: var(--accent); margin-top: 0; margin-bottom: 1.5rem; }
-
-        input, textarea {
-            width: 100%;
-            padding: 14px;
-            margin-bottom: 15px;
-            background: #0b1120;
-            border: 2px solid #334155;
-            border-radius: 12px;
-            color: white;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
+        input, textarea { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b1120; border: 2px solid #334155; border-radius: 12px; color: white; box-sizing: border-box; font-size: 16px; }
         textarea { height: 120px; resize: none; }
-
         input:focus, textarea:focus { border-color: var(--accent); outline: none; }
-
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-        button {
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
+        button { padding: 14px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .btn-save { background: var(--accent); color: #0f172a; }
         .btn-load { background: #cbd5e1; color: #0f172a; }
         .btn-clear { background: var(--danger); color: white; grid-column: span 2; }
-
         button:hover { filter: brightness(1.1); }
         button:active { transform: scale(0.97); }
     </style>
@@ -85,62 +34,71 @@
     <textarea id="content" placeholder="Nội dung mật khẩu..."></textarea>
     
     <div class="btn-group">
-        <button class="btn-save" onclick="handleEncrypt()">Mã Hóa</button>
-        <button class="btn-load" onclick="handleDecrypt()">Giải Mã</button>
+        <button class="btn-save" onclick="handleEncryptAndSave()">Mã Hóa & Lưu</button>
+        <button class="btn-load" onclick="handleLoadAndDecrypt()">Tải & Giải Mã</button>
         <button class="btn-clear" onclick="clearAll()">Xóa Sạch (Reset)</button>
     </div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
-  authDomain: "iunc-login.firebaseapp.com",
-  projectId: "iunc-login",
-  storageBucket: "iunc-login.firebasestorage.app",
-  messagingSenderId: "359473829379",
-  appId: "1:359473829379:web:b1102278155f598e316036"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
+        authDomain: "iunc-login.firebaseapp.com",
+        projectId: "iunc-login",
+        storageBucket: "iunc-login.firebasestorage.app",
+        messagingSenderId: "359473829379",
+        appId: "1:359473829379:web:b1102278155f598e316036"
+    };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
 
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  } 
-});
+    onAuthStateChanged(auth, (user) => {
+        if (!user) window.location.href = "login.html";
+    });
 
+    // Hàm lưu Cloud
+    window.saveToCloud = async (data) => {
+        const user = auth.currentUser;
+        await set(ref(db, 'vaults/' + user.uid), { encryptedData: data });
+        alert("Đã đồng bộ lên Cloud!");
+    };
+
+    // Hàm tải Cloud
+    window.loadFromCloud = async () => {
+        const user = auth.currentUser;
+        const snapshot = await get(ref(db, 'vaults/' + user.uid));
+        return snapshot.exists() ? snapshot.val().encryptedData : null;
+    };
 </script>
+
 <script>
-    // Logic mã hóa & giải mã
-    function handleEncrypt() {
+    async function handleEncryptAndSave() {
         const pass = document.getElementById('masterPass').value;
         const text = document.getElementById('content').value;
-        if(!pass || !text) return alert("Vui lòng nhập Master Password và Nội dung!");
+        if(!pass || !text) return alert("Nhập mật khẩu và nội dung!");
         
         const encrypted = CryptoJS.AES.encrypt(text, pass).toString();
         document.getElementById('content').value = encrypted;
+        await saveToCloud(encrypted);
     }
 
-    function handleDecrypt() {
+    async function handleLoadAndDecrypt() {
         const pass = document.getElementById('masterPass').value;
-        const cipher = document.getElementById('content').value;
-        if(!pass || !cipher) return alert("Vui lòng nhập Master Password và chuỗi mã hóa!");
+        const cipher = await loadFromCloud();
+        if(!pass || !cipher) return alert("Chưa có mật khẩu hoặc dữ liệu Cloud trống!");
 
         try {
             const bytes = CryptoJS.AES.decrypt(cipher, pass);
             const original = bytes.toString(CryptoJS.enc.Utf8);
-            if(original) {
-                document.getElementById('content').value = original;
-            } else {
-                alert("Sai mật khẩu hoặc dữ liệu đã bị hỏng!");
-            }
-        } catch(e) { 
-            alert("Lỗi giải mã!"); 
-        }
+            if(original) document.getElementById('content').value = original;
+            else alert("Sai mật khẩu!");
+        } catch(e) { alert("Lỗi giải mã!"); }
     }
 
     function clearAll() {
