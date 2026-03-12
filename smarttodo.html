@@ -132,10 +132,12 @@ input.addEventListener("keydown",function(e){
 function addTask(){
   const text = input.value.trim();
   if(!text) return;
- 
-  createTask(text, tasks.length);
-
-  tasks.push(text);
+  const task = {
+      id: Date.now();,
+      text: text
+  }
+  tasks.push(task);
+  createTask(task);
   saveTasks();
 
   input.value = "";
@@ -144,8 +146,9 @@ function addTask(){
   updateCounter();
 }
 
-function createTask(text, index){
+function createTask(task){
 const li = document.createElement("li");
+    li.dataset.id= task.id;
   const span = document.createElement("span");
  span.textContent = text;
  span.addEventListener("click", function(){
@@ -155,8 +158,10 @@ const li = document.createElement("li");
  del.textContent = "X";
  del.className = "deleteBtn";
  del.addEventListener("click", function(){
-   li.remove();
+   const id = li.dataset.id;
+   const index = task.findText(t => t.id == id);
    tasks.splice(index,1);
+   li.remove();
    saveTasks();
    updateCounter();
 });
@@ -179,8 +184,8 @@ function loadTask(){
    const saved = localStorage.getItem("tasks");
    if(!saved) return;
    tasks = JSON.parse(saved);
-   tasks.forEach((task,index) => {
-      createTask(task,index);
+   tasks.forEach((task) => {
+      createTask(task);
 });
    updateCounter();
 }
