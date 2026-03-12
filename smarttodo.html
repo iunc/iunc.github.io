@@ -133,11 +133,12 @@ function addTask(){
   const text = input.value.trim();
   if(!text) return;
   const task = {
-      id: Date.now(),
-      text: text
+     id: Date.now(),
+     text: text
   }
   tasks.push(task);
   createTask(task);
+
   saveTasks();
 
   input.value = "";
@@ -148,9 +149,9 @@ function addTask(){
 
 function createTask(task){
 const li = document.createElement("li");
-    li.dataset.id= task.id;
+li.dataset.id = task.id;
   const span = document.createElement("span");
- span.textContent = text;
+ span.textContent = task.text;
  span.addEventListener("click", function(){
   span.classList.toggle("completed");
 });
@@ -158,9 +159,9 @@ const li = document.createElement("li");
  del.textContent = "X";
  del.className = "deleteBtn";
  del.addEventListener("click", function(){
-   const id = li.dataset.id;
-   const index = tasks.findText(t => t.id == id);
-   tasks.splice(index,1);
+   const id = Number(li.dataset.id);
+   const index = tasks.findIndex(t => t.id == id);
+   tasks.splice(index, 1);
    li.remove();
    saveTasks();
    updateCounter();
