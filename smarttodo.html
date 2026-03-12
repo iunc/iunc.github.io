@@ -133,7 +133,7 @@ function addTask(){
   const text = input.value.trim();
   if(!text) return;
  
-  createTask(text);
+  createTask(text, tasks.length);
 
   tasks.push(text);
   saveTasks();
@@ -144,7 +144,7 @@ function addTask(){
   updateCounter();
 }
 
-function createTask(text){
+function createTask(text, index){
 const li = document.createElement("li");
   const span = document.createElement("span");
  span.textContent = text;
@@ -156,6 +156,8 @@ const li = document.createElement("li");
  del.className = "deleteBtn";
  del.addEventListener("click", function(){
    li.remove();
+   tasks.splice(index,1);
+   saveTasks();
    updateCounter();
 });
  li.appendChild(span);
@@ -177,8 +179,8 @@ function loadTask(){
    const saved = localStorage.getItem("tasks");
    if(!saved) return;
    tasks = JSON.parse(saved);
-   tasks.forEach(task => {
-      createTask(task);
+   tasks.forEach((task,index) => {
+      createTask(task,index);
 });
    updateCounter();
 }
