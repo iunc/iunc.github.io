@@ -159,7 +159,7 @@ const li = document.createElement("li");
  del.className = "deleteBtn";
  del.addEventListener("click", function(){
    const id = li.dataset.id;
-   const index = task.findText(t => t.id == id);
+   const index = tasks.findText(t => t.id == id);
    tasks.splice(index,1);
    li.remove();
    saveTasks();
