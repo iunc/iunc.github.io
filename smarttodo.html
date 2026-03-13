@@ -79,6 +79,9 @@ li span{
 .filters{
     margin:15px 0;
 }
+#clearCompleted{
+    margin-bottom:15px;
+}
 </style>
 </head>
 
@@ -98,6 +101,8 @@ li span{
 <button id="filterActive">Active</button>
 <button id="filterCompleted">Completed</button>
 </div>
+
+<button id="clearCompleted">Clear Completed</button>
     
 <div id="counter">0 tasks</div>
 <ul id="taskList"></ul>
@@ -139,6 +144,14 @@ const filterAll = document.getElementById("filterAll");
 const filterActive = document.getElementById("filterActive");
 const filterCompleted = document.getElementById("filterCompleted");
     
+const clearCompleted = document.getElementById("clearCompleted");
+
+clearCompleted.addEventListener("click", function(){
+ tasks = tasks.filter(task => !task.completed);
+ saveTasks();
+ renderByFilter();
+});
+
 addBtn.addEventListener("click",addTask);
 
 let tasks = [];
