@@ -162,7 +162,7 @@ li.dataset.id = task.id;
   const task = tasks.find(t => t.id === id);
   //task.completed = !task.completed; 
   //cái này vẫn đúng nhưng có khả năng bug
-  task.completed = span.classalist.contains("completed");
+  task.completed = span.classList.contains("completed");
   //cái này chuẩn hơn, đồng bộ Data với UI
   saveTasks();
 });
