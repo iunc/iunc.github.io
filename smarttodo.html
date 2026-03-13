@@ -101,6 +101,11 @@ li span{
 <button id="addBtn">Add</button>
 </div>
 
+<div>
+  <button>🔍</button>
+  <input id="searchInput" placeholder="Search task..." />
+</div>
+
 <div class="filters">
 <button id="filterAll">All</button>
 <button id="filterActive">Active</button>
@@ -259,18 +264,18 @@ filterCompleted.addEventListener("click", function(){
 });
 
 function renderByFilter(){
- if(currentFilter === "all"){
-    renderTasks(tasks);
- }
+ const keyword = searchInput.value.toLowerCase();
+ let list = tasks;
  if(currentFilter === "active"){
-    const active = tasks.filter(task => !task.completed);
-    renderTasks(active);
+   list = tasks.filter(task => !task.completed);
  }
  if(currentFilter === "completed"){
-    const done = tasks.filter(task => task.completed);
-    renderTasks(done);
+   list = tasks.filter(task => task.completed);
  }
-}    
+ list = list.filter(task =>   task.text.toLowerCase().includes(keyword)
+ );
+ renderTasks(list);
+}
     
 function updateCounter(){
  const total = taskList.children.length;
