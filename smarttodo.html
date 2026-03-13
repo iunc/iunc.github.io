@@ -151,7 +151,7 @@ function addTask(){
      completed: false
   }
   tasks.push(task);
-  createTask(task);
+  renderTasks(tasks);
 
   saveTasks();
 
@@ -190,7 +190,7 @@ li.dataset.id = task.id;
    if(index !== -1){
    tasks.splice(index, 1);
    }
-   li.remove();
+   renderTasks(tasks);
    saveTasks();
    updateCounter();
 });
@@ -234,7 +234,7 @@ function loadTask(){
    if(!saved) return;
    tasks = JSON.parse(saved);
    tasks.forEach((task) => {
-      createTask(task);
+      renderTasks(tasks);
 });
    updateCounter();
 }
