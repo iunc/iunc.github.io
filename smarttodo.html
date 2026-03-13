@@ -155,9 +155,11 @@ const filterActive = document.getElementById("filterActive");
 const filterCompleted = document.getElementById("filterCompleted");
  
 const searchInput = document.getElementById("searchInput");
-  
+searchInput.addEventListener("input", function(){
+  renderByFilter();
+});
+ 
 const clearCompleted = document.getElementById("clearCompleted");
-
 clearCompleted.addEventListener("click", function(){
  tasks = tasks.filter(task => !task.completed);
  saveTasks();
