@@ -18,6 +18,19 @@ body{
     max-width:500px;
     margin:auto;
 }
+.header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:15px;
+}
+
+#toggleTheme{
+ font-size:20px;
+ background:white;
+ border:1px solid #ccc;
+ cursor:pointer;
+}
 h1{
     text-align:center;
     font-size:46px;
@@ -91,6 +104,30 @@ li span{
 #clearCompleted{
     margin-bottom:15px;
 }
+body.dark{
+  background:#121212;
+  color:white;
+}
+body.dark input{
+  background:#1e1e1e;
+  color:white;
+  border:1px solid #444;
+}
+body.dark li{
+  background:#1e1e1e;
+}
+body.dark button{
+  background:#333;
+  color:white;
+}
+body.dark h1{
+  color: white;
+}
+body.dark #searchBtn{
+  background:#333;
+  border:1px solid #333;
+}
+
 </style>
 </head>
 
@@ -98,7 +135,10 @@ li span{
 
 <div class="container">
 
-<h1>Smart Todo</h1>
+<div class="header">
+  <h1>Smart Todo</h1>
+  <button id="toggleTheme">🌙</button>
+</div>
 
 <div class="inputBox">
 <input id="taskInput" placeholder="Enter task...">
@@ -157,18 +197,30 @@ const counter = document.getElementById("counter");
 const filterAll = document.getElementById("filterAll");
 const filterActive = document.getElementById("filterActive");
 const filterCompleted = document.getElementById("filterCompleted");
- 
+
 const searchInput = document.getElementById("searchInput");
 searchInput.addEventListener("input", function(){
-  renderByFilter();
+ renderByFilter();
 });
- 
+
 const clearCompleted = document.getElementById("clearCompleted");
 clearCompleted.addEventListener("click", function(){
  tasks = tasks.filter(task => !task.completed);
  saveTasks();
  renderByFilter();
 });
+
+const toggleTheme = document.getElementById("toggleTheme");
+toggleTheme.addEventListener("click", function(){
+document.body.classList.toggle("dark");
+const isDark = document.body.classList.contains("dark");
+localStorage.setItem("theme", isDark ? "dark" : "light");
+});
+
+const savedTheme = localStorage.getItem("theme");
+if(savedTheme === "dark"){
+ document.body.classList.add("dark");
+}
 
 addBtn.addEventListener("click",addTask);
 
@@ -280,7 +332,7 @@ function renderByFilter(){
  if(currentFilter === "completed"){
    list = tasks.filter(task => task.completed);
  }
- list = list.filter(task =>   task.text.toLowerCase().includes(keyword)
+ list = list.filter(task => task.text.toLowerCase().includes(keyword)
  );
  renderTasks(list);
 }
