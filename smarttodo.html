@@ -232,11 +232,11 @@ function renderByFilter(){
     renderTasks(tasks);
  }
  if(currentFilter === "active"){
-    const active = tasks.find(task => !task.completed);
+    const active = tasks.filter(task => !task.completed);
     renderTasks(active);
  }
  if(currentFilter === "completed"){
-    const done = tasks.find(task => task.completed);
+    const done = tasks.filter(task => task.completed);
     renderTasks(done);
  }
 }    
