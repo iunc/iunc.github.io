@@ -181,6 +181,9 @@ li.dataset.id = task.id;
   saveTasks();
   }
 });
+span.addEventListener("dblclick",function(){
+    editTask(span,li);
+}
  const del = document.createElement("button");
  del.textContent = "X";
  del.className = "deleteBtn";
@@ -233,10 +236,38 @@ function loadTask(){
    const saved = localStorage.getItem("tasks");
    if(!saved) return;
    tasks = JSON.parse(saved);
-   tasks.forEach((task) => {
-      renderTasks(tasks);
-});
+   renderTasks(tasks);
    updateCounter();
+}
+
+function editTask(span, li){
+ const oldText = span.textContent;
+ const input = document.createElement("input");
+ input.type = "text";
+ input.value = oldText;
+ li.replaceChild(input, span);
+ input.focus();
+ input.addEventListener("keydown", function(e){
+   if(e.key === "Enter"){
+      saveEdit();
+   }
+ });
+ input.addEventListener("blur", saveEdit);
+ function saveEdit(){
+   const newText = input.value.trim();
+   if(!newText){
+      li.replaceChild(span,input);
+      return;
+   }
+   span.textContent = newText;
+   const id = Number(li.dataset.id);
+   const task = tasks.find(t => t.id === id);
+   if(task){
+      task.text = newText;
+      saveTasks();
+   }
+   li.replaceChild(span,input);
+ }
 }
 
 </script>
