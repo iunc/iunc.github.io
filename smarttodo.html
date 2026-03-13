@@ -68,7 +68,12 @@ li{
     margin-bottom:15px;
     font-size:14px;
     color:#555;
-}  
+} 
+.filter{
+    margin-top:15px;
+    display: flex;
+    justify-content: space-between;
+}
 </style>
 </head>
 
@@ -83,6 +88,12 @@ li{
 <button id="addBtn">Add</button>
 </div>
 
+<div class="filters">
+<button id="filterAll">All</button>
+<button id="filterActive">Active</button>
+<button id="filterCompleted">Completed</button>
+</div>
+    
 <div id="counter">0 tasks</div>
 <ul id="taskList"></ul>
 
@@ -119,6 +130,10 @@ const addBtn = document.getElementById("addBtn");
 const taskList = document.getElementById("taskList");
 const counter = document.getElementById("counter");
 
+const filterAll = document.getElementById("filterAll");
+const filterActive = document.getElementById("filterActive");
+const filterCompleted = document.getElementById("filterCompleted");
+    
 addBtn.addEventListener("click",addTask);
 
 let tasks = [];
@@ -182,6 +197,26 @@ li.dataset.id = task.id;
  taskList.appendChild(li);
 }
 
+function renderTasks(list){
+ taskList.innerHTML = "";
+ list.forEach(task => {
+  createTask(task);
+ });
+ updateCounter();
+}
+
+filterAll.addEventListener("click", function(){
+ renderTasks(tasks);
+});
+filterActive.addEventListener("click", function(){
+ const active = tasks.filter(task => !task.completed);
+ renderTasks(active);
+});
+filterCompleted.addEventListener("click", function(){
+ const done = tasks.filter(task => task.completed);
+ renderTasks(done);
+});
+    
 function updateCounter(){
  const total = taskList.children.length;
  counter.textContent = total + " tasks";
