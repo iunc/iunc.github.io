@@ -51,14 +51,21 @@ li{
     border-radius:8px;
     margin-bottom:10px;
     display:flex;
-    gặp:10px;
+    gap:10px;
     align-items:center;
+}
+li input[type="checkbox"]{
+    flex:0 0 auto;
+}
+li span{
+    flex:1;
 }
 .completed{
     text-decoration:line-through;
     opacity:0.6;
 }
 .deleteBtn{
+    margin-left:auto;
     background:red;
     padding:6px 10px;
     border-radius:6px;
