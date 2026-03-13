@@ -135,6 +135,7 @@ const filterCompleted = document.getElementById("filterCompleted");
 addBtn.addEventListener("click",addTask);
 
 let tasks = [];
+let currentFilter = "all";
 
 input.addEventListener("keydown",function(e){
  if(e.key === "Enter"){
@@ -179,6 +180,7 @@ li.dataset.id = task.id;
   task.completed = span.classList.contains("completed");
   //cái này chuẩn hơn, đồng bộ Data với UI
   saveTasks();
+  renderByFilter();
   }
 });
 span.addEventListener("dblclick",function(){
@@ -211,16 +213,33 @@ function renderTasks(list){
 }
 
 filterAll.addEventListener("click", function(){
+ currentFilter = "all";
  renderTasks(tasks);
 });
 filterActive.addEventListener("click", function(){
+ currentFilter = "active";
  const active = tasks.filter(task => !task.completed);
  renderTasks(active);
 });
 filterCompleted.addEventListener("click", function(){
+ currentFilter = "completed";
  const done = tasks.filter(task => task.completed);
  renderTasks(done);
 });
+
+function renderByFilter(){
+ if(currentFilter === "all"){
+    renderTasks(tasks);
+ }
+ if(currentFilter === "active"){
+    const active = tasks.find(task => !task.completed);
+    renderTasks(active);
+ }
+ if(currentFilter === "completed"){
+    const done = tasks.find(task => task.completed);
+    renderTasks(done);
+ }
+}    
     
 function updateCounter(){
  const total = taskList.children.length;
