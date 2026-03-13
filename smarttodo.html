@@ -51,7 +51,7 @@ li{
     border-radius:8px;
     margin-bottom:10px;
     display:flex;
-    justify-content:space-between;
+    gặp:10px;
     align-items:center;
 }
 .completed{
@@ -136,6 +136,7 @@ addBtn.addEventListener("click",addTask);
 
 let tasks = [];
 let currentFilter = "all";
+let isEdit = false;
 
 input.addEventListener("keydown",function(e){
  if(e.key === "Enter"){
@@ -165,23 +166,27 @@ function addTask(){
 function createTask(task){
 const li = document.createElement("li");
 li.dataset.id = task.id;
-  const span = document.createElement("span");
+const checkbox = document.createElement("input");
+checkbox.type = "checkbox";
+checkbox.checked = task.completed;
+const span = document.createElement("span");
  span.textContent = task.text;
  if(task.completed){
      span.classList.add("completed");
  }
- span.addEventListener("click", function(e){
-  if(e.detail !== 1) return;
-  span.classList.toggle("completed");
+ checkbox.addEventListener("change", function(){
   const id = Number(li.dataset.id);
   const task = tasks.find(t => t.id === id);
-  //task.completed = !task.completed; 
-  //cái này vẫn đúng nhưng có khả năng bug
+  
   if(task){
-  task.completed = span.classList.contains("completed");
-  //cái này chuẩn hơn, đồng bộ Data với UI
+  task.completed = checkbox.checked;
   saveTasks();
   renderByFilter();
+  }
+  if(checkbox.checked){
+     span.classList.add("completed");
+  } else{
+    span.classList.remove("completed");
   }
 });
 span.addEventListener("dblclick",function(){
@@ -200,6 +205,7 @@ span.addEventListener("dblclick",function(){
    saveTasks();
    updateCounter();
 });
+ li.appendChild(checkbox);
  li.appendChild(span);
  li.appendChild(del);
  taskList.appendChild(li);
