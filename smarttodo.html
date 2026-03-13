@@ -134,7 +134,8 @@ function addTask(){
   if(!text) return;
   const task = {
      id: Date.now(),
-     text: text
+     text: text,
+     completed: false
   }
   tasks.push(task);
   createTask(task);
@@ -154,6 +155,10 @@ li.dataset.id = task.id;
  span.textContent = task.text;
  span.addEventListener("click", function(){
   span.classList.toggle("completed");
+  const id = Num(li.dataset.id);
+  const task = tasks.find(t => t.id === id);
+  task.completed = !task.completed;
+  saveTasks();
 });
  const del = document.createElement("button");
  del.textContent = "X";
