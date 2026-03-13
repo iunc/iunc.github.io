@@ -170,7 +170,8 @@ li.dataset.id = task.id;
  if(task.completed){
      span.classList.add("completed");
  }
- span.addEventListener("click", function(){
+ span.addEventListener("click", function(e){
+  if(e.detail === 1){
   span.classList.toggle("completed");
   const id = Number(li.dataset.id);
   const task = tasks.find(t => t.id === id);
@@ -182,6 +183,7 @@ li.dataset.id = task.id;
   saveTasks();
   renderByFilter();
   }
+}
 });
 span.addEventListener("dblclick",function(){
     editTask(span,li);
@@ -195,7 +197,7 @@ span.addEventListener("dblclick",function(){
    if(index !== -1){
    tasks.splice(index, 1);
    }
-   renderTasks(tasks);
+   renderByFilter();
    saveTasks();
    updateCounter();
 });
