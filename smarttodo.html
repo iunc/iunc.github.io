@@ -216,6 +216,8 @@ body.dark #sortSelect{
     <option value="default">Sort</option>
     <option value="high">High▼</option>
     <option value="low">Low▲</option>
+    <option value="active">Active▼</option>
+    <option value="completed">Completed▼</option>
   </select>
 </div>
 
@@ -407,6 +409,12 @@ const order = {
  }
  if(sortType === "low"){
    list.sort((a,b)=> order[a.priority] - order[b.priority]);
+ }
+ if(sortType === "active"){
+   list.sort((a,b)=> a.completed - b.completed);
+ }
+ if(sortType === "completed"){
+   list.sort((a,b)=> b.completed - a.completed);
  }
  renderTasks(list);
 }
