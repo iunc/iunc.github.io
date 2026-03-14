@@ -233,6 +233,8 @@ input.addEventListener("keydown", function(e){
 
 const sortSelect = document.getElementById("sortSelect");
 sortSelect.addEventListener("change", function(){
+   currentSort = sortSelect.value;
+ localStorage.setItem("sort",currentSort);
    renderByFilter();
 });
 
@@ -418,6 +420,9 @@ function loadTask(){
    const saved = localStorage.getItem("tasks");
    if(!saved) return;
    tasks = JSON.parse(saved);
+   const savedSort = localStorage.getItem("sort") || "default";
+   currentSort = savedSort;
+   sortSelect.value = savedSort;
    renderTasks(tasks);
    updateStats();
 }
