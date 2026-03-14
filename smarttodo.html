@@ -220,10 +220,10 @@ onAuthStateChanged(auth, (user) => {
 <script>
 
 const input = document.getElementById("taskInput");
-input.addEventListener("keydown",function(e){
+input.addEventListener("keydown", function(e){
  if(e.key === "Enter"){
     addTask();
-}
+ }
 });
 
 const addBtn = document.getElementById("addBtn");
@@ -352,7 +352,7 @@ span.addEventListener("dblclick",function(){
    updateStats();
 });
  li.appendChild(checkbox);
- lí.appendChild(priority);
+ li.appendChild(priority);
  li.appendChild(span);
  li.appendChild(del);
  taskList.appendChild(li);
