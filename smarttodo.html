@@ -151,6 +151,15 @@ body.dark select{
   background:#333;
   border:1px solid #333;
 }
+.high{
+  border-left:4px solid red;
+}
+.medium{
+  border-left:4px solid orange;
+}
+.low{
+  border-left:4px solid green;
+}
 
 </style>
 </head>
@@ -298,6 +307,7 @@ function addTask(){
 function createTask(task){
 const li = document.createElement("li");
 li.dataset.id = task.id;
+li.classList.add(task.priority);
 
 const checkbox = document.createElement("input");
 checkbox.type = "checkbox";
