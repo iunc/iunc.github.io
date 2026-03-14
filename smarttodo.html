@@ -222,38 +222,18 @@ body.dark #sortSelect{
 <ul id="taskList"></ul>
 
 </div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBuBHbln6bqYn9SpwOC2eDke3JJ32nE7vs",
-  authDomain: "iunc-login.firebaseapp.com",
-  projectId: "iunc-login",
-  storageBucket: "iunc-login.firebasestorage.app",
-  messagingSenderId: "359473829379",
-  appId: "1:359473829379:web:b1102278155f598e316036"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  } 
-});
-
-</script>
     
 <script>
-
 const input = document.getElementById("taskInput");
 input.addEventListener("keydown", function(e){
  if(e.key === "Enter"){
     addTask();
  }
+});
+
+const sortSelect = document.getElementById("sortSelect");
+sortSelect.addEventListener("change", function(){
+   renderByFilter();
 });
 
 const addBtn = document.getElementById("addBtn");
@@ -414,6 +394,18 @@ function renderByFilter(){
  }
  list = list.filter(task => task.text.toLowerCase().includes(keyword)
  );
+const sortType = sortSelect.value;
+const order = {
+  high:3,
+  medium:2,
+  low:1
+ };
+ if(sortType === "high"){
+   list.sort((a,b)=> order[b.priority] - order[a.priority]);
+ }
+ if(sortType === "low"){
+   list.sort((a,b)=> order[a.priority] - order[b.priority]);
+ }
  renderTasks(list);
 }
 
