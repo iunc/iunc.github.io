@@ -411,11 +411,40 @@ const order = {
    list.sort((a,b)=> order[a.priority] - order[b.priority]);
  }
  if(sortType === "active"){
-   list.sort((a,b)=> a.completed - b.completed);
+   list.sort((a,b)=>{
+     // 1 active trước
+     if(a.completed !== b.completed){
+     return a.completed - b.completed;
+     }
+     // 2 priority
+     const pa = order[a.priority];
+     const pb = order[b.priority];
+     if(pa !== pb){
+     return pb - pa;
+     }
+     // 3 newest
+     return b.id - a.id;
+     });
  }
  if(sortType === "completed"){
-   list.sort((a,b)=> b.completed - a.completed);
+   list.sort((a,b)=>{
+     // 1 completed trước
+     if(a.completed !== b.completed){
+     return b.completed - a.completed;
+     }
+     // 2 priority
+     const pa = order[a.priority];
+     const pb = order[b.priority];
+     if(pa !== pb){
+     return pb - pa;
+     }
+     // 3 newest
+     return b.id - a.id;
+     });
  }
+ if(sortType === "default"){
+  list.sort((a,b)=> b.id - a.id);
+}
  renderTasks(list);
 }
 
