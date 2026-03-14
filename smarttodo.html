@@ -403,7 +403,7 @@ function loadTask(){
 }
 
 function editTask(span, li){
- const oldText = span.textContent;
+ const oldText = span.textContent.replace(/^🔴 |^🟡 |^🟢 /,"");
  const input = document.createElement("input");
  input.type = "text";
  input.value = oldText;
