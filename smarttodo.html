@@ -245,6 +245,9 @@ function updateStats(){
 }
 
 const prioritySelect = document.getElementById("priority");
+prioritySelect.addEventListener("change", function(){
+ input.focus();
+});
 
 const filterAll = document.getElementById("filterAll");
 const filterActive = document.getElementById("filterActive");
