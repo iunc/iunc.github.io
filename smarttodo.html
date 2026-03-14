@@ -423,7 +423,7 @@ function loadTask(){
    const savedSort = localStorage.getItem("sort") || "default";
    currentSort = savedSort;
    sortSelect.value = savedSort;
-   renderTasks(tasks);
+   renderByFilter();
    updateStats();
 }
 
