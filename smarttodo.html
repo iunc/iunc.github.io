@@ -160,7 +160,7 @@ body.dark select{
 </div>
 
 <div class="inputBox">
-<input id="taskInput" placeholder="Enter task...">
+<input id="taskInput" placeholder="Enter task..." enterkeyhint="done">
 <select id="priority">
   <option value="low">🟢Low</option>
   <option value="medium">🟡Medium</option>
@@ -215,6 +215,12 @@ onAuthStateChanged(auth, (user) => {
 <script>
 
 const input = document.getElementById("taskInput");
+input.addEventListener("keydown",function(e){
+ if(e.key === "Enter"){
+    addTask();
+}
+});
+
 const addBtn = document.getElementById("addBtn");
 const taskList = document.getElementById("taskList");
 
@@ -264,12 +270,6 @@ addBtn.addEventListener("click",addTask);
 
 let tasks = [];
 let currentFilter = "all";
-
-input.addEventListener("keydown",function(e){
- if(e.key === "Enter"){
-    addTask();
-}
-});
 
 function addTask(){
   const text = input.value.trim();
