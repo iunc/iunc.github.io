@@ -286,7 +286,7 @@ function addTask(){
      priority:prioritySelect.value
   }
   tasks.push(task);
-  renderTasks(tasks);
+  renderByFilter();
 
   saveTasks();
   updateStats();
@@ -432,6 +432,7 @@ function editTask(span, li){
    if(task){
       task.text = newText;
       saveTasks();
+      renderByFilter();
    }
    li.replaceChild(span,input);
  }
