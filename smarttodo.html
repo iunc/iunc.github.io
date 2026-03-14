@@ -94,7 +94,12 @@ li{
 li input[type="checkbox"]{
     flex:0 0 auto;
 }
-li span{
+li span:first-of-type{
+    width:18px;
+    text-align:center;
+    font-size:18px;
+}
+li span:nth-child(3){
     flex:1;
 }
 .completed{
@@ -298,19 +303,19 @@ const checkbox = document.createElement("input");
 checkbox.type = "checkbox";
 checkbox.checked = task.completed;
 
-let icon = "";
+const priority = document.createElement("span")
 if(task.priority === "high"){
- icon = "🔴 ";
+ priority.textContent = "🔴";
 }
 if(task.priority === "medium"){
- icon = "🟡 ";
+ priority.textContent = "🟡";
 }
 if(task.priority === "low"){
- icon = "🟢 ";
+ priority.textContent = "🟢";
 }
 
 const span = document.createElement("span");
- span.textContent = icon + task.text;
+ span.textContent = task.text;
  if(task.completed){
      span.classList.add("completed");
  }
@@ -403,7 +408,7 @@ function loadTask(){
 }
 
 function editTask(span, li){
- const oldText = span.textContent.replace(/^🔴 |^🟡 |^🟢 /,"");
+ const oldText = span.textContent;
  const input = document.createElement("input");
  input.type = "text";
  input.value = oldText;
