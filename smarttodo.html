@@ -146,6 +146,10 @@ body.dark select{
   background:#333;
   border:1px solid #333;
 }
+body.dark #sortSelect{
+  color:white;
+  border:none;
+}
 .high{
   border-left:4px solid #ff4d4f;
 }
@@ -154,6 +158,18 @@ body.dark select{
 }
 .low{
   border-left:4px solid #52c41a;
+}
+.taskHeader{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin:10px 0;
+}
+#sortSelect {
+ padding:4px 8px;
+ font-size:14px;
+ border-radius:6px;
+ border:1px solid #ccc;
 }
 
 </style>
@@ -193,6 +209,15 @@ body.dark select{
 
 <div id="stats"></div>
   
+<div class="taskHeader">
+  <span>Tasks</span>
+  <select id="sortSelect">
+    <option value="default">Sort</option>
+    <option value="high">High▼</option>
+    <option value="low">Low▲</option>
+  </select>
+</div>
+
 <ul id="taskList"></ul>
 
 </div>
