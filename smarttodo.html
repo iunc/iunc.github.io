@@ -302,6 +302,9 @@ searchInput.addEventListener("input", function(){
 
 const clearCompleted = document.getElementById("clearCompleted");
 clearCompleted.addEventListener("click", function(){
+ const hasCompleted = tasks.some(t => t.completed);
+ if(!hasCompleted) return;
+ if(!confirm("Clear all completed tasks?")) return;
  tasks = tasks.filter(task => !task.completed);
  saveTasks();
  renderByFilter();
@@ -383,6 +386,7 @@ span.addEventListener("dblclick",function(){
  del.textContent = "X";
  del.className = "deleteBtn";
  del.addEventListener("click", function(){
+   if(!confirm("Delete this task?")) return;
    const id = Number(li.dataset.id);
    const index = tasks.findIndex(t => t.id === id);
    if(index !== -1){
