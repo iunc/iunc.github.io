@@ -506,17 +506,20 @@ function renderTasks(list){
 
 filterAll.addEventListener("click", function(){
  currentFilter = "all";
+ localStorage.setItem("filter", currentFilter);
  renderTasks(tasks);
  updateFilterUI();
 });
 filterActive.addEventListener("click", function(){
  currentFilter = "active";
+ localStorage.setItem("filter", currentFilter);
  const active = tasks.filter(task => !task.completed);
  renderTasks(active);
  updateFilterUI();
 });
 filterCompleted.addEventListener("click", function(){
  currentFilter = "completed";
+ localStorage.setItem("filter", currentFilter);
  const done = tasks.filter(task => task.completed);
  renderTasks(done);
  updateFilterUI();
@@ -595,6 +598,10 @@ function loadTask(){
    const savedSort = localStorage.getItem("sort") || "default";
    currentSort = savedSort;
    sortSelect.value = savedSort;
+   const savedFilter = localStorage.getItem("filter");
+   if(savedFilter){
+      currentFilter = savedFilter;
+   }
    renderByFilter();
    updateStats();
    updateProgress();
