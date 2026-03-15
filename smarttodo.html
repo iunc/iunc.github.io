@@ -622,6 +622,7 @@ document.getElementById("undoBtn").onclick = () => {
  tasks.push(lastDeleted);
  saveTasks();
  renderByFilter();
+ updateProgress();
 document.getElementById("undoBar").style.display = "none";
  lastDeleted = null;
 };
