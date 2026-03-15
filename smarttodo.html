@@ -196,6 +196,15 @@ body.dark #sortSelect{
  opacity:0.7;
  margin-bottom:15px;
 }
+mark{
+ background:#ffe066;
+ padding:0 3px;
+ border-radius:4px;
+}
+body.dark mark{
+ background:#ff9800;
+ color:black;
+}
 
 </style>
 </head>
@@ -358,7 +367,8 @@ checkbox.type = "checkbox";
 checkbox.checked = task.completed;
 
 const span = document.createElement("span");
- span.textContent = task.text;
+ const keyword = searchInput.value.trim();
+span.innerHTML = highlightText(task.text, keyword);
  if(task.completed){
      span.classList.add("completed");
  }
@@ -567,6 +577,12 @@ function updateProgress(){
  progressText.textContent = percent + "% completed";
 }
 
+function highlightText(text, keyword){
+ if(!keyword) return text;
+ const safeKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+ const regex = new RegExp(`(${safeKeyword})`, "gi");
+ return text.replace(regex, "<mark>$1</mark>");
+}
 </script>
 
 </body>
