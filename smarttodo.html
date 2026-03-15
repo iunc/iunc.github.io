@@ -177,6 +177,25 @@ body.dark #sortSelect{
  opacity:0.6;
  display:block;
 }
+.progress{
+ height:8px;
+ background:#ddd;
+ border-radius:6px;
+ overflow:hidden;
+ margin-bottom:10px;
+}
+#progressBar{
+ height:100%;
+ width:0%;
+ background:linear-gradient(90deg,#4CAF50,#8BC34A);
+ transition:width 0.3s;
+}
+#progressText{
+ text-align:center;
+ font-size:12px;
+ opacity:0.7;
+ margin-bottom:15px;
+}
 
 </style>
 </head>
@@ -226,11 +245,19 @@ body.dark #sortSelect{
   </select>
 </div>
 
+<div class="progress">
+  <div id="progressBar"></div>
+</div>
+<div id="progressText"></div>
+
 <ul id="taskList"></ul>
 
 </div>
     
 <script>
+const progressBar = document.getElementById("progressBar");
+const progressText = document.getElementById("progressText");
+
 const input = document.getElementById("taskInput");
 input.addEventListener("keydown", function(e){
  if(e.key === "Enter"){
@@ -279,6 +306,7 @@ clearCompleted.addEventListener("click", function(){
  saveTasks();
  renderByFilter();
  updateStats();
+ updateProgress();
 });
 
 const toggleTheme = document.getElementById("toggleTheme");
@@ -309,7 +337,7 @@ function addTask(){
   }
   tasks.push(task);
   renderByFilter();
-
+  updateProgress();
   saveTasks();
   updateStats();
 
@@ -340,6 +368,7 @@ const span = document.createElement("span");
   saveTasks();
   renderByFilter();
   updateStats();
+  updateProgress();
   }
   if(checkbox.checked){
      span.classList.add("completed");
@@ -362,6 +391,7 @@ span.addEventListener("dblclick",function(){
    renderByFilter();
    saveTasks();
    updateStats();
+   updateProgress();
 });
  li.appendChild(checkbox);
  li.appendChild(span);
@@ -486,6 +516,7 @@ function loadTask(){
    sortSelect.value = savedSort;
    renderByFilter();
    updateStats();
+   updateProgress();
 }
 
 function editTask(span, li){
@@ -517,6 +548,19 @@ function editTask(span, li){
    }
    li.replaceChild(span,input);
  }
+}
+
+function updateProgress(){
+ const total = tasks.length;
+ if(total === 0){
+   progressBar.style.width = "0%";
+   progressText.textContent = "0% completed";
+   return;
+ }
+ const completed = tasks.filter(t => t.completed).length;
+ const percent = Math.round((completed / total) * 100);
+ progressBar.style.width = percent + "%";
+ progressText.textContent = percent + "% completed";
 }
 
 </script>
