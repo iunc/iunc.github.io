@@ -172,6 +172,11 @@ body.dark #sortSelect{
  border-radius:6px;
  border:1px solid #ccc;
 }
+.emptyState{
+ text-align:center;
+ opacity:0.6;
+ display:block;
+}
 
 </style>
 </head>
@@ -366,6 +371,25 @@ span.addEventListener("dblclick",function(){
 
 function renderTasks(list){
  taskList.innerHTML = "";
+ 
+ if(list.length === 0){
+   const li = document.createElement("li");
+   let message = "🎉 No tasks yet";
+   if(searchInput.value){
+     message = "No tasks found";
+   }
+   else if(currentFilter === "active"){
+     message = "No active tasks";
+   }
+   else if(currentFilter === "completed"){
+     message = "No completed tasks";
+   }
+   li.textContent = message;
+   li.className = "emptyState";
+   taskList.appendChild(li);
+   return;
+ }
+
  list.forEach(task => {
   createTask(task);
  });
