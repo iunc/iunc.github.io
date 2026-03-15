@@ -21,13 +21,6 @@ body{
     max-width:500px;
     margin:auto;
 }
-.header{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:15px;
-}
-
 #toggleTheme{
  font-size:20px;
  background:white;
@@ -93,14 +86,17 @@ li{
     align-items:center;
 }
 li input[type="checkbox"]{
+    appearance:none;
     width:18px;
     height:18px;
+    border-radius:50%;
+    padding:0;
+    background:none;
+    border:1.5px solid #bbb;
+    cursor:pointer;
     margin:0;
     flex:0 0 auto;
-}
-li span:first-of-type{
-    flex:1;
-    min-width:0;
+    transition:0.2s;
 }
 .completed{
     text-decoration:line-through;
@@ -119,11 +115,15 @@ li span:first-of-type{
     color:#555;
 } 
 .filters{
+    display:flex;
+    gap:6px;
     margin:15px 0;
 }
 .filters button{
+ flex:1;
  background:#e0e0e0;
  color:#333;
+ transition:0.2s;
 }
 .filters button.active{
  background:#4CAF50;
@@ -133,9 +133,9 @@ body.dark .filters button.active{
  background:#4CAF50;
 }
 #clearCompleted{
-    margin-bottom:15px;
-    background:#e0e0e0;
-    color:#333;
+   margin-bottom:15px;
+   background:#e0e0e0;
+   color:#333;
 }
 body.dark{
   background:#121212;
@@ -176,6 +176,18 @@ body.dark #sortSelect{
 }
 .low{
   border-left:4px solid #52c41a;
+}
+.high input[type="checkbox"]:checked{
+ background:#ff4d4f;
+ border-color:#ff4d4f;
+}
+.medium input[type="checkbox"]:checked{
+ background:#faad14;
+ border-color:#faad14;
+}
+.low input[type="checkbox"]:checked{
+ background:#52c41a;
+ border-color:#52c41a;
 }
 .taskHeader{
  display:flex;
@@ -253,6 +265,45 @@ body.dark mark{
  color:#222;
  display:flex;
  align-items:center;
+ flex:0 0 auto;
+}
+li span:first-of-type{
+ flex:1;
+ min-width:0;
+}
+#menuList{
+ display:none;
+ margin-top:6px;
+ box-shadow:0 4px 10px rgba(0,0,0,0.15);
+ background:#e6f4ff;
+ border:1px solid #91caff;
+ border-radius:8px;
+ padding:6px 0;
+}
+#menuList button{
+ width:100%;
+ margin:4px 0;
+ background:#e6f4ff;
+ color:#1677ff;
+ font-weight:bold;
+}
+body.dark #menuList{
+ background:#1f3a5f;
+ color:#8ab4ff;
+}
+body.dark #menuList button{
+ background:#1f3a5f;
+ color:#8ab4ff;
+}
+#menuBtn{
+ background:#e6f4ff;
+ color:#1677ff;
+ border:1px solid #91caff;
+}
+body.dark #menuBtn{
+ background:#1f3a5f;
+ color:#8ab4ff;
+ border:1px solid #2f4f7f;
 }
 
 </style>
@@ -262,10 +313,7 @@ body.dark mark{
 
 <div class="container">
 
-<div class="header">
-  <h1>Smart Todo</h1>
-  <button id="toggleTheme">🌙</button>
-</div>
+<h1>Smart Todo</h1> 
 
 <div class="inputBox">
 <input id="taskInput" placeholder="Enter task..." enterkeyhint="done">
@@ -286,12 +334,16 @@ body.dark mark{
 <button id="filterAll">All</button>
 <button id="filterActive">Active</button>
 <button id="filterCompleted">Completed</button>
+<button id="menuBtn">More</button>
 </div>
- 
-<button id="clearCompleted">Clear Completed</button>
+
+<div id="menuList">
+<button id="menuTheme">Dark mode</button>
+<button id="menuClear">Clear completed</button>
+</div>
 
 <div id="stats"></div>
-  
+
 <div class="taskHeader">
   <span></span>
   <select id="sortSelect">
@@ -316,8 +368,32 @@ body.dark mark{
 </div>
 
 </div>
-    
-<script>
+
+<script> 
+
+const menuBtn = document.getElementById("menuBtn");
+const menuList = document.getElementById("menuList");
+menuBtn.addEventListener("click", ()=>{
+ menuList.style.display =
+  menuList.style.display === "block" ? "none" : "block";
+});
+
+menuTheme.onclick = ()=>{
+ toggleTheme();
+ menuList.style.display="none";
+};
+
+menuClear.onclick = ()=>{
+ clearCompleted();
+ menuList.style.display="none";
+};
+
+document.addEventListener("click", (e)=>{
+ if(!menuBtn.contains(e.target) && !menuList.contains(e.target)){
+   menuList.style.display="none";
+ }
+});
+
 const progressBar = document.getElementById("progressBar");
 const progressText = document.getElementById("progressText");
 
@@ -363,8 +439,7 @@ searchInput.addEventListener("input", function(){
  renderByFilter();
 });
 
-const clearCompleted = document.getElementById("clearCompleted");
-clearCompleted.addEventListener("click", function(){
+function clearCompleted(){
  const hasCompleted = tasks.some(t => t.completed);
  if(!hasCompleted) return;
  if(!confirm("Clear all completed tasks?")) return;
@@ -373,14 +448,13 @@ clearCompleted.addEventListener("click", function(){
  renderByFilter();
  updateStats();
  updateProgress();
-});
+}
 
-const toggleTheme = document.getElementById("toggleTheme");
-toggleTheme.addEventListener("click", function(){
+function toggleTheme(){
 document.body.classList.toggle("dark");
-const isDark = document.body.classList.contains("dark");
-localStorage.setItem("theme", isDark ? "dark" : "light");
-});
+ const isDark = document.body.classList.contains("dark");
+ localStorage.setItem("theme", isDark ? "dark" : "light");
+}
 
 const savedTheme = localStorage.getItem("theme");
 if(savedTheme === "dark"){
@@ -391,6 +465,7 @@ addBtn.addEventListener("click",addTask);
 
 let tasks = [];
 let currentFilter = "all";
+let currentSort = "default";
 let lastDeleted = null;
 let undoTimeout = null;
 
@@ -406,10 +481,9 @@ function addTask(){
   }
   tasks.push(task);
   renderByFilter();
-  updateProgress();
   saveTasks();
   updateStats();
-
+  updateProgress();
   input.value = "";
   input.focus();
 }
@@ -436,7 +510,7 @@ span.innerHTML = highlightText(task.text, keyword);
  checkbox.addEventListener("change", function(){
   const id = Number(li.dataset.id);
   const task = tasks.find(t => t.id === id);
-  
+
   if(task){
   task.completed = checkbox.checked;
   saveTasks();
@@ -479,7 +553,7 @@ span.addEventListener("dblclick",function(){
 
 function renderTasks(list){
  taskList.innerHTML = "";
- 
+
  if(list.length === 0){
    const li = document.createElement("li");
    let message = "🎉 No tasks yet";
@@ -507,27 +581,27 @@ function renderTasks(list){
 filterAll.addEventListener("click", function(){
  currentFilter = "all";
  localStorage.setItem("filter", currentFilter);
- renderTasks(tasks);
+ renderByFilter();
  updateFilterUI();
 });
 filterActive.addEventListener("click", function(){
  currentFilter = "active";
  localStorage.setItem("filter", currentFilter);
  const active = tasks.filter(task => !task.completed);
- renderTasks(active);
+ renderByFilter();
  updateFilterUI();
 });
 filterCompleted.addEventListener("click", function(){
  currentFilter = "completed";
  localStorage.setItem("filter", currentFilter);
  const done = tasks.filter(task => task.completed);
- renderTasks(done);
+ renderByFilter();
  updateFilterUI();
 });
 
 function renderByFilter(){
  const keyword = searchInput.value.toLowerCase();
- let list = tasks;
+ let list =[...tasks];
  if(currentFilter === "active"){
    list = tasks.filter(task => !task.completed);
  }
@@ -705,6 +779,7 @@ document.getElementById("filterActive").classList.add("active");
 document.getElementById("filterCompleted").classList.add("active");
  }
 }
+
 </script>
 
 </body>
