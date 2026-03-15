@@ -121,8 +121,21 @@ li span:first-of-type{
 .filters{
     margin:15px 0;
 }
+.filters button{
+ background:#e0e0e0;
+ color:#333;
+}
+.filters button.active{
+ background:#4CAF50;
+ color:white;
+}
+body.dark .filters button.active{
+ background:#4CAF50;
+}
 #clearCompleted{
     margin-bottom:15px;
+    background:#e0e0e0;
+    color:#333;
 }
 body.dark{
   background:#121212;
@@ -494,16 +507,19 @@ function renderTasks(list){
 filterAll.addEventListener("click", function(){
  currentFilter = "all";
  renderTasks(tasks);
+ updateFilterUI();
 });
 filterActive.addEventListener("click", function(){
  currentFilter = "active";
  const active = tasks.filter(task => !task.completed);
  renderTasks(active);
+ updateFilterUI();
 });
 filterCompleted.addEventListener("click", function(){
  currentFilter = "completed";
  const done = tasks.filter(task => task.completed);
  renderTasks(done);
+ updateFilterUI();
 });
 
 function renderByFilter(){
@@ -582,6 +598,7 @@ function loadTask(){
    renderByFilter();
    updateStats();
    updateProgress();
+   updateFilterUI();
 }
 
 function editTask(span, li){
@@ -665,6 +682,21 @@ function formatTime(timestamp){
  if(minutes < 60) return minutes + "m";
  if(hours < 24) return hours + "h";
  return days + "d";
+}
+
+function updateFilterUI(){
+ document.querySelectorAll(".filters button").forEach(btn=>{
+  btn.classList.remove("active");
+ });
+ if(currentFilter === "all"){
+document.getElementById("filterAll").classList.add("active");
+ }
+ if(currentFilter === "active"){
+document.getElementById("filterActive").classList.add("active");
+ }
+ if(currentFilter === "completed"){
+document.getElementById("filterCompleted").classList.add("active");
+ }
 }
 </script>
 
