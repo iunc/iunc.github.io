@@ -93,10 +93,14 @@ li{
     align-items:center;
 }
 li input[type="checkbox"]{
+    width:18px;
+    height:18px;
+    margin:0;
     flex:0 0 auto;
 }
-li span{
+li span:first-of-type{
     flex:1;
+    min-width:0;
 }
 .completed{
     text-decoration:line-through;
@@ -229,6 +233,13 @@ body.dark mark{
  color:#ff9800;
  font-weight:bold;
  cursor:pointer;
+}
+.taskTime{
+ white-space:nowrap;
+ font-size:11px;
+ color:#222;
+ display:flex;
+ align-items:center;
 }
 
 </style>
@@ -377,7 +388,8 @@ function addTask(){
      id: Date.now(),
      text: text,
      completed: false,
-     priority:prioritySelect.value
+     priority:prioritySelect.value,
+     createdAt: Date.now()
   }
   tasks.push(task);
   renderByFilter();
@@ -393,6 +405,10 @@ function createTask(task){
 const li = document.createElement("li");
 li.dataset.id = task.id;
 li.classList.add(task.priority);
+
+const time = document.createElement("span");
+time.className = "taskTime";
+time.textContent = formatTime(task.createdAt);
 
 const checkbox = document.createElement("input");
 checkbox.type = "checkbox";
@@ -443,6 +459,7 @@ span.addEventListener("dblclick",function(){
 });
  li.appendChild(checkbox);
  li.appendChild(span);
+ li.appendChild(time);
  li.appendChild(del);
  taskList.appendChild(li);
 }
@@ -636,6 +653,18 @@ function showUndo(){
    undoBar.style.display = "none";
    lastDeleted = null;
  },5000);
+}
+
+function formatTime(timestamp){
+ if(!timestamp) return "";
+ const diff = Date.now() - timestamp;
+ const minutes = Math.floor(diff / 60000);
+ const hours = Math.floor(diff / 3600000);
+ const days = Math.floor(diff / 86400000);
+ if(minutes < 1) return "now";
+ if(minutes < 60) return minutes + "m";
+ if(hours < 24) return hours + "h";
+ return days + "d";
 }
 </script>
 
