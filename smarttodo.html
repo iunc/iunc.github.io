@@ -677,7 +677,7 @@ const order = {
      return pb - pa;
      }
      // 3 newest
-     return b.id - a.id;
+     return b.createdAt - a.createdAt;
      });
  }
  if(sortType === "completed"){
@@ -693,11 +693,11 @@ const order = {
      return pb - pa;
      }
      // 3 newest
-     return b.id - a.id;
+     return b.createdAt - a.createdAt;
      });
  }
  if(sortType === "default"){
-  list.sort((a,b)=> b.id - a.id);
+  list.sort((a,b)=> b.createdAt - a.createdAt);
 }
  renderTasks(list);
 }
