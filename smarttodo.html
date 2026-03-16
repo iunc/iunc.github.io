@@ -124,6 +124,7 @@ li input[type="checkbox"]{
  background:#e0e0e0;
  color:#333;
  transition:0.2s;
+ padding:12px;
 }
 .filters button.active{
  background:#4CAF50;
@@ -305,6 +306,22 @@ body.dark #menuBtn{
  color:#8ab4ff;
  border:1px solid #2f4f7f;
 }
+.searchBox{
+ display:flex;
+ gap:10px;
+ margin-bottom:20px;
+}
+.searchBox input{
+ flex:1;
+ min-width:0;
+}
+.dateHeader{
+ font-size:12px;
+ font-weight:bold;
+ opacity:0.6;
+ margin:10px 0 4px;
+ background:none;
+}
 
 </style>
 </head>
@@ -340,6 +357,7 @@ body.dark #menuBtn{
 <div id="menuList">
 <button id="menuTheme">Dark mode</button>
 <button id="menuClear">Clear completed</button>
+<button id="menuClearAll">Clear all</button>
 </div>
 
 <div id="stats"></div>
@@ -393,6 +411,20 @@ document.addEventListener("click", (e)=>{
    menuList.style.display="none";
  }
 });
+
+document.getElementById("menuClearAll").onclick = ()=>{
+ if(tasks.length === 0){
+    menuList.style.display="none";
+    return;
+ }
+ if(!confirm("Clear ALL tasks?")) return;
+ tasks = [];
+ saveTasks();
+ renderByFilter();
+ updateStats();
+ updateProgress();
+ menuList.style.display="none";
+};
 
 const progressBar = document.getElementById("progressBar");
 const progressText = document.getElementById("progressText");
@@ -572,9 +604,19 @@ function renderTasks(list){
    return;
  }
 
- list.forEach(task => {
-  createTask(task);
- });
+ let lastDate = "";
+list.forEach(task=>{
+ const label = getTaskDateLabel(task.createdAt);
+ if(label !== lastDate){
+   const header = document.createElement("li");
+   header.textContent = label;
+   header.className = "dateHeader";
+   taskList.appendChild(header);
+   lastDate = label;
+ }
+ createTask(task);
+});
+
  updateStats();
 }
 
@@ -778,6 +820,20 @@ document.getElementById("filterActive").classList.add("active");
  if(currentFilter === "completed"){
 document.getElementById("filterCompleted").classList.add("active");
  }
+}
+
+function getTaskDateLabel(timestamp){
+ const date = new Date(timestamp);
+ const today = new Date();
+ const yesterday = new Date();
+ yesterday.setDate(today.getDate()-1);
+ if(date.toDateString() === today.toDateString()){
+   return "Today";
+ }
+ if(date.toDateString() === yesterday.toDateString()){
+   return "Yesterday";
+ }
+ return date.toLocaleDateString();
 }
 
 </script>
