@@ -888,7 +888,12 @@ let color = active <= 3 ? "#faad14" : "#ff4d4f";
  g.innerHTML =
  `<span class="greetText">${text}</span> ${icon}<br>
  <small style="font-weight:bold">${today}</small><br>
- <small>${active?`You have <span class="taskCount" style="color:${color}">${active}</span> task${active>1?"s":""} left today`:"All tasks completed 🎉"}</small>`;
+<small>${tasks.length===0
+ ? "Start planning your day ✨"
+ : active
+ ? `You have <span class="taskCount" style="color:${color}">${active}</span> task${active>1?"s":""} left today`
+ : "All tasks completed 🎉"
+}</small>`;
 }
 setInterval(updateGreeting,60000);
 
