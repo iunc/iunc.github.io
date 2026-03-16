@@ -413,17 +413,14 @@ document.addEventListener("click", (e)=>{
 });
 
 document.getElementById("menuClearAll").onclick = ()=>{
- if(tasks.length === 0){
-    menuList.style.display="none";
-    return;
- }
+ menuList.style.display = "none";
+ if(tasks.length === 0) return;
  if(!confirm("Clear ALL tasks?")) return;
  tasks = [];
  saveTasks();
  renderByFilter();
  updateStats();
  updateProgress();
- menuList.style.display="none";
 };
 
 const progressBar = document.getElementById("progressBar");
