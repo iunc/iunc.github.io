@@ -322,6 +322,25 @@ body.dark #menuBtn{
  margin:10px 0 4px;
  background:none;
 }
+#greeting{
+ text-align:center;
+ margin-bottom:20px;
+}
+.greetText{
+ font-weight:700;
+ font-size:16px; background:linear-gradient(90deg,#4CAF50,#8BC34A);
+ -webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;
+}
+#greeting small{
+ opacity:0.7;
+ font-size:13px;
+}
+body.dark .greetText{
+ background:linear-gradient(90deg,#8ab4ff,#4fc3f7);
+ -webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;
+}
 
 </style>
 </head>
@@ -331,6 +350,11 @@ body.dark #menuBtn{
 <div class="container">
 
 <h1>Smart Todo</h1> 
+
+<div id="greeting">
+  <div id="greetText"></div>
+  <div id="greetSub"></div>
+</div>
 
 <div class="inputBox">
 <input id="taskInput" placeholder="Enter task..." enterkeyhint="done">
@@ -598,6 +622,7 @@ function renderTasks(list){
    li.textContent = message;
    li.className = "emptyState";
    taskList.appendChild(li);
+   updateGreeting();
    return;
  }
 
@@ -615,6 +640,7 @@ list.forEach(task=>{
 });
 
  updateStats();
+ updateGreeting();
 }
 
 filterAll.addEventListener("click", function(){
@@ -836,6 +862,20 @@ function getTaskDateLabel(timestamp){
  }
  return weekday + " " + day + "/" + month + "/" + year;
 }
+
+function updateGreeting(){
+ const h = new Date().getHours();
+ const g = document.getElementById("greeting");
+ const text = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+ const icon = ["🌙","🌅","☀️","🌤","🌇","🌙"][
+  h<5?0 : h<9?1 : h<12?2 : h<17?3 : h<19?4 : 5
+ ];
+ const active = tasks.filter(t=>!t.completed).length;
+ g.innerHTML =
+ `<span class="greetText">${text}</span> ${icon}<br>
+ <small>${active?`You have ${active} task${active>1?"s":""} left today`:"All tasks completed 🎉"}</small>`;
+}
+setInterval(updateGreeting,60000);
 
 </script>
 
