@@ -341,6 +341,13 @@ body.dark .greetText{
  -webkit-background-clip:text;
  -webkit-text-fill-color:transparent;
 }
+.taskCount{
+ color:#4CAF50;
+ font-weight:600;
+}
+body.dark .taskCount{
+ color:#8BC34A;
+}
 
 </style>
 </head>
@@ -865,15 +872,23 @@ function getTaskDateLabel(timestamp){
 
 function updateGreeting(){
  const h = new Date().getHours();
+ const today = new Date().toLocaleDateString("en-EN",{
+ weekday:"short",
+ day:"numeric",
+ month:"numeric",
+ year:"numeric"
+});
  const g = document.getElementById("greeting");
  const text = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
  const icon = ["🌙","🌅","☀️","🌤","🌇","🌙"][
   h<5?0 : h<9?1 : h<12?2 : h<17?3 : h<19?4 : 5
  ];
  const active = tasks.filter(t=>!t.completed).length;
+let color = active <= 3 ? "#faad14" : "#ff4d4f";
  g.innerHTML =
  `<span class="greetText">${text}</span> ${icon}<br>
- <small>${active?`You have ${active} task${active>1?"s":""} left today`:"All tasks completed 🎉"}</small>`;
+ <small style="font-weight:bold">${today}</small><br>
+ <small>${active?`You have <span class="taskCount" style="color:${color}">${active}</span> task${active>1?"s":""} left today`:"All tasks completed 🎉"}</small>`;
 }
 setInterval(updateGreeting,60000);
 
