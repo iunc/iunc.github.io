@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>File Viewer</title>
+<style>
+ body { font-family: sans-serif; padding: 10px; }
+ #viewer { margin-top: 20px; }
+ canvas { width: 100% !important; height: auto !important; }
+ table { border-collapse: collapse; }
+ td, th { border: 1px solid #ccc; padding: 5px; }
+</style>
+</head>
+<body>
+
+<h2>📂 Mở file (Word / PDF / Excel)</h2>
+<input type="file" id="fileInput">
+<div id="viewer"></div>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<!-- Mammoth -->
+<script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+
+<!-- SheetJS -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script>
+const input = document.getElementById("fileInput");
+const viewer = document.getElementById("viewer");
+
+input.addEventListener("change", async () => {
+ const file = input.files[0];
+ if (!file) return;
+
+ viewer.innerHTML = "";
+
+ const type = file.name.split(".").pop().toLowerCase();
+
+ if (type === "pdf") {
+  const reader = new FileReader();
+  reader.onload = async function() {
+   const pdf = await pdfjsLib.getDocument({data: reader.result}).promise;
+   for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({scale: 1.2});
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    await page.render({canvasContext: ctx, viewport}).promise;
+    viewer.appendChild(canvas);
+   }
+  };
+  reader.readAsArrayBuffer(file);
+ }
+
+ else if (type === "docx") {
+  const reader = new FileReader();
+  reader.onload = function() {
+   mammoth.convertToHtml({arrayBuffer: reader.result})
+    .then(result => {
+      viewer.innerHTML = result.value;
+    });
+  };
+  reader.readAsArrayBuffer(file);
+ }
+
+ else if (type === "xlsx") {
+  const reader = new FileReader();
+  reader.onload = function() {
+   const data = new Uint8Array(reader.result);
+   const workbook = XLSX.read(data, {type: "array"});
+   const sheet = workbook.Sheets[workbook.SheetNames[0]];
+   const html = XLSX.utils.sheet_to_html(sheet);
+   viewer.innerHTML = html;
+  };
+  reader.readAsArrayBuffer(file);
+ }
+
+ else {
+  viewer.innerHTML = "❌ Không hỗ trợ file này";
+ }
+});
+</script>
+
+</body>
+</html>
