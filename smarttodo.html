@@ -857,7 +857,7 @@ function getTaskDateLabel(timestamp){
  const today = new Date();
  const yesterday = new Date();
  yesterday.setDate(today.getDate()-1);
- const weekday = date.toLocaleDateString("vi-VN",{weekday:"short"});
+ const weekday = date.toLocaleDateString("en-US",{weekday:"short"});
  const day = date.getDate();
  const month = date.getMonth()+1;
  const year = date.getFullYear();
