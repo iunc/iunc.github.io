@@ -348,6 +348,48 @@ body.dark .greetText{
 body.dark .taskCount{
  color:#8BC34A;
 }
+#guidePopup{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,0.4);
+ display:none;
+ align-items:center;
+ justify-content:center;
+ z-index:999;
+}
+.popupBox{
+ background:white;
+ padding:20px;
+ border-radius:12px;
+ width:90%;
+ max-width:320px;
+ text-align:center;
+ box-shadow:0 6px 20px rgba(0,0,0,0.2);
+}
+.popupBox h3{
+ margin-top:0;
+}
+.popupBox button{
+ margin-top:10px;
+ padding:10px;
+ width:100%;
+ border:none;
+ border-radius:8px;
+ background:#4CAF50;
+ color:white;
+ cursor:pointer;
+}
+body.dark .popupBox{
+ background:#1e1e1e;
+ color:white;
+}
+.popupBox{
+ animation:pop 0.25s ease;
+}
+@keyframes pop{
+ from{transform:scale(0.8); opacity:0;}
+ to{transform:scale(1); opacity:1;}
+}
 
 </style>
 </head>
@@ -414,6 +456,16 @@ body.dark .taskCount{
 <div id="undoBar">
   <span>Task deleted</span>
   <button id="undoBtn">Undo</button>
+</div>
+
+<div id="guidePopup">
+  <div class="popupBox">
+    <h3>💡 Tips</h3>
+    <p>• Double click để edit task</p>
+    <p>• Nhấn ❌ để xoá</p>
+    <p>• Giữ (long press) để pin (coming soon)</p>
+    <button id="closeGuide">Đã hiểu</button>
+  </div>
 </div>
 
 </div>
@@ -897,6 +949,16 @@ let color = active <= 3 ? "#faad14" : "#ff4d4f";
 }
 setInterval(updateGreeting,60000);
 
+const guidePopup = document.getElementById("guidePopup");
+const closeGuide = document.getElementById("closeGuide");
+// chỉ hiện 1 lần
+if(!localStorage.getItem("seenGuide")){
+ guidePopup.style.display = "flex";
+}
+closeGuide.onclick = ()=>{
+ guidePopup.style.display = "none";
+ localStorage.setItem("seenGuide", "true");
+};
 </script>
 
 </body>
