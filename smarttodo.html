@@ -268,6 +268,9 @@ body.dark mark{
  align-items:center;
  flex:0 0 auto;
 }
+body.dark .taskTime{
+color:#ccc;
+}
 li span:first-of-type{
  flex:1;
  min-width:0;
@@ -328,7 +331,8 @@ body.dark #menuBtn{
 }
 .greetText{
  font-weight:700;
- font-size:16px; background:linear-gradient(90deg,#4CAF50,#8BC34A);
+ font-size:16px;
+ background:linear-gradient(90deg,#4CAF50,#8BC34A);
  -webkit-background-clip:text;
  -webkit-text-fill-color:transparent;
 }
@@ -411,6 +415,55 @@ body.dark .medium.pinned{
 body.dark .low.pinned{
  background:#1f3a24;
 }
+#toggleDueBtn{
+ width:100%;
+ margin-bottom:8px;
+ background:#e6f4ff;
+ color:#1677ff;
+ border:1px solid #91caff;
+}
+body.dark #toggleDueBtn{
+ background:#1f3a5f;
+ color:#8ab4ff;
+ border:1px solid #2f4f7f;
+}
+.dueInput{
+ width:100%;
+ padding:12px;
+ border-radius:8px;
+ border:1px solid #91caff;
+ background:#e6f4ff;
+ color:#1677ff;
+ font-size:14px;
+ margin-bottom:10px;
+ outline:none;
+ transition:0.2s;
+}
+.dueInput:focus{
+ border-color:#1677ff;
+ box-shadow:0 0 0 2px rgba(22,119,255,0.2);
+}
+/* dark mode */
+body.dark .dueInput{
+ background:#1f3a5f;
+ color:#8ab4ff;
+ border:1px solid #2f4f7f;
+}
+body.dark .dueInput:focus{
+ box-shadow:0 0 0 2px rgba(138,180,255,0.2);
+}
+#dueHint{
+ display:none;
+ font-size:12px;
+ opacity:0.6;
+ margin-bottom:4px;
+}
+.overdue{
+ border-right:6px solid #ff4d4f;
+}
+.urgent{
+ border-right:6px solid #faad14;
+}
 
 </style>
 </head>
@@ -419,12 +472,12 @@ body.dark .low.pinned{
 
 <div class="container">
 
-<h1>Smart Todo</h1> 
+<h1>Smart Todo</h1>
 
 <div id="greeting">
   <div id="greetText"></div>
   <div id="greetSub"></div>
-</div>
+</div> 
 
 <div class="inputBox">
 <input id="taskInput" placeholder="Enter task..." enterkeyhint="done">
@@ -435,6 +488,11 @@ body.dark .low.pinned{
 </select>
 <button id="addBtn">Add</button>
 </div>
+
+<button id="toggleDueBtn">+ Deadline</button>
+<small id="dueHint">Select date & time</small>
+<input type="datetime-local" id="dueDate" class="dueInput" style="display:none;">
+<input type="datetime-local" id="dueDate" class="dueInput" style="display:none;">
 
 <div class="searchBox">
   <button id="searchBtn">🔍</button>
@@ -484,7 +542,8 @@ body.dark .low.pinned{
     <h3>💡 Tips</h3>
     <p>• Double click để edit task</p>
     <p>• Nhấn ❌ để xoá</p>
-    <p>• Giữ (long press) để pin (coming soon)</p>
+    <p>• Giữ (long press) để pin</p>
+    <p>• +Deadline thêm ngày giờ để tạo deadline</p>
     <button id="closeGuide">Đã hiểu</button>
   </div>
 </div>
@@ -533,7 +592,7 @@ const progressText = document.getElementById("progressText");
 const input = document.getElementById("taskInput");
 input.addEventListener("keydown", function(e){
  if(e.key === "Enter"){
-    addTask();
+   addTask();
  }
 });
 
@@ -606,14 +665,18 @@ let undoTimeout = null;
 
 function addTask(){
   const text = input.value.trim();
-  if(!text) return;
+  if(!text){
+  input.focus();
+  return;
+  }
   const task = {
      id: Date.now(),
      text: text,
      completed: false,
      priority:prioritySelect.value,
      createdAt: Date.now(),
-     pinned: false
+     pinned:false,
+     dueDate: dueDateInput.value || null 
   }
   tasks.push(task);
   renderByFilter();
@@ -622,16 +685,71 @@ function addTask(){
   updateProgress();
   input.value = "";
   input.focus();
+  dueDateInput.value = "";
+  dueDateInput.style.display = "none";
+  toggleDueBtn.style.display = "block";
+  dueHint.style.display = "none";
 }
 
 function createTask(task){
-const li = document.createElement("li");
-li.dataset.id = task.id;
-li.className = task.priority + (task.pinned ? " pinned" : "");
+   const li = document.createElement("li");
 
-const time = document.createElement("span");
-time.className = "taskTime";
-time.textContent = formatTime(task.createdAt);
+// 👉 priority + pinned
+li.classList.add(task.priority);
+if(task.pinned){
+  li.classList.add("pinned");
+}
+
+// 👉 overdue / urgent
+if(task.dueDate){
+ const now = Date.now();
+ const due = new Date(task.dueDate).getTime();
+ if(due < now){
+   li.classList.add("overdue");
+ } else if(due - now < 86400000){
+   li.classList.add("urgent");
+ }
+}
+
+   li.dataset.id = task.id;
+
+   const time = document.createElement("span");
+   time.className = "taskTime";
+
+   if(task.dueDate){
+ const now = new Date();
+const due = new Date(task.dueDate);
+let text = "";
+if (due < now) {
+  text = "❗ Overdue";
+} 
+else if (due - now < 3600000) { // < 1 giờ
+  const diffMs = due - now;
+  const diffMinutes = Math.ceil(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMinutes / 60);
+  const minutes = diffMinutes % 60;
+  if(diffHours > 0){
+    text = `⚠️ Soon (${diffHours}h ${minutes}m)`;
+  } else {
+    text = `⚠️ Soon (${minutes}m)`;
+  }
+} 
+else if (due.toDateString() === now.toDateString()) {
+  text = "⏰ Today";
+} 
+else {
+  const tomorrow = new Date();
+  tomorrow.setDate(now.getDate() + 1);
+  if (due.toDateString() === tomorrow.toDateString()) {
+    text = "⏰ Tomorrow";
+  } else {
+    text = "⏰ " + due.toLocaleDateString();
+  }
+}
+time.textContent = text;
+}else{
+ time.textContent = formatTime(task.createdAt);
+}
 
 const checkbox = document.createElement("input");
 checkbox.type = "checkbox";
@@ -927,10 +1045,10 @@ function formatTime(timestamp){
  const minutes = Math.floor(diff / 60000);
  const hours = Math.floor(diff / 3600000);
  const days = Math.floor(diff / 86400000);
- if(minutes < 1) return "now";
- if(minutes < 60) return minutes + "m";
- if(hours < 24) return hours + "h";
- return days + "d";
+ if(minutes < 1) return "🕒 now";
+ if(minutes < 60) return "🕒 " +minutes + "m";
+ if(hours < 24) return "🕒 "+ hours + "h";
+ return "🕒 "+days + "d";
 }
 
 function updateFilterUI(){
@@ -984,7 +1102,7 @@ let color = active <= 3 ? "#faad14" : "#ff4d4f";
  g.innerHTML =
  `<span class="greetText">${text}</span> ${icon}<br>
  <small style="font-weight:bold">${today}</small><br>
-<small>${tasks.length===0
+ <small>${tasks.length===0
  ? "Start planning your day ✨"
  : active
  ? `You have <span class="taskCount" style="color:${color}">${active}</span> task${active>1?"s":""} left today`
@@ -1011,7 +1129,41 @@ function togglePin(id){
  saveTasks();
  renderByFilter();
 }
-</script>
 
+const toggleDueBtn = document.getElementById("toggleDueBtn");
+const dueDateInput = document.getElementById("dueDate");
+toggleDueBtn.onclick = ()=>{
+ dueDateInput.style.display =
+  dueDateInput.style.display === "none" ? "block" : "none";
+ toggleDueBtn.style.display = "none";
+ dueHint.style.display = "block";
+ dueDateInput.focus();
+};
+
+dueDateInput.addEventListener("change", ()=>{
+ if(!input.value.trim()){
+   input.focus();
+   return;
+ }
+ addTask();
+});
+
+
+document.addEventListener("click", (e)=>{
+ const isClickInside = dueDateInput.contains(e.target) || toggleDueBtn.contains(e.target);
+ if(!isClickInside){
+   if(!dueDateInput.value){
+     dueDateInput.style.display = "none";
+     dueHint.style.display = "none";
+     toggleDueBtn.style.display = "block";
+   }
+ }
+});
+
+setInterval(()=>{
+ renderByFilter();
+}, 30000);
+
+</script>
 </body>
 </html>
