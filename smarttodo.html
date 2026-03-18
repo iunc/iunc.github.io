@@ -627,7 +627,7 @@ function addTask(){
 function createTask(task){
 const li = document.createElement("li");
 li.dataset.id = task.id;
-li.classList.add(task.priority);
+li.className = task.priority + (task.pinned ? " pinned" : "");
 
 const time = document.createElement("span");
 time.className = "taskTime";
