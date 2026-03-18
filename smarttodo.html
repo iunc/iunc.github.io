@@ -510,8 +510,6 @@ body.dark .dueInput:focus{
 <button id="menuTheme">Dark mode</button>
 <button id="menuClear">Clear completed</button>
 <button id="menuClearAll">Clear all</button>
-<button id="toggleBtn">Export & Clear</button>
-<input type="file" id="fileInput" style="display:none" accept=".json">
 </div>
 
 <div id="stats"></div>
@@ -1162,55 +1160,9 @@ document.addEventListener("click", (e)=>{
  }
 });
 
-const toggleBtn = document.getElementById('toggleBtn');
-const fileInput = document.getElementById('fileInput');
-toggleBtn.addEventListener('click', () =>{
-    // Ẩn menu list
-    menuList.style.display = "none";
-    if (toggleBtn.textContent === "Export & Clear") {
-        // 1️⃣ Backup LocalStorage thành JSON
-        const backup = { ...localStorage };
-        const jsonStr = JSON.stringify(backup, null, 2);
-        // 2️⃣ Tạo file tải về
-        const blob = new Blob([jsonStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'localStorage_backup.json';
-        a.click();
-        URL.revokeObjectURL(url);
-        // 3️⃣ Clear LocalStorage
-        localStorage.clear();
-        // 4️⃣ Đổi text nút để Import
-        toggleBtn.textContent = "Import & Restore";
-    } else if (toggleBtn.textContent === "Import") {
-        // 5️⃣ Mở dialog chọn file JSON
-        fileInput.click();
-    }
-});
-// 6️⃣ Khi người dùng chọn file JSON để import
-fileInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const data = JSON.parse(e.target.result);
-            // Restore LocalStorage
-            for (let key in data) {               localStorage.setItem(key, data[key]);
-            }
-            toggleBtn.textContent = "Export & Clear"; // đổi lại nút
-        } catch (err) {
-            alert("File JSON không hợp lệ!");
-        }
-    };
-    reader.readAsText(file);
-});
-
 setInterval(()=>{
  renderByFilter();
 }, 30000);
-
 </script>
 </body>
 </html>
