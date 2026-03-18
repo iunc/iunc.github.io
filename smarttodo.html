@@ -390,6 +390,27 @@ body.dark .popupBox{
  from{transform:scale(0.8); opacity:0;}
  to{transform:scale(1); opacity:1;}
 }
+.high.pinned{
+ border-left:6px solid #ff4d4f;
+ background:#ffeaea;
+}
+.medium.pinned{
+ border-left:6px solid #faad14;
+ background:#fff4cc;
+}
+.low.pinned{
+ border-left:6px solid #52c41a;
+ background:#eaffea;
+}
+body.dark .high.pinned{
+ background:#3a1f1f;
+}
+body.dark .medium.pinned{
+ background:#3a3318;
+}
+body.dark .low.pinned{
+ background:#1f3a24;
+}
 
 </style>
 </head>
@@ -531,10 +552,12 @@ function updateStats(){
  const total = tasks.length;
  const active = tasks.filter(t => !t.completed).length;
  const completed = tasks.filter(t => t.completed).length;
+ const pinned = tasks.filter(t=>t.pinned).length;
  stats.textContent =
-  total + " total • " +
-  active + " active • " +
-  completed + " completed";
+ total + " total • " +
+ active + " active • " +
+ completed + " completed" +
+ (pinned ? " • 📌 " + pinned : "");
 }
 
 const prioritySelect = document.getElementById("priority");
@@ -589,7 +612,8 @@ function addTask(){
      text: text,
      completed: false,
      priority:prioritySelect.value,
-     createdAt: Date.now()
+     createdAt: Date.now(),
+     pinned: false
   }
   tasks.push(task);
   renderByFilter();
@@ -639,6 +663,17 @@ span.innerHTML = highlightText(task.text, keyword);
 span.addEventListener("dblclick",function(){
     editTask(span,li);
 });
+
+let pressTimer;
+li.addEventListener("touchstart", ()=>{
+ pressTimer = setTimeout(()=>{
+   togglePin(task.id);
+ }, 500);
+});
+li.addEventListener("touchend", ()=>{
+ clearTimeout(pressTimer);
+});
+
  const del = document.createElement("button");
  del.textContent = "X";
  del.className = "deleteBtn";
@@ -781,6 +816,15 @@ const order = {
  if(sortType === "default"){
   list.sort((a,b)=> b.createdAt - a.createdAt);
 }
+
+// 👇 ƯU TIÊN PIN (LUÔN LUÔN)
+list.sort((a,b)=>{
+ if(a.pinned !== b.pinned){
+   return b.pinned - a.pinned;
+ }
+ return 0;
+});
+
  renderTasks(list);
 }
 
@@ -959,6 +1003,14 @@ closeGuide.onclick = ()=>{
  guidePopup.style.display = "none";
  localStorage.setItem("seenGuide", "true");
 };
+
+function togglePin(id){
+ const t = tasks.find(t => t.id === id);
+ if(!t) return;
+ t.pinned = !t.pinned;
+ saveTasks();
+ renderByFilter();
+}
 </script>
 
 </body>
