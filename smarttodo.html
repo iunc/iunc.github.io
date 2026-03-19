@@ -791,7 +791,8 @@ function addTask(){
     priority: autoPriority,
     createdAt: Date.now(),
     pinned: false,
-    dueDate: autoDueDate
+    dueDate: autoDueDate,
+    xpGained = false
   };
 
   // 7. Lưu trữ và cập nhật giao diện
@@ -886,7 +887,7 @@ span.innerHTML = highlightText(task.text, keyword);
 
   if(task){
   task.completed = checkbox.checked;
-  if (task.completed) {
+  if (task.completed && !task.xpGained) {
         // 1. Pháo hoa
         confetti({
             particleCount: 150,
@@ -899,6 +900,7 @@ span.innerHTML = highlightText(task.text, keyword);
         if (typeof addXP === "function") {
             addXP(10);
         }
+        task.xpGained = true;
     }
   saveTasks();
   renderByFilter();
