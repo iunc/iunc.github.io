@@ -1,13 +1,113 @@
-<div class="game">
-  <h1>🎯 Guess The Number</h1>
-  <p>Đoán số từ 1 đến 100</p>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔢 Number Guess</title>
 
-  <input type="number" id="guessInput" placeholder="Nhập số..." />
-  <button id="guessBtn">Đoán</button>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      margin:0;
+      color:white;
+      padding:10px;
+    }
+    .game{
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding:20px;
+      border-radius:20px;
+      text-align:center;
+      width:300px;
+      width:100%;    
+      max-width:350px;
+    }
+    h1{
+      margin-bottom:10px;
+    }
+    input{
+      padding:10px;
+      width:100%;
+      border:none;
+      border-radius:10px;
+      margin-top:10px;
+      outline:none;
+      font-size:16px;
+    }
+    button{
+      margin-top:10px;
+      padding:10px 20px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      background:#ff7eb3;
+      color:white;
+      width:100%;
+    }
+    button:hover{
+      opacity:0.8;
+    }
+    #message{
+      margin-top:15px;
+      font-weight:bold;
+    }
+  </style>
+</head>
 
-  <p id="message"></p>
-  <p>Lượt còn: <span id="attempts">10</span></p>
-  <p>Best: <span id="best">--</span></p>
+<body>
 
-  <button id="resetBtn">Chơi lại</button>
-</div>
+  <div class="game">
+    <h1>🔢 Guess The Number</h1>
+    <p>Đoán số từ 1 đến 100</p>
+
+    <input type="number" id="guessInput" placeholder="Nhập số..." />
+    <br>
+    <button id="guessBtn">Đoán</button>
+
+    <p id="message"></p>
+
+    <button id="resetBtn">Chơi lại</button>
+  </div>
+
+  <script>
+    let randomNumber;
+    
+    const input = document.getElementById("guessInput");
+    const btn = document.getElementById("guessBtn");
+    const msg = document.getElementById("message");
+    const resetBtn = document.getElementById("resetBtn");
+
+    function startGame(){
+      randomNumber = Math.floor(Math.random() * 100) + 1;
+      msg.textContent = "";
+      input.value = "";
+    }
+
+    btn.onclick = ()=>{
+      const guess = Number(input.value);
+
+      if(!guess) return;
+
+      if(guess === randomNumber){
+        msg.textContent = "🎉 Chính xác!";
+      } 
+      else if(guess > randomNumber){
+        msg.textContent = "🔽 Nhỏ hơn!";
+      } 
+      else {
+        msg.textContent = "🔼 Lớn hơn!";
+      }
+    };
+
+    resetBtn.onclick = startGame;
+
+    startGame();
+  </script>
+
+</body>
+</html>
