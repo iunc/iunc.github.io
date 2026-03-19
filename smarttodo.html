@@ -544,6 +544,7 @@ body.dark .dueInput:focus{
     <p>• Nhấn ❌ để xoá</p>
     <p>• Giữ (long press) để pin</p>
     <p>• +Deadline thêm ngày giờ để tạo deadline</p>
+    <p> Tạo task nhanh, gõ !h !m !l để tạo priority, gõ @today @tmr @dd/mm-hh:mm để tạo deadline </p>
     <button id="closeGuide">Đã hiểu</button>
   </div>
 </div>
@@ -665,24 +666,89 @@ let undoTimeout = null;
 
 function addTask(){
   const text = input.value.trim();
-  if(!text){
-  input.focus();
-  return;
+  
+  // 1. Kiểm tra đầu vào trống
+  if (!text) {
+    input.focus();
+    return;
   }
+
+  // 2. Thiết lập giá trị mặc định từ giao diện (nếu có)
+  let autoPriority = prioritySelect.value; 
+  let autoDueDate = dueDateInput.value || null; 
+
+  // 3. Xử lý Cờ Ưu Tiên (!h, !m, !l)
+  let lowerText = text.toLowerCase();
+  if (lowerText.includes("!h") || lowerText.includes("!high")) {
+    autoPriority = "high";
+    text = text.replace(/!high|!h/gi, "").trim(); 
+  } else if (lowerText.includes("!m") || lowerText.includes("!med")) {
+    autoPriority = "medium";
+    text = text.replace(/!med|!m/gi, "").trim();
+  } else if (lowerText.includes("!l") || lowerText.includes("!low")) {
+    autoPriority = "low";
+    text = text.replace(/!low|!l/gi, "").trim();
+  }
+
+  // Cập nhật lại chuỗi chữ thường sau khi đã lọc Priority
+  lowerText = text.toLowerCase();
+
+  // 4. Xử lý Cờ Thời Gian thông minh (@today, @tmr, @dd/mm)
+  
+  // Trường hợp A: @today hoặc @tomorrow có kèm giờ (ví dụ: @today-14:30)
+  if (lowerText.includes("@today") || lowerText.includes("@tomorrow") || lowerText.includes("@tmr")) {
+    const d = new Date();
+    if (lowerText.includes("@tomorrow") || lowerText.includes("@tmr")) {
+      d.setDate(d.getDate() + 1);
+    }
+    // Tìm xem có đoạn giờ phút đi kèm không (-hh:mm)
+    const timeMatch = text.match(/@(today|tomorrow|tmr)(?:-(\d{1,2}):(\d{1,2}))?/i);
+    const hour = (timeMatch && timeMatch[2]) ? timeMatch[2].padStart(2, '0') : "23";
+    const min = (timeMatch && timeMatch[3]) ? timeMatch[3].padStart(2, '0') : "59";
+    autoDueDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}T${hour}:${min}`;
+    text = text.replace(timeMatch[0], "").trim();
+  } 
+
+  // Trường hợp B: Nhập ngày tháng cụ thể (ví dụ: @20/05 hoặc @20/05-14:30)
+  else {
+    const dateTimeMatch = text.match(/@(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?(?:-(\d{1,2}):(\d{1,2}))?/i);
+    if (dateTimeMatch) {
+      const day = dateTimeMatch[1].padStart(2, '0');
+      const month = dateTimeMatch[2].padStart(2, '0');
+      const year = dateTimeMatch[3] || new Date().getFullYear();
+      const hour = dateTimeMatch[4] ? dateTimeMatch[4].padStart(2, '0') : "23";
+      const min = dateTimeMatch[5] ? dateTimeMatch[5].padStart(2, '0') : "59";
+      const dateString = `${year}-${month}-${day}T${hour}:${min}`;
+      if (!isNaN(Date.parse(dateString))) {
+        autoDueDate = dateString;
+        text = text.replace(dateTimeMatch[0], "").trim();
+      }
+    }
+  }
+
+  // 5. Đề phòng trường hợp gõ mỗi cờ mà không có nội dung task
+  if (!text) return;
+
+  
+  // 6. Tạo đối tượng Task hoàn chỉnh
   const task = {
-     id: Date.now(),
-     text: text,
-     completed: false,
-     priority:prioritySelect.value,
-     createdAt: Date.now(),
-     pinned:false,
-     dueDate: dueDateInput.value || null 
-  }
+    id: Date.now(),
+    text: text,
+    completed: false,
+    priority: autoPriority,
+    createdAt: Date.now(),
+    pinned: false,
+    dueDate: autoDueDate
+  };
+
+  // 7. Lưu trữ và cập nhật giao diện
   tasks.push(task);
   renderByFilter();
   saveTasks();
   updateStats();
   updateProgress();
+  
+  // 8. Reset form nhập liệu
   input.value = "";
   input.focus();
   dueDateInput.value = "";
