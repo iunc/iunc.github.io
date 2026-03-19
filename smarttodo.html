@@ -665,7 +665,7 @@ let lastDeleted = null;
 let undoTimeout = null;
 
 function addTask(){
-  const text = input.value.trim();
+  let text = input.value.trim();
   
   // 1. Kiểm tra đầu vào trống
   if (!text) {
