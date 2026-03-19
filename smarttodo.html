@@ -1316,30 +1316,27 @@ document.addEventListener("click", (e)=>{
  }
 });
 
-// Khởi tạo dữ liệu từ bộ nhớ máy
+// Khởi tạo dữ liệu
 let xp = parseInt(localStorage.getItem("todo_xp")) || 0;
 let level = parseInt(localStorage.getItem("todo_level")) || 1;
 
 function addXP(amount) {
-    xp += amount;   
-    // Dùng while thay vì if để xử lý trường hợp XP tăng vọt (ví dụ 250/100)
-    while (xp >= (level * 100)) {
-        let nextLevelXP = level * 100;
-        xp -= nextLevelXP; // Trừ đi số điểm cần để lên cấp
-        level++; // Tăng cấp   
-        // Hiệu ứng pháo hoa cực lớn mỗi khi lên cấp
+    xp += amount;
+    // Level càng cao càng cần nhiều XP
+    while (xp >= level * 100) {
+        xp -= level * 100;
+        level++;
         confetti({
             particleCount: 300,
             spread: 100,
             origin: { y: 0.3 },
             ticks: 200
-        });     
-        console.log("Chúc mừng! Bạn đã lên cấp " + level);
+        });
+        alert("Chúc mừng! Bạn đã lên cấp " + level + " 🎉");
     }
     saveLevel();
     updateLevelUI();
 }
-
 
 function saveLevel() {
     localStorage.setItem("todo_xp", xp);
@@ -1347,12 +1344,14 @@ function saveLevel() {
 }
 
 function updateLevelUI() {
-    const nextLevelXP = level * 100;
-    const percent = (xp / nextLevelXP) * 100;   document.getElementById("userLevel").textContent = level;   document.getElementById("userXP").textContent = xp;    document.getElementById("xpBar").style.width = percent + "%";
+    const maxXP = level * 100; // XP cần để lên level tiếp
+    const percent = Math.min((xp / maxXP) * 100, 100);
+    // Hiển thị level   document.getElementById("userLevel").textContent = level;
+    // 🔥 SỬA CHỖ NÀY: hiển thị xp/maxXP   document.getElementById("userXP").textContent = xp + " / " + maxXP;
+    // Thanh progress    document.getElementById("xpBar").style.width = percent + "%";
 }
-// Chạy cập nhật giao diện ngay khi mở app
+// Load lần đầu
 updateLevelUI();
-
 
 setInterval(()=>{
  renderByFilter();
