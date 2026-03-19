@@ -1321,22 +1321,25 @@ let xp = parseInt(localStorage.getItem("todo_xp")) || 0;
 let level = parseInt(localStorage.getItem("todo_level")) || 1;
 
 function addXP(amount) {
-    xp += amount;
-    let nextLevelXP = level * 100; // Mỗi level cần thêm 100 XP
-    if (xp >= nextLevelXP) {
-        xp -= nextLevelXP;
-        level++;
-        // Hiệu ứng khi lên cấp (Pháo hoa cực lớn)
+    xp += amount;   
+    // Dùng while thay vì if để xử lý trường hợp XP tăng vọt (ví dụ 250/100)
+    while (xp >= (level * 100)) {
+        let nextLevelXP = level * 100;
+        xp -= nextLevelXP; // Trừ đi số điểm cần để lên cấp
+        level++; // Tăng cấp   
+        // Hiệu ứng pháo hoa cực lớn mỗi khi lên cấp
         confetti({
-            particleCount: 400,
+            particleCount: 300,
             spread: 100,
-            origin: { y: 0.3 }
-        });
-        alert("CHÚC MỪNG! Bạn đã lên cấp " + level + " 🎉");
+            origin: { y: 0.3 },
+            ticks: 200
+        });     
+        console.log("Chúc mừng! Bạn đã lên cấp " + level);
     }
     saveLevel();
     updateLevelUI();
 }
+
 
 function saveLevel() {
     localStorage.setItem("todo_xp", xp);
