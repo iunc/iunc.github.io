@@ -464,6 +464,49 @@ body.dark .dueInput:focus{
 .urgent{
  border-right:6px solid #faad14;
 }
+/* 1. Tạo kiểu dáng cho thanh Header của mỗi ngày */
+.dateHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px 12px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    margin: 15px 0 5px;
+    user-select: none;
+    transition: background 0.3s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+body.dark .dateHeader {
+    background: #2d2d2d;
+}
+/* 2. Tạo mũi tên chỉ xuống bằng CSS (không cần icon hình ảnh) */
+.dateHeader::after {
+    content: '▼';
+    font-size: 12px;
+    transition: transform 0.3s ease; /* Hiệu ứng xoay mượt */
+}
+/* 3. Khi Header bị đóng (có class 'collapsed'), xoay mũi tên sang ngang */
+.dateHeader.collapsed::after {
+    transform: rotate(-90deg);
+}
+/* 4. Vỏ bọc chứa các Task bên trong một ngày */
+.group-content {
+    overflow: hidden;
+    /* Dùng max-height thay vì display:none để có thể tạo hiệu ứng trượt */
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    max-height: 2000px; /* Một con số đủ lớn để chứa hết các task */
+    opacity: 1;
+}
+/* 5. Trạng thái ẩn của vỏ bọc */
+.group-content.hidden {
+    max-height: 0;
+    opacity: 0;
+}
+
 
 </style>
 </head>
@@ -757,7 +800,7 @@ function addTask(){
   dueHint.style.display = "none";
 }
 
-function createTask(task){
+function createTask(task,container){
    const li = document.createElement("li");
 
 // 👉 priority + pinned
@@ -879,7 +922,11 @@ li.addEventListener("touchend", ()=>{
  li.appendChild(span);
  li.appendChild(time);
  li.appendChild(del);
- taskList.appendChild(li);
+ if (container) {
+       container.appendChild(li);
+   } else {
+       taskList.appendChild(li);
+   }
 }
 
 function renderTasks(list){
@@ -905,17 +952,34 @@ function renderTasks(list){
  }
 
  let lastDate = "";
+ let currentGroup = null; // Biến này sẽ đóng vai trò là cái hộp đựng task cho mỗi ngày
+
 list.forEach(task=>{
  const label = getTaskDateLabel(task.createdAt);
- if(label !== lastDate){
-   const header = document.createElement("li");
-   header.textContent = label;
-   header.className = "dateHeader";
-   taskList.appendChild(header);
-   lastDate = label;
- }
- createTask(task);
-});
+
+ // Khi phát hiện một ngày mới (Ví dụ: Từ Today chuyển sang Yesterday)
+   if(label !== lastDate){
+     // 1. Tạo thanh Header
+     const header = document.createElement("li");
+     header.textContent = label;
+     header.className = "dateHeader";
+     taskList.appendChild(header);
+     
+     // 2. Tạo một cái hộp <div> để chứa các task của ngày đó
+     currentGroup = document.createElement("div");
+     currentGroup.className = "group-content";
+    taskList.appendChild(currentGroup);
+   
+     // 3. Gắn sự kiện click vào Header để Đóng/Mở cái hộp
+     header.onclick = () => {
+  header.classList.toggle("collapsed");   currentGroup.classList.toggle("hidden"); 
+};
+     lastDate = label; // Cập nhật lại ngày để so sánh cho vòng lặp tiếp theo
+   }
+   
+   // 4. Tạo task và thả vào cái hộp (currentGroup) thay vì thả lung tung
+   createTask(task, currentGroup);
+ });
 
  updateStats();
  updateGreeting();
