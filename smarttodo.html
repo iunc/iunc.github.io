@@ -1316,7 +1316,6 @@ document.addEventListener("click", (e)=>{
  }
 });
 
-// Khởi tạo dữ liệu
 let xp = parseInt(localStorage.getItem("todo_xp")) || 0;
 let level = parseInt(localStorage.getItem("todo_level")) || 1;
 
@@ -1346,11 +1345,10 @@ function saveLevel() {
 function updateLevelUI() {
     const maxXP = level * 100; // XP cần để lên level tiếp
     const percent = Math.min((xp / maxXP) * 100, 100);
-    // Hiển thị level   document.getElementById("userLevel").textContent = level;
-    // 🔥 SỬA CHỖ NÀY: hiển thị xp/maxXP   document.getElementById("userXP").textContent = xp + " / " + maxXP;
-    // Thanh progress    document.getElementById("xpBar").style.width = percent + "%";
+document.getElementById("userLevel").textContent = level;
+document.getElementById("userXP").textContent = xp + " / " + maxXP;
+document.getElementById("xpBar").style.width = percent + "%";
 }
-// Load lần đầu
 updateLevelUI();
 
 setInterval(()=>{
