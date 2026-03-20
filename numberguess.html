@@ -507,15 +507,16 @@ function letGo(){
   if(guess === randomNumber){
     let rank = getRank(attempts);
     msg.textContent = `🎉 Chính xác! Rank:${rank}`;
-    msg.classList.add("success");
-    gameOver = true;
-    btn.textContent = "Chơi lại";
-    btn.disabled = flase;
     confetti({
        particleCount: 150,
        spread: 70,
        origin: { y: 0.6 }
     });
+    msg.classList.add("success");
+    gameOver = true;
+    btn.textContent = "Chơi lại";
+    btn.disabled = flase;
+    
 
     if(!bestScore || attempts > bestScore){
       localStorage.setItem("bestScore", attempts);
