@@ -5,18 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🔢 Number Guess</title>
 <style>
+
 *{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+   margin:0;
+   padding:0;
+   box-sizing:border-box;
+   -webkit-tap-highlight-color: transparent;
+   /*outline:1px solid red;*/
 }
 body{
   font-family: Arial;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
+  min-height:100dvh;
   margin:0;
 }
 .game{
@@ -27,94 +30,534 @@ body{
   text-align:center;
   color:white;
   width:300px;
+  height:auto;
 }
 input{
-  padding:10px;
-  width:80%;
+  padding:12px;
+  width:100%;
   border:none;
-  border-radius:10px;
-  margin-top:10px;
+  border-radius:12px;
+  margin-top:12px;
+  font-size:16px;
+  outline:none;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  text-align: center;
+}
+input::placeholder{
+  color: rgba(255,255,255,0.8);
 }
 button{
-  margin-top:10px;
-  padding:10px 20px;
+  margin-top:12px;
+  padding:12px;
+  width:40%;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   cursor:pointer;
-  background:#ff7eb3;
+  background: linear-gradient(135deg, #36d1dc, #5b86e5);
   color:white;
-  user-select:none;
+  font-size:16px;
+  font-weight: bold;
+  transition: all 0.15s ease;
 }
-button:hover{
-  opacity:0.8;
+button:active{
+  transform: scale(0.96);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2) inset;
 }
+button:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+}
+h1{
+  font-size: 28px;
+  font-weight: bold;
+  background: linear-gradient(90deg, #ff7eb3, #ffd86b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 15px rgba(255,255,255,0.3);
+  letter-spacing: 1px;
+  animation: fadeUp 0.6s ease;
+}
+@keyframes fadeUp{
+  from{
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to{
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.subtitle{
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  margin-top: 5px;
+}
+#message{
+  margin-top:15px;
+  font-weight:bold;
+  min-height:24px;
+  transition: all 0.2s ease;
+}
+#message.success{
+  color: #4ade80;
+}
+#message.hint{
+  color: #facc15;
+}
+#message.error{
+  color: #f87171;
+}
+.info{
+  margin-top:10px;
+  font-size:14px;
+  color: rgba(255,255,255,0.7);
+}
+.info span{
+  color: #ffd86b;
+  font-weight: bold;
+  font-size: 16px;
+}
+.shake{
+  animation: shake 0.3s;
+}
+@keyframes shake{
+  0%{ transform: translateX(0); }
+  25%{ transform: translateX(-5px); }
+  50%{ transform: translateX(5px); }
+  75%{ transform: translateX(-5px); }
+  100%{ transform: translateX(0); }
+}
+.flash{
+  background: rgba(255, 0, 0, 0.2);
+}
+#menu{
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  padding:25px 20px;
+  border-radius:20px;
+  text-align:center;
+  color:white;
+  width:300px;
+}
+#menu h2{
+  font-size:24px;
+  font-weight:700;
+  margin-bottom:20px;
+  background: linear-gradient(135deg, #ffffff, #cbd5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+#menu button{
+  display:block;
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  color:white;
+}
+#menu button:active{
+  transform: scale(0.96);
+}
+#menu button:nth-of-type(1){
+  background: linear-gradient(135deg, #56ab2f, #a8e063);
+}
+#menu button:nth-of-type(2){
+  background: linear-gradient(135deg, #36d1dc, #5b86e5);
+}
+#menu button:nth-of-type(3){
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+}
+#menuBtn{
+  margin-top:15px;
+  width:40%;
+  background: rgba(255,255,255,0.2);
+}
+.hidden{
+  display:none;
+}
+#range{
+  font-size:14px;
+  margin-top:10px;
+  color:#a5b4fc; /* tím xanh nhẹ */
+  font-weight:500;
+  letter-spacing:0.3px;
+}
+#history{
+  font-size:13px;
+  margin-top:6px;
+  color:rgba(255,255,255,0.7);
+}
+#modeMenu{
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  padding:25px 20px;
+  border-radius:20px;
+  text-align:center;
+  color:white;
+  width:300px;
+}
+#modeMenu h2{
+  font-size:24px;
+  margin-bottom:20px;
+}
+#modeMenu button{
+  display:block;
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:bold;
+  background: linear-gradient(135deg, #36d1dc, #5b86e5);
+  color:white;
+}
+#aiControls button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  transition: transform 0.1s ease, filter 0.2s ease;
+}
+#aiControls button:active {
+  transform: scale(0.98);
+  filter: brightness(0.9);
+}
+#aiControls button:nth-of-type(1) {
+  background: linear-gradient(135deg, #36d1dc, #5b86e5); 
+}
+#aiControls button:nth-of-type(2) {
+  background: linear-gradient(135deg, #36d1dc, #5b86e5);
+}
+#aiControls button:nth-of-type(3) {
+  background: linear-gradient(135deg, #56ab2f, #a8e063);
+}
+#aiControls button:nth-of-type(4) {
+  background: rgba(255, 255, 255, 0.15);
+}
+#aiGuess {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 15px 0;
+  color: #ffd86b;
+  text-shadow: 0 0 10px rgba(255, 216, 107, 0.3);
+}
+
+
 </style>
 </head>
 
 <body>
 
-<div class="game">
-  <h1>Number Guess</h1>
-  <p>Đoán số từ 1 đến 100</p>
+<div id="modeMenu">
+  <h2>MODE</h2>
+  <button onclick="selectMode('player')">🧠 Tôi đoán</button>
+  <button onclick="selectMode('ai')">🤖 Game đoán</button>
+</div>
+
+<div id="menu" style="display:none;">
+  <h2>LEVEL</h2>
+  <button onclick="startWithLevel('easy')">🐣 Dễ</button>
+  <button onclick="startWithLevel('medium')">😎 Trung bình</button>
+  <button onclick="startWithLevel('hard')">🔥 Khó</button>
+</div>
+
+<div class="game" id="game" style="display:none">
+ <h1>NUMBER GUESS</h1>
+ <div id="playerUI">
+  <p class="subtitle" id="subtitle"></p>
   <input type="number" id="guessInput" placeholder="Nhập số..." />
   <button id="guessBtn">Đoán</button>
   <p id="message"></p>
-  <p>Lượt còn: <span id="attempts">10</span></p>
-  <p>Best: <span id="best">--</span></p>
-  <button id="resetBtn">Chơi lại</button>
+  <p id="range"></p>
+  <p id="history"></p>
+  <p class="info">Lượt còn: <span id="attempts">10</span></p>
+<p class="info">Best: <span id="best">--</span></p>
+<button id="menuBtn">Đổi level</button>
 </div>
 
-<script>
+<div id="aiControls" style="display:none;">
+  <p id="aiTitle" style="margin: 10px 0; font-size: 14px;"></p>
+  <p id="aiGuess"></p>
+  <button onclick="tooLow()">🔼 Lớn hơn</button>
+  <button onclick="tooHigh()">🔽 Nhỏ hơn</button>
+  <button id="correctBtn" onclick="correct()">🎉 Đúng rồi</button>
+  <button onclick="backToMode()">⬅️ Đổi chế độ</button>
+</div>
+</div>
+
+<script> 
 
 let randomNumber;
 let attempts;
+let gameOver = false;
+let aiMin;
+let aiMax;
+let aiGuess;
 let bestScore = localStorage.getItem("bestScore");
 
+const menuBtn = document.getElementById("menuBtn");
+menuBtn.onclick = () => { document.getElementById("menu").style.display = "block";
+document.getElementById("game").style.display = "none";
+}
+
+const range = document.getElementById("range");
+const history = document.getElementById("history")
+
+const aiControls = document.getElementById("aiControls");
+const aiGuessText = document.getElementById("aiGuess");
+const aiTitle = document.getElementById("aiTitle");
+const playerUI = document.getElementById("playerUI");
+
 const input = document.getElementById("guessInput");
+input.addEventListener("keydown",function(e){
+  if(e.key === "Enter" && !gameOver && input.value){
+      letGo();
+  }
+})
+input.addEventListener("input", function(){
+  if(gameOver) return;
+  btn.disabled = !input.value;
+})
+
 const btn = document.getElementById("guessBtn");
 const msg = document.getElementById("message");
 const attemptsText = document.getElementById("attempts");
 const bestText = document.getElementById("best");
-const resetBtn = document.getElementById("resetBtn");
 
 bestText.textContent = bestScore ? bestScore : "--";
 
+let mode = "player";
+
+function selectMode(m){
+ mode = m;
+
+document.getElementById("modeMenu").style.display = "none";
+if(mode === "player"){
+document.getElementById("menu").style.display = "block";
+} else{
+document.getElementById("game").style.display = "block";
+  maxNumber = 100;
+  startGame();
+}
+}
+
+let maxNumber = 100;
+let maxAttempts = 10;
+let difficult;
+
+function startWithLevel(level){
+  if(level === "easy"){
+    maxNumber = 50;
+    maxAttempts = 10;
+    difficult = "easy";
+  } else if(level === "medium"){
+    maxNumber = 100;
+    maxAttempts = 10;
+    difficult = "medium";
+  } else{
+    maxNumber = 200;
+    maxAttempts = 8; 
+    difficult = "hard";
+  }
+document.getElementById("menu").style.display = "none";
+document.getElementById("game").style.display = "block";
+startGame();
+}
+
+let min = 1;
+let max = maxNumber;
+let historyList = [];
+
 function startGame(){
-  randomNumber = Math.floor(Math.random()*100)+1;
-  attempts = 10;
+if(mode === "ai"){
+  playerUI.style.display = "none";
+  menu.style.display = "none";
+  aiControls.style.display = "block";
+  aiTitle.textContent = "Nghĩ 1 số từ 1 đến 100, 🤖 tôi sẽ đoán!";
+  aiMin = 1;
+  aiMax = maxNumber;
+  nextGuess();
+} else{
+  playerUI.style.display = "block";
+  aiControls.style.display ="none";
+}
+
+document.getElementById("subtitle").textContent = "Đoán số từ 1 đến "+ maxNumber;
+  randomNumber = Math.floor(Math.random()*maxNumber)+1;
+  attempts = maxAttempts;
   attemptsText.textContent = attempts;
   msg.textContent = "";
   input.value = "";
+  msg.classList.add("hidden");
+  min = 1;
+  max = maxNumber;
+  historyList = [];
+  range.classList.add("hidden");
+  history.classList.add("hidden");
+  gameOver = false;
+  btn.disabled = true;
+  btn.textContent = "Đoán";
+
 }
 
-btn.onclick = ()=>{
+function nextGuess(){
+  aiGuess = Math.floor((aiMin + aiMax)/2);
+  aiGuessText.innerHTML = `🤖 <span style="color:white; font-size:16px;">Tôi đoán:</span> ${aiGuess}`;
+}
+
+function tooLow(){
+  aiMin = aiGuess + 1;
+  nextGuess();
+}
+
+function tooHigh(){
+  aiMax = aiGuess - 1;
+  nextGuess();
+}
+
+function correct(){
+ const cBtn = document.getElementById("correctBtn");
+
+ aiGuessText.textContent = "😎 Tôi đoán đúng rồi";
+ aiGuessText.style.color = "#4ade80";
+
+ cBtn.textContent = "Chơi lại";
+ cBtn.style.background = "linear-gradient(135deg, #ff9a9e, #fecfef)";
+
+ confetti({
+    particleCount: 150,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
+
+ cBtn.onclick = ()=>{
+  cBtn.textContent = "🎉 Đúng rồi";
+  cBtn.style.background = "";
+  aiGuessText.style.color = "";
+  cBtn.onclick = correct;
+  aiMin = 1;
+  aiMax = maxNumber;
+  nextGuess();
+}
+
+}
+
+function backToMode(){
+   modeMenu.style.display = "block";
+   game.style.display = "none";
+}
+
+btn.onclick = letGo;
+
+function getRank(attempts){
+  if(attempts >= 7) return "🏆 S";
+  if(attempts >= 4) return "🥈 A";
+  return "🥉 B";
+}
+
+function letGo(){
+  if(gameOver){
+    startGame();
+    return;
+  }
+  
+  if (attempts <= 0) return;
   const guess = Number(input.value);
 
-  if(!guess) return;
+  if(!input.value){
+    msg.textContent = "Nhập số đi nào!";
+    msg.className = "error";
+    return;
+  }
+  if(guess < 1 || guess > maxNumber){
+    msg.textContent = `Nhập số từ 1 đến ${maxNumber}`;
+    msg.className = "error";
+    return;
+  }
 
+  historyList.push(guess);
   attempts--;
   attemptsText.textContent = attempts;
+  msg.className = "";
+
+  let diff = Math.abs(guess - randomNumber);
+  let hintText = "";
+  if(diff <= 5){
+    hintText = "🔥 Rất gần!";
+  } else if(diff <= 10){
+    hintText = "😮 Gần rồi!";
+  } else{
+    hintText = "🧊 Còn xa!";
+  }
 
   if(guess === randomNumber){
-    msg.textContent = "🎉 Chính xác!";
-    
+    let rank = getRank(attempts);
+    msg.textContent = `🎉 Chính xác! Rank:${rank}`;
+    msg.classList.add("success");
+    gameOver = true;
+    btn.textContent = "Chơi lại";
+    btn.disabled = flase;
+    confetti({
+       particleCount: 150,
+       spread: 70,
+       origin: { y: 0.6 }
+    });
+
     if(!bestScore || attempts > bestScore){
       localStorage.setItem("bestScore", attempts);
       bestText.textContent = attempts;
     }
 
   } else if(guess > randomNumber){
-    msg.textContent = "🔽 Nhỏ hơn!";
+    msg.textContent = "🔽 Nhỏ hơn "+ hintText;
+    msg.classList.add("hint");
+  input.classList.add("shake","flash");
+    setTimeout(()=>{
+input.classList.remove("shake","flash")
+    },300);
+    max = guess - 1
   } else {
-    msg.textContent = "🔼 Lớn hơn!";
+    msg.textContent = "🔼 Lớn hơn " + hintText;
+    msg.classList.add("hint");
+  input.classList.add("shake","flash");
+    setTimeout(()=>{      input.classList.remove("shake","flash")
+    },300);
+    min = guess + 1;
+  }
+  
+  if(difficult === "easy"){
+    range.classList.remove("hidden");
+    history.classList.remove("hidden");
+    range.textContent = `Khoảng: ${min} đến ${max}`;
+    history.textContent = "Đã đoán: "+ historyList.join(", ");
+  } else if(difficult === "medium"){
+    history.classList.remove("hidden");
+    history.textContent = "Đã đoán: "+ historyList.join(", ");
   }
 
   if(attempts <= 0 && guess !== randomNumber){
     msg.textContent = "💀 Thua! Số là " + randomNumber;
+    msg.classList.add("error");
+    gameOver = true;
+    btn.textContent = "Chơi lại";
+    btn.disabled = false;
   }
-};
 
-resetBtn.onclick = startGame;
+  input.value = "";
+};
 
 startGame();
 
