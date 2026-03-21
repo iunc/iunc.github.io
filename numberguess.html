@@ -643,7 +643,7 @@ function letGo(){
        spread: 70,
        origin: { y: 0.6 }
     });
-    if(!bestScore || attempts > bestScore){
+    if(!bestScore || attempts > Number(bestScore)){
       localStorage.setItem("bestScore", attempts);
       bestText.textContent = attempts;
     }
