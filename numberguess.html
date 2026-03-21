@@ -382,6 +382,9 @@ h1{
   </div>
 </div>
 
+<audio id="bgm" loop preload="auto">
+    <source src="https://upload.wikimedia.org/wikipedia/commons/3/30/Lofi_Study_Beat.mp3" type="audio/mpeg">
+</audio>
 <script> 
 
 let randomNumber;
@@ -429,6 +432,7 @@ const attemptsText = document.getElementById("attempts");
 let mode = "player";
 
 function selectMode(m){
+ startBGM();
  mode = m;
 
 document.getElementById("modeMenu").style.display = "none";
@@ -736,6 +740,17 @@ function updateMenuLock(){
      }   
 }
 
+function startBGM() {
+    const bgm = document.getElementById("bgm");
+    if (!bgmStarted) {
+        bgm.volume = 0.2; // Để âm lượng nhỏ vừa phải
+        bgm.play().then(() => {
+            bgmStarted = true;
+        }).catch(err => {
+            console.log("Trình duyệt chờ tương tác để phát nhạc...");
+        });
+    }
+}
 
 updateXPUI();
 updateMenuLock();
