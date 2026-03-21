@@ -382,10 +382,6 @@ h1{
   </div>
 </div>
 
-<audio id="bgm" loop preload="auto">
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-</audio>
-
 <script> 
 
 let randomNumber;
@@ -433,7 +429,6 @@ const attemptsText = document.getElementById("attempts");
 let mode = "player";
 
 function selectMode(m){
- startBGM();
  mode = m;
 
 document.getElementById("modeMenu").style.display = "none";
@@ -739,17 +734,6 @@ function updateMenuLock(){
        medBtn.style.pointerEvents = "auto";
        medBtn.innerHTML = "😎 Trung bình";
      }   
-}
-
-let bgmStarted = false;
-function startBGM() {
-    const bgm = document.getElementById("bgm");
-    if (!bgmStarted) {
-        bgm.volume = 0.2;
-        bgm.play().then(() => {
-            bgmStarted = true;
-        })
-    }
 }
 
 updateXPUI();
