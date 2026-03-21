@@ -259,7 +259,64 @@ h1{
   color: #ffd86b;
   text-shadow: 0 0 10px rgba(255, 216, 107, 0.3);
 }
-
+.xp-container {
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+}
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+#xp-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #ffd86b, #ff7eb3);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+.popup-content {
+  background: linear-gradient(135deg, #2c5364, #203a43);
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  color: white;
+  width: 280px;
+  border: 1px solid rgba(255,255,255,0.2);
+  transform: scale(1);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.popup-overlay.hidden {
+  display: none;
+  opacity: 0;
+}
+.popup-btn {
+  margin-top: 20px;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 10px;
+  background: #4ade80;
+  color: #0f2027;
+  font-weight: bold;
+  cursor: pointer;
+}
+.popup-btn:active { transform: scale(0.95); }
 
 </style>
 </head>
@@ -275,7 +332,7 @@ h1{
 <div id="menu" style="display:none;">
   <h2>LEVEL</h2>
   <button onclick="startWithLevel('easy')">🐣 Dễ</button>
-  <button onclick="startWithLevel('medium')">😎 Trung bình</button>
+  <button onclick="startWithLevel('medium')">😎Trung bình</button>
   <button onclick="startWithLevel('hard')">🔥 Khó</button>
 </div>
 
@@ -290,6 +347,18 @@ h1{
   <p id="history"></p>
   <p class="info">Lượt còn: <span id="attempts">10</span></p>
 <p class="info">Best: <span id="best">--</span></p>
+
+<div class="xp-container">
+  <p class="info">Level: <span id="level">1</span></p>
+  <p id="player-title" style="font-size: 13px; color: #ffd86b; font-weight: bold; margin:8px 0; letter-spacing: 0.5px;">
+    👶 Tân Binh
+  </p>
+  <div class="progress-bar">
+    <div id="xp-fill"></div>
+  </div>
+  <p id="xp-text" style="font-size: 11px; margin-top: 5px; color: rgba(255,255,255,0.5)">0 / 100 XP</p>
+</div>
+
 <button id="menuBtn">Level</button>
 <button id="backBtn" onclick="backToMode()">Mode</button>
 </div>
@@ -304,6 +373,15 @@ h1{
 </div>
 </div>
 
+<div id="customPopup" class="popup-overlay hidden">
+  <div class="popup-content">
+    <div id="popupIcon" style="font-size: 50px; margin-bottom: 10px;">🎉</div>
+    <h2 id="popupTitle">Thông báo</h2>
+    <p id="popupMessage">Nội dung thông báo ở đây.</p>
+    <button onclick="closePopup()" class="popup-btn">Đóng</button>
+  </div>
+</div>
+
 <script> 
 
 let randomNumber;
@@ -312,11 +390,16 @@ let gameOver = false;
 let aiMin;
 let aiMax;
 let aiGuess;
+let currentXP = parseInt(localStorage.getItem("xp")) || 0;
+let currentLevel = parseInt(localStorage.getItem("level")) || 1;
 let bestScore = localStorage.getItem("bestScore");
+const bestText = document.getElementById("best");
+bestText.textContent = bestScore ? bestScore: "--";
 
 const menuBtn = document.getElementById("menuBtn");
 menuBtn.onclick = () => { document.getElementById("menu").style.display = "block";
 document.getElementById("game").style.display = "none";
+updateMenuLock();
 }
 
 const range = document.getElementById("range");
@@ -341,9 +424,7 @@ input.addEventListener("input", function(){
 const btn = document.getElementById("guessBtn");
 const msg = document.getElementById("message");
 const attemptsText = document.getElementById("attempts");
-const bestText = document.getElementById("best");
 
-bestText.textContent = bestScore ? bestScore : "--";
 
 let mode = "player";
 
@@ -365,6 +446,14 @@ let maxAttempts = 10;
 let difficult;
 
 function startWithLevel(level){
+  if(currentLevel >= 15 && level === "medium"){
+      showPopup("HÀNH TRÌNH KHÓ KHĂN","Bậc thầy không thể chơi level Trung bình. Hãy chọn chế độ Khó.","🚫");
+       return;
+  }
+  if(currentLevel >= 5 && level === "easy"){
+      showPopup("QUÁ DỄ DÀNG","Bạn đã vượt qua trình độ này rồi. Hãy chọn  level khác","🔒");
+      return;
+  }
   if(level === "easy"){
     maxNumber = 50;
     maxAttempts = 10;
@@ -419,6 +508,39 @@ document.getElementById("subtitle").textContent = "Đoán số từ 1 đến "+ 
 
 }
 
+function updateXPUI(){
+  const xpNeeded = 100;
+  const progress = (currentXP % xpNeeded);
+  document.getElementById("level").textContent = currentLevel;
+document.getElementById("xp-fill").style.width = progress + "%";
+document.getElementById("xp-text").textContent = `${progress}/${xpNeeded}XP`;
+
+  const titleElement = document.getElementById("player-title");
+  titleElement.textContent = getTitle(currentLevel);
+updateMenuLock();
+}
+
+function addXP(){
+  const multiplier = (difficult === "easy")?1:(difficult === "medium")?2:5;
+  let gainedXP = (attempts + 1) * multiplier * 10;
+  currentXP += gainedXP;
+  let newLevel = Math.floor(currentXP/100)+1;
+  if(newLevel > currentLevel){
+     let oldTitle = getTitle(currentLevel);
+     currentLevel = newLevel;
+     let newTitle = getTitle(currentLevel);
+     if(oldTitle !== newTitle){
+         showPopup("DANH HIỆU MỚI",`Bạn đã đạt được danh hiệu: ${newTitle}`,"👑");  
+     } else{
+     showPopup("LEVEL UP!",`Chúc mừng! Bạn đã đạt được cấp độ ${currentLevel}`,"🚀");
+     }
+  }
+  localStorage.setItem("xp",currentXP);
+  localStorage.setItem("level",currentLevel);
+updateXPUI();
+return gainedXP;
+}
+
 function nextGuess(){
   aiGuess = Math.floor((aiMin + aiMax)/2);
   aiGuessText.innerHTML = `🤖 <span style="color:white; font-size:16px;">Tôi đoán:</span> ${aiGuess}`;
@@ -458,7 +580,6 @@ function correct(){
   aiMax = maxNumber;
   nextGuess();
 }
-
 }
 
 function backToMode(){
@@ -484,13 +605,12 @@ function letGo(){
   const guess = Number(input.value);
 
   if(!input.value){
-    msg.textContent = "Nhập số đi nào!";
-    msg.className = "error";
+    showPopup("ERROR!","Nhập số đi nào bạn ơi!","⚠️");
     return;
   }
   if(guess < 1 || guess > maxNumber){
-    msg.textContent = `Nhập số từ 1 đến ${maxNumber}`;
-    msg.className = "error";
+    showPopup("ERROR!",`Vui lòng nhập số từ 1 đến ${maxNumber}!`,"⚠️");
+    input.value = "";
     return;
   }
 
@@ -510,19 +630,19 @@ function letGo(){
   }
 
   if(guess === randomNumber){
+    let gained = addXP();
     let rank = getRank(attempts);
-    msg.textContent = `🎉 Chính xác! Rank:${rank}`;
+    msg.innerHTML = `🎉 Chính xác! <br>+${gained}XP <br>Rank:${rank}`;
+    msg.classList.add("success");
+    gameOver = true;
+    btn.textContent = "Chơi tiếp";
+    btn.disabled = false;
+    input.value = "";
     confetti({
        particleCount: 150,
        spread: 70,
        origin: { y: 0.6 }
     });
-    msg.classList.add("success");
-    gameOver = true;
-    btn.textContent = "Chơi lại";
-    btn.disabled = false;
-    
-
     if(!bestScore || attempts > bestScore){
       localStorage.setItem("bestScore", attempts);
       bestText.textContent = attempts;
@@ -556,16 +676,76 @@ input.classList.remove("shake","flash")
   }
 
   if(attempts <= 0 && guess !== randomNumber){
-    msg.textContent = "💀 Thua! Số là " + randomNumber;
-    msg.classList.add("error");
+    if(currentLevel > 1){
+       currentLevel--;
+       currentXP = (currentLevel - 1)*100;
+    } else{
+       currentXP = 0;
+    }
+localStorage.setItem("xp",currentXP);
+localStorage.setItem("level",currentLevel);
+    updateXPUI();
+    showPopup("THẤT BẠI!",`Bạn đã bị xuống cấp: <span style="color:#ffd86b">${currentLevel}</span> <br> Số đúng là <span style="color:#ffd86b">${randomNumber}</span>`,"💀");
     gameOver = true;
     btn.textContent = "Chơi lại";
     btn.disabled = false;
   }
-
   input.value = "";
 };
 
+function showPopup(title,massage,icon="🔔"){  document.getElementById("popupTitle").textContent = title;
+document.getElementById("popupMessage").innerHTML = massage;
+document.getElementById("popupIcon").textContent = icon;
+
+const popup = document.getElementById("customPopup");
+popup.classList.remove("hidden");
+}
+
+function closePopup(){
+document.getElementById("customPopup").classList.add("hidden");
+
+let isTooPro = (currentLevel >= 5 && difficult === "easy") ||  (currentLevel >= 15 && difficult === "medium");
+
+if(isTooPro){   document.getElementById("game").style.display = "none";
+document.getElementById("menu").style.display = "block";
+updateMenuLock();
+}
+}
+
+function getTitle(level) {
+    if (level >= 30) return "👑 Huyền Thoại Số Học";
+    if (level >= 20) return "🧙 Bậc Thầy Tiên Đoán";
+    if (level >= 15) return "💎 Thợ Săn Con Số";
+    if (level >= 10) return "🔥 Chuyên Gia Đoán Số";
+    if (level >= 5)  return "🌟 Người Chơi Hệ Số";
+    return "👶 Tân Binh";
+}
+
+function updateMenuLock(){
+   const easyBtn = document.querySelector("button[onclick*='easy']");
+   const medBtn = document.querySelector("button[onclick*='medium']");
+   if(currentLevel >= 5 && easyBtn){
+       easyBtn.style.opacity = "0.5";
+       easyBtn.style.pointerEvents = "none";
+       easyBtn.innerHTML = "🔒 Dễ (Locked)";
+   } else {
+       easyBtn.style.opacity = "1";
+       easyBtn.style.pointerEvents = "auto";
+       easyBtn.innerHTML = "🐣 Dễ";
+     }
+   if(currentLevel >= 15 && medBtn){
+       medBtn.style.opacity = "0.5";
+       medBtn.style.pointerEvents = "none";
+       medBtn.innerHTML = "🔒 Trung bình (Locked)";
+   } else {
+       medBtn.style.opacity = "1";
+       medBtn.style.pointerEvents = "auto";
+       medBtn.innerHTML = "😎 Trung bình";
+     }   
+}
+   
+updateXPUI();
+updateMenuLock();
 startGame();
 
 </script>
