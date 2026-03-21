@@ -178,6 +178,11 @@ h1{
   width:40%;
   background: rgba(255,255,255,0.2);
 }
+#backBtn{
+  margin-top:15px;
+  width:40%;
+  background: rgba(255,255,255,0.2);
+}
 .hidden{
   display:none;
 }
@@ -285,7 +290,8 @@ h1{
   <p id="history"></p>
   <p class="info">Lượt còn: <span id="attempts">10</span></p>
 <p class="info">Best: <span id="best">--</span></p>
-<button id="menuBtn">Đổi level</button>
+<button id="menuBtn">Level</button>
+<button id="backBtn" onclick="backToMode()">Mode</button>
 </div>
 
 <div id="aiControls" style="display:none;">
@@ -294,7 +300,7 @@ h1{
   <button onclick="tooLow()">🔼 Lớn hơn</button>
   <button onclick="tooHigh()">🔽 Nhỏ hơn</button>
   <button id="correctBtn" onclick="correct()">🎉 Đúng rồi</button>
-  <button onclick="backToMode()">⬅️ Đổi chế độ</button>
+  <button onclick="backToMode()">Mode</button>
 </div>
 </div>
 
