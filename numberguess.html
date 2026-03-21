@@ -446,14 +446,6 @@ let maxAttempts = 10;
 let difficult;
 
 function startWithLevel(level){
-  if(currentLevel >= 15 && level === "medium"){
-      showPopup("HÀNH TRÌNH KHÓ KHĂN","Bậc thầy không thể chơi level Trung bình. Hãy chọn chế độ Khó.","🚫");
-       return;
-  }
-  if(currentLevel >= 5 && level === "easy"){
-      showPopup("QUÁ DỄ DÀNG","Bạn đã vượt qua trình độ này rồi. Hãy chọn  level khác","🔒");
-      return;
-  }
   if(level === "easy"){
     maxNumber = 50;
     maxAttempts = 10;
