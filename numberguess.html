@@ -622,6 +622,7 @@ function letGo(){
   }
 
   if(guess === randomNumber){
+    playSound(success);
     let gained = addXP();
     let rank = getRank(attempts);
     msg.innerHTML = `🎉 Chính xác! <br>+${gained}XP <br>Rank:${rank}`;
@@ -630,7 +631,6 @@ function letGo(){
     btn.textContent = "Chơi tiếp";
     btn.disabled = false;
     input.value = "";
-    playSound(success);
     confetti({
        particleCount: 150,
        spread: 70,
