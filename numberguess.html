@@ -361,6 +361,13 @@ h1{
 
 <button id="menuBtn">Level</button>
 <button id="backBtn" onclick="backToMode()">Mode</button>
+
+<div id="dailyStatus" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+    <p style="font-size: 13px; color: #aaa; margin: 0;">
+        📅 Đã điểm danh: <span id="streakCount" style="color: #ffd86b; font-weight: bold;">0</span> ngày
+    </p>
+</div>
+
 </div>
 
 <div id="aiControls" style="display:none;">
@@ -461,6 +468,7 @@ function startWithLevel(level){
   }
 document.getElementById("menu").style.display = "none";
 document.getElementById("game").style.display = "block";
+checkDaily();
 startGame();
 }
 
@@ -734,6 +742,23 @@ function updateMenuLock(){
        medBtn.style.pointerEvents = "auto";
        medBtn.innerHTML = "😎 Trung bình";
      }   
+}
+
+function checkDaily(){
+  const today = new Date().toDateString();
+  let lastCheckin = localStorage.getItem("lastCheckin");
+  let streak = parseInt(localStorage.getItem("streakCount")) || 0;
+  if(lastCheckin !== today){
+      const giftXP = 10;
+      currentXP += giftXP;
+      streak++;    localStorage.setItem("lastCheckin",today);
+localStorage.setItem("streakCount",streak);
+localStorage.setItem("xp",currentXP);
+updateXPUI();
+showPopup("QUÀ ĐIỂM DANH 🎁",`Ngày thứ ${streak}! Bạn nhận được <b style="color:#ffd86b">+10 XP</b>.`, "✨");
+  }
+const streakEl = document.getElementById("streakCount");
+if(streakEl) streakEl.textContent = streak;
 }
 
 updateXPUI();
