@@ -539,6 +539,7 @@ const badgeEl = document.getElementById("badgeDisplay");
             badgeEl.style.display = "block";
             badgeEl.innerHTML = "🐝 Danh hiệu: <b>Ong Mật</b>";
         }
+  }
 updateMenuLock();
 }
 
@@ -812,7 +813,6 @@ localStorage.setItem("hasBdg7","true");
 setTimeout(()=>{
    showPopup("QUÀ ĐIỂM DANH 🎁",`Ngày thứ <b style="color:#ffd86b">${totalDays}</b> <br>Bạn nhận được <b style="color:#ffd86b">+10 XP</b>. <br> Chuỗi: <b style="color:#ffd86b">${streak}</b>${bdgMsg}`, "✨");
 },500);
-  }
 const streakEl = document.getElementById("streakCount");
 if(streakEl) streakEl.textContent = totalDays;
 }
