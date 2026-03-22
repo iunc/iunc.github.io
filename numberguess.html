@@ -482,7 +482,7 @@ h1{
   <div class="game shop-container">
     <span onclick="closeShop()" style="position:absolute; top:5px; right:5px; color:#aaa; cursor:pointer; font-size:25px;">×</span>
     <h2 class="shop-title">CỬA HÀNG</h2>
-    <div class="gameXPDisplay">Số dư:<span id="gameXPDisplay" style="font-size:14px; color:white">0</span> XP</div>
+    <div class="gameXPDisplay">Số dư:<span id="gameXPDisplay" style="font-size:14px; color:white">0</span> 💰</div>
     <div class="inventory-bar">
       Túi đồ: 🛡️ <b id="invShield">0</b> | ❄️ <b id="invFreeze">0</b>
     </div>
@@ -514,6 +514,7 @@ let aiMax;
 let aiGuess;
 let currentXP = parseInt(localStorage.getItem("xp")) || 0;
 let currentLevel = parseInt(localStorage.getItem("level")) || 1;
+let money = parseInt(localStorage.getItem("money")) || 0;
 let bestScore = localStorage.getItem("bestScore");
 const bestText = document.getElementById("best");
 bestText.textContent = bestScore ? bestScore: "--";
@@ -654,7 +655,7 @@ const badgeEl = document.getElementById("badgeDisplay");
   }
 
 const shopXP = document.getElementById("gameXPDisplay");
-if(shopXP) shopXP.textContent = currentXP;
+if(shopXP) shopXP.textContent = money;
 const invS = document.getElementById("invShield");
 if(invS) invS.textContent = localStorage.getItem("shield") || 0;
 const invF = document.getElementById("invFreeze");
@@ -667,6 +668,7 @@ function addXP(){
   const multiplier = (difficult === "easy")?1:(difficult === "medium")?2:5;
   let gainedXP = (attempts + 1) * multiplier * 10;
   currentXP += gainedXP;
+  money += gainedXP;
   let newLevel = Math.floor(currentXP/100)+1;
   if(newLevel > currentLevel){
      let oldTitle = getTitle(currentLevel);
@@ -678,8 +680,8 @@ function addXP(){
      showPopup("LEVEL UP!",`Chúc mừng! Bạn đã đạt được cấp độ ${currentLevel}`,"🚀");
      }
   }
-  localStorage.setItem("xp",currentXP);
-  localStorage.setItem("level",currentLevel);
+localStorage.setItem("xp",currentXP); localStorage.setItem("level",currentLevel);
+localStorage.setItem("money",money);
 updateXPUI();
 return gainedXP;
 }
@@ -828,12 +830,16 @@ input.classList.remove("shake","flash")
     if(currentLevel > 1){
        currentLevel--;
        currentXP = (currentLevel - 1)*100;
+       money -= 50;
+       if(money < 0) money = 0;
     } else {
         currentXP = 0;
+        money = 0;
       }
   
 localStorage.setItem("xp",currentXP);
 localStorage.setItem("level",currentLevel);
+localStorage.setItem("money",money);
     updateXPUI();
     showPopup("THẤT BẠI!",`Bạn đã bị xuống cấp: <span style="color:#ffd86b">${currentLevel}</span> <br> Số đúng là <span style="color:#ffd86b">${randomNumber}</span>`,"💀");
 }
@@ -963,13 +969,13 @@ function closeShop(){
 }
 
 function buyItem(item,price){
-  if(currentXP < price){
+  if(money < price){
     showPopup("THẤT BẠI","Bạn không đủ XP!","❌");
     return;
   }
   
-  currentXP -= price;
-  localStorage.setItem("xp", currentXP);
+  money -= price;
+  localStorage.setItem("money", money);
 
   let count = parseInt(localStorage.getItem(item)) || 0;
   localStorage.setItem(item, count+1);
