@@ -317,6 +317,80 @@ h1{
   cursor: pointer;
 }
 .popup-btn:active { transform: scale(0.95); }
+.shop-overlay{
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.shop-container {
+  width: 280px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.shop-container::-webkit-scrollbar {
+  width: 4px;
+}
+.shop-container::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+}
+.shop-container::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 10px 0;
+}
+.shop-title {
+  color: #ffd86b;
+  margin-bottom: 10px;
+}
+.inventory-bar {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-size: 12px;
+  color: #aaa;
+}
+.shop-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.item-info {
+  text-align: left;
+}
+.item-name {
+  font-weight: bold;
+  font-size: 14px;
+}
+.item-desc {
+  font-size: 10px;
+  color: #ccc;
+}
+.buy-btn {
+  width: 75px;
+  margin: 0;
+  padding: 6px;
+  font-size: 12px;
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+}
+.shield-color { background: #4ade80; }
+.freeze-color { background: #60a5fa; }
 
 </style>
 </head>
@@ -389,6 +463,34 @@ h1{
     <h2 id="popupTitle">Thông báo</h2>
     <p id="popupMessage">Nội dung thông báo ở đây.</p>
     <button onclick="closePopup()" class="popup-btn">Đóng</button>
+  </div>
+</div>
+
+<div id="shopMenu" class="shop-overlay">
+  <div class="game shop-container">
+    <span onclick="closeShop()" style="position:absolute; top:5px; right:5px; color:#aaa; cursor:pointer; font-size:25px;">×</span>
+    <h2 class="shop-title">CỬA HÀNG</h2>
+    
+    <div class="inventory-bar">
+      Túi đồ: 🛡️ <b id="invShield">0</b> | ❄️ <b id="invFreeze">0</b>
+    </div>
+
+    <div class="shop-item">
+      <div class="item-info">
+        <div class="item-name">🛡️ Khiên</div>
+        <div class="item-desc">Chống tụt Level</div>
+      </div>
+      <button class="buy-btn shield-color" onclick="buyItem('shield', 500)">500 XP</button>
+    </div>
+
+    <div class="shop-item">
+      <div class="item-info">
+        <div class="item-name">❄️ Băng</div>
+        <div class="item-desc">Giữ chuỗi streak</div>
+      </div>
+      <button class="buy-btn freeze-color" onclick="buyItem('freeze', 1500)">1500 XP</button>
+    </div>
+
   </div>
 </div>
 
@@ -817,6 +919,13 @@ const streakEl = document.getElementById("streakCount");
 if(streakEl) streakEl.textContent = totalDays;
 }
 
+function openShop(){
+  const shop = document.getElementById("shopMenu");
+  if(shop){
+  shop.style.display = "flex";
+  updateXPUI();
+  }
+}
 
 updateXPUI();
 updateMenuLock();
