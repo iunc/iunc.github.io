@@ -912,33 +912,42 @@ function checkDaily(){
       const yesterday = new Date();
   yesterday.setDate(today.getDate()-1);
       const yesterdayStr = yesterday.toDateString();
-      if(lastCheckin === yesterdayStr){
+      if(lastCheckin === yesterdayStr || lastCheckin === null){
           streak++;
-      } else if(lastCheckin === null){
-          streak++;
-      } else streak = 1;
+      } else {
+         let freeze = parseInt(localStorage.getItem("freeze")) || 0;
+         if(freeze > 0){
+         freeze--;     localStorage.setItem("freeze",freeze);
+         bdgMsg = "<br><span style='color:#60a5fa'>❄️ <b>Đã dùng Băng!</b> Chuỗi của bạn được bảo toàn.</span>";
+         } else {
+         streak = 1;
+         bdgMsg = "<br><span style='color:#ff4a4a'>⚠️ Bạn đã quên điểm danh! Chuỗi quay về ngày 1.</span>"; 
+         }
+      }
 
       currentXP += 10;
+      money += 10;
       totalDays++;    localStorage.setItem("lastCheckin",todayStr);
 localStorage.setItem("streakCount",totalDays);
 localStorage.setItem("xp",currentXP);
 localStorage.setItem("streak",streak);
+localStorage.setItem("money",money);
 
 let bdgMsg = "";
 if(streak >= 100){
-   bdgMsg = "<br><span style='color:#ffd86b'>Nhận Badge: 🐘<b>Voi Bền Bỉ</b>!</span>";
+   bdgMsg += "<br><span style='color:#ffd86b'>Nhận Badge: 🐘<b>Voi Bền Bỉ</b>!</span>";
 localStorage.setItem("hasBdg100","true");
 } else if(streak >= 28){
-   bdgMsg = "<br><span style='color:#ffd86b'>Nhận Badge: 🐂<b>Trâu Siêng Năng</b>!</span>";
+   bdgMsg += "<br><span style='color:#ffd86b'>Nhận Badge: 🐂<b>Trâu Siêng Năng</b>!</span>";
 localStorage.setItem("hasBdg28","true");
 } else if(streak >= 21){
-   bdgMsg = "<br><span style='color:#ffd86b'>Nhận Badge: 🦫<b>Hải Ly Miệt Mài</b>!</span>";
+   bdgMsg += "<br><span style='color:#ffd86b'>Nhận Badge: 🦫<b>Hải Ly Miệt Mài</b>!</span>";
 localStorage.setItem("hasBdg21","true");
 } else if(streak >= 14){
-   bdgMsg = "<br><span style='color:#ffd86b'>Nhận Badge: 🐜<b>Kiến Cần Cù</b>!</span>";
+   bdgMsg += "<br><span style='color:#ffd86b'>Nhận Badge: 🐜<b>Kiến Cần Cù</b>!</span>";
 localStorage.setItem("hasBdg14","true");
 } else if(streak >= 7){
-   bdgMsg = "<br><span style='color:#ffd86b'>Nhận Badge: 🐝<b>Ong Mật</b>!</span>";
+   bdgMsg += "<br><span style='color:#ffd86b'>Nhận Badge: 🐝<b>Ong Mật</b>!</span>";
 localStorage.setItem("hasBdg7","true");
 } 
 
@@ -946,7 +955,7 @@ updateXPUI();
 
 }
 setTimeout(()=>{
-   showPopup("QUÀ ĐIỂM DANH 🎁",`Ngày thứ <b style="color:#ffd86b">${totalDays}</b> <br>Bạn nhận được <b style="color:#ffd86b">+10 XP</b>. <br> Chuỗi: <b style="color:#ffd86b">${streak}</b>${bdgMsg}`, "✨");
+   showPopup("QUÀ ĐIỂM DANH",`Ngày thứ <b style="color:#ffd86b">${totalDays}</b> <br>Nhận được <b style="color:#ffd86b">+10XP +10💰</b> <br> Chuỗi: <b style="color:#ffd86b">${streak}</b>${bdgMsg}`, "🎁");
 },500);
 const streakEl = document.getElementById("streakCount");
 if(streakEl) streakEl.textContent = totalDays;
