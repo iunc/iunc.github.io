@@ -789,8 +789,6 @@ localStorage.setItem("streakCount",totalDays);
 localStorage.setItem("xp",currentXP);
 localStorage.setItem("streak",streak);
 
-updateXPUI();
-
 let bdgMsg = "";
 if(streak >= 100){
    bdgMsg = "<br><span style='color:#ffd86b'>Nhận Badge: 🐘<b>Voi Bền Bỉ</b>!</span>";
@@ -808,6 +806,8 @@ localStorage.setItem("hasBdg14","true");
    bdgMsg = "<br><span style='color:#ffd86b'>Nhận Badge: 🐝<b>Ong Mật</b>!</span>";
 localStorage.setItem("hasBdg7","true");
 } 
+
+updateXPUI();
 
 }
 setTimeout(()=>{
