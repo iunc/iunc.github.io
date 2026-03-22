@@ -292,7 +292,7 @@ h1{
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1001;
   opacity: 1;
   transition: opacity 0.3s ease;
 }
@@ -396,6 +396,12 @@ h1{
 }
 .shield-color { background: #4ade80; }
 .freeze-color { background: #60a5fa; }
+.gameXPDisplay{
+  font-size:14px;
+  font-weight:700;
+  color: white;
+  margin:10px 0;
+}
 
 </style>
 </head>
@@ -440,7 +446,7 @@ h1{
 
 <button id="menuBtn">Level</button>
 <button id="backBtn" onclick="backToMode()">Mode</button>
-<button id="shopBtn" onclick="openShop()">Shop(<span id="gameXPDisplay" style="font-size:14px; color:white">0</span>)</button>
+<button id="shopBtn" onclick="openShop()">Shop</button>
 
 <div id="dailyStatus" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
     <p style="font-size: 13px; color: #aaa; margin: 0;">
@@ -476,6 +482,7 @@ h1{
   <div class="game shop-container">
     <span onclick="closeShop()" style="position:absolute; top:5px; right:5px; color:#aaa; cursor:pointer; font-size:25px;">×</span>
     <h2 class="shop-title">CỬA HÀNG</h2>
+    <div class="gameXPDisplay">Số dư:<span id="gameXPDisplay" style="font-size:14px; color:white">0</span> XP</div>
     <div class="inventory-bar">
       Túi đồ: 🛡️ <b id="invShield">0</b> | ❄️ <b id="invFreeze">0</b>
     </div>
@@ -645,6 +652,14 @@ const badgeEl = document.getElementById("badgeDisplay");
             badgeEl.innerHTML = "Danh hiệu: 🐝 <b style='color:#ffd86b;'>Ong Mật</b>";
         }
   }
+
+const shopXP = document.getElementById("gameXPDisplay");
+if(shopXP) shopXP.textContent = currentXP;
+const invS = document.getElementById("invShield");
+if(invS) invS.textContent = localStorage.getItem("shield") || 0;
+const invF = document.getElementById("invFreeze");
+if(invF) invF.textContent = localStorage.getItem("freeze") || 0;
+
 updateMenuLock();
 }
 
@@ -821,7 +836,7 @@ localStorage.setItem("level",currentLevel);
   input.value = "";
 };
 
-function showPopup(title,massage,icon="🔔"){  document.getElementById("popupTitle").textContent = title;
+function showPopup(title,massage,icon="🔔"){  document.getElementById("popupTitle").innerHTML = `<b style="color:#ffd86b">${title}</b>`;
 document.getElementById("popupMessage").innerHTML = massage;
 document.getElementById("popupIcon").textContent = icon;
 
@@ -936,6 +951,24 @@ function closeShop(){
   shop.style.display = "none";
   updateXPUI();
   }
+}
+
+function buyItem(item,price){
+  if(currentXP < price){
+    showPopup("THẤT BẠI","Bạn không đủ XP!","❌");
+    return;
+  }
+  
+  currentXP -= price;
+  localStorage.setItem("xp", currentXP);
+
+  let count = parseInt(localStorage.getItem(item)) || 0;
+  localStorage.setItem(item, count+1);
+
+  updateXPUI();
+
+  let name = item === "shield" ? "Khiên 🛡️" : "Băng ❄️";
+  showPopup(`<b style="color:#ffd86b;">THÀNH CÔNG</b>`,`Đã sắm 1 <b style="color:#ffd86b;">${name} <b>`,"💰");
 }
 
 updateXPUI();
