@@ -819,20 +819,29 @@ input.classList.remove("shake","flash")
   }
 
   if(attempts <= 0 && guess !== randomNumber){
+    let shields = localStorage.getItem("shield") || 0;
+    if(shields > 0){
+      shields--;      localStorage.setItem("shield",shields);
+      updateXPUI();
+      showPopup("🛡️ ĐÃ DÙNG KHIÊN", "Khiên giúp bạn không bị tụt level","✨");
+    } else {
     if(currentLevel > 1){
        currentLevel--;
        currentXP = (currentLevel - 1)*100;
-    } else{
-       currentXP = 0;
-    }
+    } else {
+        currentXP = 0;
+      }
+  
 localStorage.setItem("xp",currentXP);
 localStorage.setItem("level",currentLevel);
     updateXPUI();
     showPopup("THẤT BẠI!",`Bạn đã bị xuống cấp: <span style="color:#ffd86b">${currentLevel}</span> <br> Số đúng là <span style="color:#ffd86b">${randomNumber}</span>`,"💀");
+}
     gameOver = true;
     btn.textContent = "Chơi lại";
     btn.disabled = false;
-  }
+}
+  
   input.value = "";
 };
 
