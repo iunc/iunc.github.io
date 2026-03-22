@@ -930,6 +930,14 @@ function openShop(){
   }
 }
 
+function closeShop(){
+  const shop = document.getElementById("shopMenu");
+  if(shop){
+  shop.style.display = "none";
+  updateXPUI();
+  }
+}
+
 updateXPUI();
 updateMenuLock();
 startGame();
