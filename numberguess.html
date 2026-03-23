@@ -189,7 +189,7 @@ h1{
   background: rgba(255,255,255,0.2);
 }
 .hidden{
-  display:none;
+  display:none !important;
 }
 #range{
   font-size:14px;
@@ -396,13 +396,38 @@ h1{
 }
 .shield-color { background: #4ade80; }
 .freeze-color { background: #60a5fa; }
+.magnifier-color { background: #BF5AF2;}
 .gameXPDisplay{
   font-size:14px;
   font-weight:700;
   color: white;
   margin:10px 0;
 }
-
+.control-group {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 15px;
+}
+.control-group button {
+  flex:1;
+  max-width: 33.33%;
+  margin: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px:
+}
+#timerBtn {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffd86b;
+  cursor: default;
+  border: 1px solid rgba(255, 216, 107, 0.2);
+}
+#timerDisplay {
+  font-family: monospace;
+  font-size: 16px;
+}
 </style>
 </head>
 
@@ -426,7 +451,17 @@ h1{
  <div id="playerUI">
   <p class="subtitle" id="subtitle"></p>
   <input type="number" id="guessInput" placeholder="Nhập số..." />
-  <button id="guessBtn">Đoán</button>
+  
+  <div class="control-group">
+  <button id="magnifierBtn" class="hidden" onclick="useMagnifier()">
+    🔍 <span id="invMagnifier">0</span>
+  </button>
+  <button id="guessBtn">ĐOÁN</button>
+  <button id="timerBtn" class="hidden">
+    <span id="timerDisplay">59:00</span>
+  </button>
+</div>
+
   <p id="message"></p>
   <p id="range"></p>
   <p id="history"></p>
@@ -484,7 +519,7 @@ h1{
     <h2 class="shop-title">CỬA HÀNG</h2>
     <div class="gameXPDisplay">Số dư: <span id="gameXPDisplay" style="font-size:14px; color:white">0</span> 💰</div>
     <div class="inventory-bar">
-      Túi đồ: 🛡️ <b id="invShield">0</b> | ❄️ <b id="invFreeze">0</b>
+      Túi đồ: 🛡️ <b id="invShield">0</b> | ❄️ <b id="invFreeze">0</b> | 🔍 <b id="invMagnifier">0</b>
     </div>
     <div class="shop-item">
       <div class="item-info">
@@ -499,6 +534,14 @@ h1{
         <div class="item-desc">Giữ chuỗi streak</div>
       </div>
       <button class="buy-btn freeze-color" onclick="buyItem('freeze', 1500)">1500 XP</button>
+    </div>
+
+    <div class="shop-item">
+      <div class="item-info">
+        <div class="item-name">🔍 Siêu nhãn</div>
+        <div class="item-desc">Định vị mục tiêu</div>
+      </div>
+      <button class="buy-btn magnifier-color" onclick="buyItem('magnifier', 2000)">2000 💰</button>
     </div>
 
   </div>
