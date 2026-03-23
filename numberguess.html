@@ -428,6 +428,17 @@ h1{
   font-family: monospace;
   font-size: 16px;
 }
+.timer-warn {
+    color: #ff4d4d !important;
+    animation: blink-red 0.5s infinite;
+    font-weight: bold;
+}
+@keyframes blink-red {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
 </style>
 </head>
 
@@ -549,6 +560,8 @@ h1{
 
 <script> 
 
+let gameTimer;
+let timeLeft;
 let playing = false;
 let randomNumber;
 let attempts;
@@ -663,9 +676,15 @@ document.getElementById("subtitle").textContent = "Đoán số từ 1 đến "+ 
   range.classList.add("hidden");
   history.classList.add("hidden");
   gameOver = false;
-  playing = true;
+  playing = false;
   btn.disabled = true;
   btn.textContent = "Đoán";
+  clearInterval(gameTimer);
+  gameTimer = null;
+  const baseSeconds = 1*60;
+  let reduction = Math.floor((currentLevel - 30)/5);
+  timeLeft = Math.max(10, baseSeconds - (reduction)*10);
+  updateTimerUI();
 }
 
 function updateXPUI(){
@@ -794,7 +813,12 @@ function letGo(){
     startGame();
     return;
   }
-  
+  if(!playing){
+    playing = true;
+    if(currentLevel >= 30 && !gameTimer){
+      startTimer();
+    }
+  }
   if (attempts <= 0) return;
   const guess = Number(input.value);
 
@@ -828,6 +852,7 @@ function letGo(){
     let rank = getRank(attempts);
     msg.innerHTML = `🎉 Chính xác! <br>+${gained}XP <br>Rank:${rank}`;
     msg.classList.add("success");
+    clearInterval(gameTimer);
     gameOver = true;
     playing = false;
     btn.textContent = "Chơi tiếp";
@@ -892,10 +917,12 @@ localStorage.setItem("level",currentLevel);
 localStorage.setItem("money",money);
     updateXPUI();
     updateUnlock();
+    clearInterval(gameTimer);
     showPopup("THẤT BẠI!",`Bạn đã bị xuống cấp: <span style="color:#ffd86b">${currentLevel}</span> <br> Số đúng là <span style="color:#ffd86b">${randomNumber}</span>`,"💀");
 }
     gameOver = true;
     playing = false;
+    clearInterval(gameTimer);
     btn.textContent = "Chơi lại";
     btn.disabled = false;
 }
@@ -1059,9 +1086,8 @@ document.getElementById("timerBtn").classList.toggle("hidden", !isUnlock);
 }
 
 function useMagnifier(){
-  if(playing){
+  if(!playing || gameOver){
    showPopup("THÔNG BÁO","Game chưa bắt đầu mà soi gì ba 😱", "🔔");
-   playing = false;
    return;
   }
   let count = localStorage.getItem("magnifier") || 0;
@@ -1086,6 +1112,46 @@ if(hMax > max){
 }
 msg.style.color = "#ffd86b";
 msg.innerHTML = `🔍 Siêu Nhãn: Khoảng ${hMin} đến ${hMax}`;
+}
+
+function startTimer(){
+  clearInterval(gameTimer);
+  const baseSeconds = 1*60;
+  let reduction = Math.floor((currentLevel - 30)/5);
+  timeLeft = Math.max(10, baseSeconds - (reduction*10));
+  updateTimerUI();
+  gameTimer = setInterval(()=>{
+   timeLeft--;
+   updateTimerUI();
+   const display = document.getElementById("timerDisplay");
+   if(timeLeft <= 10){
+     display.classList.add("timer-warn");
+   } else {
+     display.classList.remove("timer-warn");
+   }
+   if(timeLeft <= 0){
+     clearInterval(gameTimer);
+     handleTimeout();
+   }
+  },1000);
+}
+
+function updateTimerUI(){
+  let m = Math.floor(timeLeft / 60);
+  let s = Math.floor(timeLeft % 60); document.getElementById("timerDisplay").textContent = `${m < 10?'0':''}${m}:${s<10?'0':''}${s}`;
+}
+ 
+function handleTimeout(){
+  clearInterval(gameTimer);
+  gameTimer = null;
+  playing = false;
+  if(currentLevel > 1){
+ currentLevel--; localStorage.setItem("level",currentLevel);
+  showPopup("HẾT GIỜ",`Bạn đã quá chậm rồi, bạn bị xuống cấp <b style='color:#ffd86b;'>${currentLevel}</b>`,"⏰");
+  document.getElementById("timerDisplay").classList.remove("timer-warn");
+  updateXPUI();
+  }
+startGame();
 }
 
 updateXPUI();
