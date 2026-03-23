@@ -538,7 +538,7 @@ h1{
 
     <div class="shop-item">
       <div class="item-info">
-        <div class="item-name">🔍 Siêu nhãn</div>
+        <div class="item-name">🔍 Siêu Nhãn</div>
         <div class="item-desc">Định vị mục tiêu</div>
       </div>
       <button class="buy-btn magnifier-color" onclick="buyItem('magnifier', 2000)">2000 💰</button>
@@ -664,7 +664,6 @@ document.getElementById("subtitle").textContent = "Đoán số từ 1 đến "+ 
   gameOver = false;
   btn.disabled = true;
   btn.textContent = "Đoán";
-
 }
 
 function updateXPUI(){
@@ -726,6 +725,7 @@ function addXP(){
 localStorage.setItem("xp",currentXP); localStorage.setItem("level",currentLevel);
 localStorage.setItem("money",money);
 updateXPUI();
+updateUnlock();
 return gainedXP;
 }
 
@@ -884,6 +884,7 @@ localStorage.setItem("xp",currentXP);
 localStorage.setItem("level",currentLevel);
 localStorage.setItem("money",money);
     updateXPUI();
+    updateUnlock();
     showPopup("THẤT BẠI!",`Bạn đã bị xuống cấp: <span style="color:#ffd86b">${currentLevel}</span> <br> Số đúng là <span style="color:#ffd86b">${randomNumber}</span>`,"💀");
 }
     gameOver = true;
@@ -1034,12 +1035,24 @@ function buyItem(item,price){
 
   updateXPUI();
 
-  let name = item === "shield" ? "🛡️ Khiên" : "❄️ Băng";
+  const itemNames ={
+   'shield': "🛡️ Khiên",
+   'freeze': "❄️ Băng",
+   'magnifier': "🔍 Siêu Nhãn"
+  };
+  let name = itemNames[item] || "Vật phẩm";
   showPopup("THÀNH CÔNG",`Đã sắm <b style="color:#ffd86b;">${name} <b>`,"💰");
+}
+
+function updateUnlock(){
+const isUnlock = currentLevel >= 30;
+document.getElementById("magnifierBtn").classList.toggle("hidden", !isUnlock);
+document.getElementById("timerBtn").classList.toggle("hidden", !isUnlock);
 }
 
 updateXPUI();
 updateMenuLock();
+updateUnlock();
 startGame();
 
 </script>
