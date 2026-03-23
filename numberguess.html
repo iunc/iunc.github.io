@@ -1030,12 +1030,13 @@ localStorage.setItem("hasBdg7","true");
 
 updateXPUI();
 
-}
+
 setTimeout(()=>{
    showPopup("QUÀ ĐIỂM DANH",`Ngày thứ <b style="color:#ffd86b">${totalDays}</b> <br>Nhận được <b style="color:#ffd86b">+10XP +10💰</b> <br> Chuỗi: <b style="color:#ffd86b">${streak}</b>${bdgMsg}`, "🎁");
 },500);
 const streakEl = document.getElementById("streakCount");
 if(streakEl) streakEl.textContent = totalDays;
+}
 }
 
 function openShop(){
