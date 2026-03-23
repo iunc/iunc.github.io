@@ -549,6 +549,7 @@ h1{
 
 <script> 
 
+let playing = false;
 let randomNumber;
 let attempts;
 let gameOver = false;
@@ -662,6 +663,7 @@ document.getElementById("subtitle").textContent = "Đoán số từ 1 đến "+ 
   range.classList.add("hidden");
   history.classList.add("hidden");
   gameOver = false;
+  playing = true;
   btn.disabled = true;
   btn.textContent = "Đoán";
 }
@@ -827,6 +829,7 @@ function letGo(){
     msg.innerHTML = `🎉 Chính xác! <br>+${gained}XP <br>Rank:${rank}`;
     msg.classList.add("success");
     gameOver = true;
+    playing = false;
     btn.textContent = "Chơi tiếp";
     btn.disabled = false;
     input.value = "";
@@ -892,6 +895,7 @@ localStorage.setItem("money",money);
     showPopup("THẤT BẠI!",`Bạn đã bị xuống cấp: <span style="color:#ffd86b">${currentLevel}</span> <br> Số đúng là <span style="color:#ffd86b">${randomNumber}</span>`,"💀");
 }
     gameOver = true;
+    playing = false;
     btn.textContent = "Chơi lại";
     btn.disabled = false;
 }
@@ -1055,6 +1059,11 @@ document.getElementById("timerBtn").classList.toggle("hidden", !isUnlock);
 }
 
 function useMagnifier(){
+  if(playing){
+   showPopup("THÔNG BÁO","Game chưa bắt đầu mà soi gì ba 😱", "🔔");
+   playing = false;
+   return;
+  }
   let count = localStorage.getItem("magnifier") || 0;
   if(count <=0 ){
     showPopup("HẾT ĐỒ","Bạn vào cửa hàng để mua thêm Siêu Nhãn","🔍");
