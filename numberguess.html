@@ -519,7 +519,7 @@ h1{
     <h2 class="shop-title">CỬA HÀNG</h2>
     <div class="gameXPDisplay">Số dư: <span id="gameXPDisplay" style="font-size:14px; color:white">0</span> 💰</div>
     <div class="inventory-bar">
-      Túi đồ: 🛡️ <b id="invShield">0</b> | ❄️ <b id="invFreeze">0</b> | 🔍 <b id="invMagnifier">0</b>
+      Túi đồ: 🛡️ <b id="invShield">0</b> | ❄️ <b id="invFreeze">0</b> | 🔍 <b id="invMShop">0</b>
     </div>
     <div class="shop-item">
       <div class="item-info">
@@ -702,6 +702,10 @@ const invS = document.getElementById("invShield");
 if(invS) invS.textContent = localStorage.getItem("shield") || 0;
 const invF = document.getElementById("invFreeze");
 if(invF) invF.textContent = localStorage.getItem("freeze") || 0;
+const invM = document.getElementById("invMagnifier");
+if(invM) invM.textContent = localStorage.getItem("magnifier") || 0;
+const invMShop = document.getElementById("invMShop");
+if(invMShop) invMShop.textContent = localStorage.getItem("magnifier") || 0;
 
 updateMenuLock();
 }
@@ -1048,6 +1052,31 @@ function updateUnlock(){
 const isUnlock = currentLevel >= 30;
 document.getElementById("magnifierBtn").classList.toggle("hidden", !isUnlock);
 document.getElementById("timerBtn").classList.toggle("hidden", !isUnlock);
+}
+
+function useMagnifier(){
+  let count = localStorage.getItem("magnifier") || 0;
+  if(count <=0 ){
+    showPopup("HẾT ĐỒ","Bạn vào cửa hàng để mua thêm Siêu Nhãn","🔍");
+    return;
+  }
+  count--;
+localStorage.setItem("magnifier",count);
+const invM = document.getElementById("invMagnifier");
+if(invM) invM.textContent = count;
+let offset = Math.floor(Math.random()*10);
+let hMin = randomNumber - offset;
+let hMax = hMin + 10;
+if(hMin < min){
+  hMin = min;
+  hMax = hMin + 10;
+}
+if(hMax > max){
+  hMax = max;
+  hMin = hMax - 10;
+}
+msg.style.color = "#ffd86b";
+msg.innerHTML = `🔍 Siêu Nhãn: Khoảng ${hMin} đến ${hMax}`;
 }
 
 updateXPUI();
