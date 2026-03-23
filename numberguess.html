@@ -681,7 +681,7 @@ document.getElementById("subtitle").textContent = "Đoán số từ 1 đến "+ 
   btn.textContent = "Đoán";
   clearInterval(gameTimer);
   gameTimer = null;
-  const baseSeconds = 1*60;
+  const baseSeconds = 59*60;
   let reduction = Math.floor((currentLevel - 30)/5);
   timeLeft = Math.max(10, baseSeconds - (reduction)*10);
   updateTimerUI();
@@ -1116,7 +1116,7 @@ msg.innerHTML = `🔍 Siêu Nhãn: Khoảng ${hMin} đến ${hMax}`;
 
 function startTimer(){
   clearInterval(gameTimer);
-  const baseSeconds = 1*60;
+  const baseSeconds = 59*60;
   let reduction = Math.floor((currentLevel - 30)/5);
   timeLeft = Math.max(10, baseSeconds - (reduction*10));
   updateTimerUI();
