@@ -23,6 +23,7 @@ body{
   margin:0;
 }
 .game{
+  position:relative;
   background: rgba(255,255,255,0.15);
   backdrop-filter: blur(10px);
   padding:20px;
@@ -467,10 +468,10 @@ h1{
     display: none;
 }
 #mascot-container {
-    position: fixed;
-    bottom: 150px;
-    left: 5px; 
-    z-index: 999;
+    position: absolute;
+    top:0%;
+    left: -30px; 
+    z-index: 100;
 }
 .mascot-body {
     font-size: 50px;
@@ -563,6 +564,9 @@ h1{
 </div>
 
 <div class="game" id="game" style="display:none">
+ <div id="mascot-container" onclick="openQuest()">
+    <div class="mascot-body">🐰</div>
+</div>
  <h1>NUMBER GUESS</h1>
  <div id="playerUI">
   <p class="subtitle" id="subtitle"></p>
@@ -674,9 +678,7 @@ h1{
 </div>
 
 
-<div id="mascot-container" onclick="openQuest()">
-    <div class="mascot-body">🐰</div>
-</div>
+
 <div id="quest-overlay" class="quest-hidden" onclick="closeQuestExternal(event)">
     <div class="quest-window glass">
         <span class="quest-close" onclick="closeQuest()">×</span>
