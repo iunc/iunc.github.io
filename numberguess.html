@@ -565,7 +565,7 @@ let money = parseInt(localStorage.getItem("money")) || 0;
 let bestScore = localStorage.getItem("bestScore");
 const bestText = document.getElementById("best");
 bestText.textContent = bestScore ? bestScore: "--";
-let lastCheckin = localStorage.getItem("lastCheckin") || "";
+let lastCheckin = localStorage.getItem("lastCheckin");
 let totalDays = parseInt(localStorage.getItem("streakCount")) || 0;
 let streak = parseInt(localStorage.getItem("streak")) || 0;
 
@@ -992,6 +992,9 @@ function updateMenuLock(){
 function checkDaily(){
   const today = new Date();
   const todayStr = today.toDateString();
+  let lastCheckin = localStorage.getItem("lastCheckin");
+let totalDays = parseInt(localStorage.getItem("streakCount")) || 0;
+let streak = parseInt(localStorage.getItem("streak")) || 0;
   let bdgMsg = "";
   if(lastCheckin !== todayStr){
       const yesterday = new Date();
