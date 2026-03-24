@@ -466,6 +466,83 @@ h1{
 #bgmAudio {
     display: none;
 }
+#mascot-container {
+    position: fixed;
+    bottom: 150px;
+    left: 5px; 
+    z-index: 999;
+}
+.mascot-body {
+    font-size: 50px;
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
+    animation: bounceMobile 2.5s infinite;
+}
+#quest-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    transition: opacity 0.3s ease;
+}
+.quest-window {
+    width: 85%;
+    max-width: 320px;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+.quest-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+.quest-window h2{
+   color:#ffd86b;
+   text-align:center;
+}
+.quest-window p{
+   text-align:center;
+   opacity:0.8;
+   margin-top:5px;
+   font-size:12px;
+}
+.quest-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.08);
+    margin: 12px 0;
+    padding: 12px;
+    border-radius: 12px;
+    gap: 8px;
+}
+.quest-status {
+    font-size: 12px;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 8px;
+    border-radius: 6px;
+    min-width: 40px;
+    text-align: center;
+}
+.quest-close{
+  font-size:20px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: #aaa;
+  cursor: pointer;
+}
+@keyframes bounceMobile {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(5deg); }
+}
 
 </style>
 </head>
@@ -596,6 +673,28 @@ h1{
     </audio>
 </div>
 
+
+<div id="mascot-container" onclick="openQuest()">
+    <div class="mascot-body">🐰</div>
+</div>
+<div id="quest-overlay" class="quest-hidden" onclick="closeQuestExternal(event)">
+    <div class="quest-window glass">
+        <span class="quest-close" onclick="closeQuest()">×</span>
+        <div>
+            <h2>📜 NHIỆM VỤ</h2>
+            <p>Hoàn thành nhiệm vụ để nhận quà</p>
+        </div>
+        <div id="quest-list">
+            <div class="quest-item">
+                <div class="quest-info">
+                    <div class="quest-text">Đang tải nhiệm vụ...</div>
+                    <div class="quest-bar-bg"><div class="quest-bar-fill" style="width: 30%"></div></div>
+                </div>
+                <div class="quest-status">0/5</div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script> 
 
@@ -1232,6 +1331,35 @@ icon.textContent = "🔇";
 }
 }
 
+
+
+function openQuest() {
+const mascot = document.getElementById("mascot-container");
+const overlay = document.getElementById("quest-overlay");
+mascot.style.transform = "scale(1.2) translateY(-20px)";
+mascot.style.transition = "0.2s";
+setTimeout(() => {       overlay.classList.remove("quest-hidden");
+mascot.style.opacity = "0";
+}, 200);
+}
+
+
+
+function closeQuest() {
+const mascot = document.getElementById("mascot-container");
+const overlay = document.getElementById("quest-overlay");
+overlay.classList.add("quest-hidden");
+mascot.style.opacity = "1";
+mascot.style.transform = "scale(1) translateY(0)";
+}
+
+
+
+function closeQuestExternal(e) {
+    if (e.target.id === "quest-overlay") {
+        closeQuest();
+    }
+}
 
 updateXPUI();
 updateMenuLock();
