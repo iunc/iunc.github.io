@@ -566,6 +566,28 @@ let bestScore = localStorage.getItem("bestScore");
 const bestText = document.getElementById("best");
 bestText.textContent = bestScore ? bestScore: "--";
 
+const sfxWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
+const sfxLose = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+const sfxClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+
+function triggerEffect(type) {
+    if (type === 'win') {
+        sfxWin.currentTime = 0;
+        sfxWin.play().catch(() => {});
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    } 
+    else if (type === 'lose') {
+        sfxLose.currentTime = 0;
+        sfxLose.play().catch(() => {});
+        if (navigator.vibrate) navigator.vibrate(200);
+    } 
+    else if (type === 'click') {
+        sfxClick.currentTime = 0;
+        sfxClick.play().catch(() => {});
+    }
+}
+
 const menuBtn = document.getElementById("menuBtn");
 menuBtn.onclick = () => { document.getElementById("menu").style.display = "block";
 document.getElementById("game").style.display = "none";
@@ -768,11 +790,7 @@ function correct(){
  cBtn.textContent = "Chơi lại";
  cBtn.style.background = "linear-gradient(135deg, #ff9a9e, #fecfef)";
 
- confetti({
-    particleCount: 150,
-    spread: 70,
-    origin: { y: 0.6 }
-  });
+ triggerEffect('win');
 
  cBtn.onclick = ()=>{
   cBtn.textContent = "🎉 Đúng rồi";
@@ -848,11 +866,7 @@ function letGo(){
     btn.textContent = "Chơi tiếp";
     btn.disabled = false;
     input.value = "";
-    confetti({
-       particleCount: 150,
-       spread: 70,
-       origin: { y: 0.6 }
-    });
+    triggerEffect('win');
     if(!bestScore || attempts > Number(bestScore)){
       localStorage.setItem("bestScore", attempts);
       bestText.textContent = attempts;
@@ -908,6 +922,7 @@ localStorage.setItem("money",money);
     updateXPUI();
     updateUnlock();
     clearInterval(gameTimer);
+    triggerEffect('lose');
     showPopup("THẤT BẠI!",`Bạn đã bị xuống cấp: <span style="color:#ffd86b">${currentLevel}</span> <br> Số đúng là <span style="color:#ffd86b">${randomNumber}</span>`,"💀");
 }
     gameOver = true;
