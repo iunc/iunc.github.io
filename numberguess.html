@@ -576,7 +576,7 @@ function triggerEffect(type) {
         sfxWin.play().catch(() => {});
         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
     } 
-    else (type === 'lose') {
+    else if(type === 'lose') {
         sfxLose.currentTime = 0;
         sfxLose.play().catch(() => {});
     } 
