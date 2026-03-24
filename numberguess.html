@@ -1214,6 +1214,25 @@ function handleTimeout(){
 startGame();
 }
 
+
+
+function toggleBGM(){
+const audio = document.getElementById("bgmAudio");
+const btn = document.getElementById("bgmBtn");
+const icon = document.getElementById("bgmIcon");
+if(audio.paused){
+audio.play().then(()=>{
+btn.classList.add("is-playing");
+icon.textContent = "🔊";
+}).catch(()=>{});
+} else{
+audio.pause();
+btn.classList.remove("is-playing");
+icon.textContent = "🔇";
+}
+}
+
+
 updateXPUI();
 updateMenuLock();
 updateUnlock();
