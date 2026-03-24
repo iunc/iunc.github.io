@@ -992,15 +992,15 @@ function updateMenuLock(){
 function checkDaily(){
   const today = new Date();
   const todayStr = today.toDateString();
-  let lastCheckin = localStorage.getItem("lastCheckin");
-let totalDays = parseInt(localStorage.getItem("streakCount")) || 0;
-let streak = parseInt(localStorage.getItem("streak")) || 0;
+  let storedLast = localStorage.getItem("lastCheckin");
+  totalDays = parseInt(localStorage.getItem("streakCount")) || 0;
+  streak = parseInt(localStorage.getItem("streak")) || 0;
   let bdgMsg = "";
-  if(lastCheckin !== todayStr){
+  if(storedLast !== todayStr){
       const yesterday = new Date();
   yesterday.setDate(today.getDate()-1);
       const yesterdayStr = yesterday.toDateString();
-      if(lastCheckin === yesterdayStr || lastCheckin === null){
+      if(storedLast === yesterdayStr || storedLast === null){
           streak++;
       } else {
          let freeze = parseInt(localStorage.getItem("freeze")) || 0;
@@ -1167,7 +1167,7 @@ updateXPUI();
 updateMenuLock();
 updateUnlock();
 startGame();
-
+localStorage.clear();
 </script>
 
 </body>
