@@ -980,6 +980,8 @@ function updateMenuLock(){
 }
 
 function checkDaily(){
+  localStorage.removeItem("lastCheckin");
+  localStorage.removeItem("streakCount");
   const today = new Date();
   const todayStr = today.toDateString();
   let lastCheckin = localStorage.getItem("lastCheckin");
