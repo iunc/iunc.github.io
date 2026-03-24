@@ -992,9 +992,6 @@ function updateMenuLock(){
 function checkDaily(){
   const today = new Date();
   const todayStr = today.toDateString();
-  let lastCheckin = localStorage.getItem("lastCheckin");
-  let totalDays = parseInt(localStorage.getItem("streakCount")) || 0;
-  let streak = parseInt(localStorage.getItem("streak")) || 0;
   let bdgMsg = "";
   if(lastCheckin !== todayStr){
       const yesterday = new Date();
