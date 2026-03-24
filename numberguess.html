@@ -1016,6 +1016,7 @@ function letGo(){
     msg.innerHTML = `🎉 Chính xác! <br>+${gained}XP <br>Rank:${rank}`;
     msg.classList.add("success");
     clearInterval(gameTimer);
+    capNhatNhiemVu("win",1);
     gameOver = true;
     playing = false;
     btn.textContent = "Chơi tiếp";
@@ -1077,6 +1078,7 @@ localStorage.setItem("money",money);
     updateXPUI();
     updateUnlock();
     clearInterval(gameTimer);
+    capNhatNhiemVu("total_fail",1);
     showPopup("THẤT BẠI!",`Bạn đã bị xuống cấp: <span style="color:#ffd86b">${currentLevel}</span> <br> Số đúng là <span style="color:#ffd86b">${randomNumber}</span>`,"💀");
 }
     gameOver = true;
