@@ -900,7 +900,6 @@ input.classList.remove("shake","flash")
       updateXPUI();
       showPopup("🛡️ ĐÃ DÙNG KHIÊN", "Khiên giúp bạn không bị tụt level","✨");
     } else {
-    triggerEffect('lose');
     if(currentLevel > 1){
        currentLevel--;
        currentXP = (currentLevel - 1)*100;
@@ -910,7 +909,7 @@ input.classList.remove("shake","flash")
         currentXP = 0;
         money = 0;
       }
-  
+triggerEffect('lose');
 localStorage.setItem("xp",currentXP);
 localStorage.setItem("level",currentLevel);
 localStorage.setItem("money",money);
