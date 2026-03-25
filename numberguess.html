@@ -551,6 +551,33 @@ h1{
     0%, 100% { transform: translateY(0) rotate(0deg); }
     50% { transform: translateY(-8px) rotate(5deg); }
 }
+.gift-icon {
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.2s;
+    animation: shake-gift 0.8s infinite; 
+}
+@keyframes shake-gift {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(15deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(-15deg); }
+    100% { transform: rotate(0deg); }
+}
+.empty-msg {
+    text-align: center;
+    padding: 30px 10px;
+    color: #888; 
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.6;
+    background: rgba(255, 255, 255, 0.05); 
+    border-radius: 12px;
+    border: 1px dashed #555; 
+    margin: 10px 0;
+}
+
 
 </style>
 </head>
@@ -1017,6 +1044,17 @@ function letGo(){
     msg.classList.add("success");
     clearInterval(gameTimer);
     capNhatNhiemVu("win",1);
+    if(guess % 2 !== 0){
+    capNhatNhiemVu("odd",1);
+    } else {
+    capNhatNhiemVu("even",1);
+    }
+    if(guess >= 10 && guess <= 99){
+    capNhatNhiemVu("win_2digits",1);
+    if(guess % 11 === 0){
+    capNhatNhiemVu("double_num",1);
+    }
+    }
     gameOver = true;
     playing = false;
     btn.textContent = "Chơi tiếp";
@@ -1395,7 +1433,8 @@ const khoNhiemVu = [
     { id: 17, text: "Tích lũy 500 xu", goal: 500, type: "rich" },
     { id: 18, text: "Đoán trúng số có 2 chữ số giống nhau", goal: 1, type: "double_num" },
     { id: 19, text: "Thắng ván đầu tiên khi mở web", goal: 1, type: "first_win" },
-    { id: 20, text: "Duy trì streak điểm danh", goal: 1, type: "keep_streak" }
+    { id: 20, text: "Duy trì streak điểm danh", goal: 1, type: "keep_streak" },
+    { id: 21, text: "Đoán trúng số có 2 chữ số", goal: 1, type: "win_2digits" }
 ];
 
 
@@ -1424,7 +1463,9 @@ const baNhiemVu = taoNhiemVu();
 const vungHienThi = document.getElementById("quest-list");
 vungHienThi.innerHTML = "";
 baNhiemVu.forEach((q,index)=>{
+if(q.isClaimed) return;
 let percent = (q.current/q.goal)*100;
+let isDone = q.current >= q.goal;
 const itemHTML = `
 <div class="quest-item">
 <div class="quest-info">
@@ -1433,9 +1474,15 @@ const itemHTML = `
 <div class="quest-bar-fill" style="width: ${percent}%"></div>
 </div>
 </div>
-<div class="quest-status">${q.current}/${q.goal}</div> </div>`;
+<div class="quest-status">
+${isDone? `<span class="gift-icon" onclick="nhanThuong(${index})">🎁</span>` : `<span class="quest-num">${q.current}/${q.goal}</span>`}
+</div> 
+</div>`;
 vungHienThi.innerHTML += itemHTML;
 });
+if(vungHienThi.innerHTML === ""){
+vungHienThi.innerHTML = "<div class='empty-msg'>Hẹn gặp lại bạn ngày mai! ✨</div>";
+}
 }
 
 
@@ -1445,7 +1492,7 @@ let baNhiemVu = JSON.parse(localStorage.getItem("daily_quest"));
 if(!baNhiemVu) return;
 let changed = false;
 baNhiemVu = baNhiemVu.map(q=>{
-if(q.type === type && q.current < q.goal){
+if(q.type === type && q.current < q.goal && !q.isClaimed){
 q.current += value;
 if(q.current>q.goal) q.current=q.goal;
 changed = true;
@@ -1454,6 +1501,21 @@ return q;
 });
 if(changed){
 localStorage.setItem("daily_quest",JSON.stringify(baNhiemVu));
+}
+}
+
+
+
+function nhanThuong(index){
+let baNhiemVu = JSON.parse(localStorage.getItem("daily_quest"));
+let q = baNhiemVu[index];
+if(q.current>=q.goal && !q.isClaimed){
+q.isClaimed = true;
+localStorage.setItem("daily_quest",JSON.stringify(baNhiemVu));
+money += 100;
+localStorage.setItem("money",money);
+showPopup("QUÀ NHIỆM VỤ","Chúc mừng bạn đã nhận được 100 💰","🎁");
+hienThiNhiemVu();
 }
 }
 
