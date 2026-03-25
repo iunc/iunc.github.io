@@ -1087,6 +1087,7 @@ function letGo(){
 
   } else if(guess > randomNumber){
     msg.textContent = "🔽 Nhỏ hơn "+ hintText;
+    if(currentLevel>=10) caKhia(false);
     msg.classList.add("hint");
   input.classList.add("shake","flash");
     setTimeout(()=>{
@@ -1095,6 +1096,7 @@ input.classList.remove("shake","flash")
     max = guess - 1
   } else {
     msg.textContent = "🔼 Lớn hơn " + hintText;
+    if(currentLevel>=10) caKhia(true);
     msg.classList.add("hint");
   input.classList.add("shake","flash");
     setTimeout(()=>{      input.classList.remove("shake","flash")
@@ -1536,6 +1538,20 @@ localStorage.setItem("money",money);
 showPopup("QUÀ NHIỆM VỤ","Chúc mừng bạn đã nhận được 100 💰","🎁");
 hienThiNhiemVu();
 }
+}
+
+
+
+function caKhia(isLow){
+const hienThi = document.getElementById("range");
+const loiThoai = {
+    low: ["Thấp quá, nhích lên tí!", "Chưa tới đâu, thêm tí nữa.", "Số này còn xanh lắm!"],
+    high: ["Cao quá rồi đại ca!", "Hạ cánh xuống tí đi.", "Vượt rào rồi, giảm lại!"]
+};
+let list = isLow? loiThoai.low : loiThoai.high;
+let msgCaKhia = list[Math.floor(Math.random()*list.length)];
+hienThi.classList.remove("hidden");
+hienThi.innerHTML =`<span>${msgCaKhia}</span>`;
 }
 
 
