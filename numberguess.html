@@ -1440,6 +1440,24 @@ vungHienThi.innerHTML += itemHTML;
 
 
 
+function capNhatNhiemVu(type,value){
+let baNhiemVu = JSON.parse(localStorage.getItem("daily_quest"));
+if(!baNhiemVu) return;
+let changed = false;
+baNhiemVu = baNhiemVu.map(q=>{
+if(q.type === type && q.current < q.goal){
+q.current += value;
+if(q.current>q.goal) q.current=q.goal;
+changed = true;
+}
+return q;
+});
+if(changed){
+localStorage.setItem("daily_quest",JSON.stringify(baNhiemVu));
+}
+}
+
+
 updateXPUI();
 updateMenuLock();
 updateUnlock();
