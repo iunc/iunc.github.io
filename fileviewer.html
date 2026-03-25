@@ -2,8 +2,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="icon" sizes="192x192" href="https://fonts.gstatic.com/s/i/materialicons/description/v12/24px.svg">
-<link rel="apple-touch-icon" href="https://fonts.gstatic.com/s/i/materialicons/description/v12/24px.svg">
 <meta name="apple-mobile-web-app-title" content="IUNC Viewer">
 <meta name="mobile-web-app-capable" content="yes">
 <title>File Viewer</title>
@@ -89,6 +87,40 @@ input.addEventListener("change", async () => {
   viewer.innerHTML = "❌ Không hỗ trợ file này";
  }
 });
+
+
+const setEmojiIcon = (emoji) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 192;
+    canvas.height = 192;
+    const ctx = canvas.getContext('2d');
+
+    // 1. Vẽ nền đen bo góc cho xịn (giống icon app thật)
+    ctx.fillStyle = '#0f0f0f'; 
+    ctx.roundRect(0, 0, 192, 192, 40); // Bo góc 40px
+    ctx.fill();
+
+    // 2. Vẽ Emoji 📚 vào giữa
+    ctx.font = '120px serif'; // Hạ size xuống tí để nằm gọn trong nền đen
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(emoji, 96, 105); // Nhích xuống tí cho cân mắt
+
+    // 3. Cắm vào link icon
+    let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/png';
+    link.rel = 'shortcut icon'; // Cho Android
+    link.href = canvas.toDataURL('image/png');
+    document.getElementsByTagName('head')[0].appendChild(link);
+    
+    // 4. Thêm cái này cho iPhone nó cũng nhận luôn
+    let appleLink = document.querySelector("link[rel='apple-touch-icon']") || document.createElement('link');
+    appleLink.rel = 'apple-touch-icon';
+    appleLink.href = canvas.toDataURL('image/png');
+    document.getElementsByTagName('head')[0].appendChild(appleLink);
+  };
+
+  setEmojiIcon('📚');
 </script>
 
 </body>
