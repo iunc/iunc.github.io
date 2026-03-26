@@ -1117,7 +1117,8 @@ input.classList.remove("shake","flash")
   if(attempts <= 0 && guess !== randomNumber){
     let shields = localStorage.getItem("shield") || 0;
     if(shields > 0){
-      shields--;      localStorage.setItem("shield",shields);
+      shields--;
+capNhatNhiemVu("hint",1);      localStorage.setItem("shield",shields);
       updateXPUI();
       showPopup("🛡️ ĐÃ DÙNG KHIÊN", "Khiên giúp bạn không bị tụt level","✨");
     } else {
@@ -1225,7 +1226,8 @@ function checkDaily(){
       } else {
          let freeze = parseInt(localStorage.getItem("freeze")) || 0;
          if(freeze > 0){
-         freeze--;     localStorage.setItem("freeze",freeze);
+         freeze--;
+capNhatNhiemVu("hint",1);     localStorage.setItem("freeze",freeze);
          bdgMsg = "<br><span style='color:#60a5fa'>❄️ <b>Đã dùng Băng!</b> Chuỗi của bạn được bảo toàn.</span>";
          } else {
          streak = 1;
@@ -1325,6 +1327,7 @@ function useMagnifier(){
     return;
   }
   count--;
+capNhatNhiemVu("hint",1);
 localStorage.setItem("magnifier",count);
 const invM = document.getElementById("invMagnifier");
 if(invM) invM.textContent = count;
