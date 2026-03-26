@@ -247,7 +247,7 @@ window.login = function () {
 
   setTimeout(() => {
     status.innerText = "Đang xác thực danh tính...";
-  }, 500);
+  }, 100);
 
   setTimeout(() => {
     signInWithEmailAndPassword(auth, email, password)
@@ -270,7 +270,7 @@ window.login = function () {
 
             setTimeout(() => {
               window.location.href = "dashboard.html";
-            }, 500);
+            }, 100);
           }
 
         }, 100);
