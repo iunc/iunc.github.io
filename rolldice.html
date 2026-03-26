@@ -81,11 +81,12 @@ body {
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    transition: transform 0.1s;
+}
+.btn-bet.active{
+border:3px solid #fff;
 }
 .btn-tai { background: #e74c3c; color: white; }
 .btn-xiu { background: #3498db; color: white; }
-.btn-bet:active { transform: scale(0.95); } 
 .btn-roll {
     width: 100%;
     padding: 15px;
@@ -116,12 +117,72 @@ body {
     margin: 15px 0;
     color: #ecf0f1; 
 }
-.pop-effect {
-    transform: scale(1.1);
-}
 @media (max-width: 380px) {
     .dice { width: 60px; height: 60px; font-size: 1.5rem; }
     .btn-bet { padding: 15px; font-size: 1rem; }
+}
+.history-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed #444;
+}
+.history-section p {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #f1c40f; 
+    text-transform: uppercase;
+    letter-spacing: 2px; 
+    margin-bottom: 12px;
+    text-align: center;
+}
+.dots-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap; 
+    min-height: 24px;
+}
+.dot {
+    margin-top:10px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    font-family: 'Arial Black', sans-serif; 
+    box-shadow: inset 0 -2px 5px rgba(0,0,0,0.3); 
+}
+.dot-tai { background: #e74c3c; } 
+.dot-xiu { background: #3498db; }
+.dot-triple { background: #f1c40f; color: #000; } 
+.bet-group {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+.bet-btn {
+    background: #2c3e50;
+    color: white;
+    border: 1px solid #444;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    min-width: 45px;
+    transition: all 0.2s;
+}
+.bet-btn.active {
+    background: #f1c40f;
+    color: #000;
+    border-color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);
 }
 
 </style>
@@ -145,46 +206,98 @@ body {
     </div>
 
     <div class="bet-grid">
-        <button class="btn-bet btn-tai" onclick="choose('Tài')">TÀI (11-17)</button>
-        <button class="btn-bet btn-xiu" onclick="choose('Xỉu')">XỈU (4-10)</button>
+        <button class="btn-bet btn-tai" onclick="choose('Tài',this)">TÀI (11-17)</button>
+        <button class="btn-bet btn-xiu" onclick="choose('Xỉu',this)">XỈU (4-10)</button>
     </div>
+
+<div class="bet-section">
+    <p style="color: #f1c40f; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px;">MỨC CƯỢC</p>
+    <div class="bet-group">
+        <button class="bet-btn active" onclick="setBet(10, this)">10</button>
+        <button class="bet-btn" onclick="setBet(50, this)">50</button>
+        <button class="bet-btn" onclick="setBet(100, this)">100</button>
+        <button class="bet-btn" onclick="setBet(500, this)">500</button>
+        <button class="bet-btn" onclick="setBet('all', this)" style="color: #ff4757;">ALL</button>
+    </div>
+</div>
 
     <div class="action-board">
         <p id="message">Chọn Tài hoặc Xỉu để bắt đầu!</p>
         <button id="roll-btn" class="btn-roll" disabled>QUAY XÚC XẮC</button>
     </div>
+ 
+    <div class="history-section">
+    <p>LỊCH SỬ (SOI CẦU)</p>
+    <div id="history-dots" class="dots-container">
+        </div>
+    </div>
+
 </div>
 
 <script>
 
-const rollBtn = document.getElementById('roll-btn');
-
 let userChoose = "";
-let balance = 1000;
+let currentBet = 10;
+let saved = localStorage.getItem("balance")
+let balance = (saved !== null) ? Number(saved) : 1000;
+
+
+const rollBtn = document.getElementById('roll-btn');
+const balanceEl = document.getElementById("balance");
+balanceEl.textContent = balance;
+
 
 function rollDice() {
 return Math.floor(Math.random() * 6) + 1;
 }
 
-function choose(type){
+
+function choose(type,element){
 userChoose = type;
 let msg = document.getElementById("message");
+let btnBet = document.querySelectorAll('.btn-bet');
+btnBet.forEach(btn => btn.classList.remove('active'));
+element.classList.add('active');
 msg.innerText = "Bạn đã chọn: " + type;
 msg.style.color = "#ecf0f1"; 
 msg.style.textShadow = "none";
-document.getElementById('dice-1').innerText = "?";
-    document.getElementById('dice-2').innerText = "?";
-    document.getElementById('dice-3').innerText = "?";
+document.getElementById('dice-1').innerText = "🎲"; document.getElementById('dice-2').innerText = "🎲"; document.getElementById('dice-3').innerText = "🎲";
 rollBtn.disabled = false;
 }
 
+
 rollBtn.addEventListener('click', () => {
+if(balance < currentBet) {
+let msg = document.getElementById("message");
+msg.innerText = "BẠN KHÔNG ĐỦ TIỀN CƯỢC!";
+msg.style.color = "#ff4757";
+msg.style.textShadow = "0 0 10px #ff4757";
+return;
+}
+rollBtn.disabled = true;
+let msg = document.getElementById("message");
+msg.innerText = "Đang quay..";
+msg.style.color = "#f1c40f";
+msg.style.textShadow = "none";
+let count = 0;
+let shuffle = setInterval(()=>{
+document.getElementById("dice-1").innerText = Math.floor(Math.random()*6) +1;
+document.getElementById("dice-2").innerText = Math.floor(Math.random()*6) +1;
+document.getElementById("dice-3").innerText = Math.floor(Math.random()*6) +1;
+count++;
+if(count > 15){
+clearInterval(shuffle);
+handleRoll();
+}
+},100);
+});
+
+
+function handleRoll(){
 const d1 = rollDice();
 const d2 = rollDice();
 const d3 = rollDice();
-document.getElementById('dice-1').innerText = d1;
-    document.getElementById('dice-2').innerText = d2;
-    document.getElementById('dice-3').innerText = d3;
+document.getElementById('dice-1').innerText = d1; document.getElementById('dice-2').innerText = d2;   document.getElementById('dice-3').innerText = d3;
 const total = d1 + d2 + d3; 
 let result = "";
 if(d1 === d2 && d2 === d3){
@@ -197,21 +310,56 @@ if (result === "Triple") {
 msg.innerText = `BỘ BA (${d1}-${d2}-${d3}). NHÀ CÁI ĂN HẾT!`;
 msg.style.color = "#ff4757"; 
 msg.style.textShadow = "0 0 15px #ff4757";
-balance -= 100;
+balance -= currentBet;
 } else if (userChoose === result) {
 msg.innerText = `TỔNG ${total} (${result}). BẠN THẮNG!`;
 msg.style.color = "#2ed573";
 msg.style.textShadow = "0 0 15px #2ed573";
-balance += 100;
+balance += currentBet;
 } else {
 msg.innerText = `TỔNG ${total} (${result}). BẠN THUA RỒI!`;
 msg.style.color = "#ffa502";
 msg.style.textShadow = "0 0 15px #ffa502";
-balance -= 100;
+balance -= currentBet;
 }
+addHistory(result);
+saveGame();
+}
+
+
+function addHistory(result) {
+const history = document.getElementById('history-dots');
+const dot = document.createElement('div');
+dot.classList.add('dot');
+if (result === "Tài") {
+dot.classList.add('dot-tai');
+dot.innerText = "T";
+} else if (result === "Xỉu") {
+dot.classList.add('dot-xiu');
+dot.innerText = "X";
+} else {
+dot.classList.add('dot-triple');
+dot.innerText = "B";
+}
+history.prepend(dot);
+if(history.children.length > 10){        history.removeChild(history.lastChild);
+}
+}
+
+
+function setBet(amount,element){
+currentBet = amount === 'all' ? balance : amount;
+const buttons = document.querySelectorAll('.bet-btn');
+buttons.forEach(btn => btn.classList.remove('active'));
+element.classList.add('active');
+}
+
+
+function saveGame(){
+localStorage.setItem("balance",balance);
 document.getElementById("balance").innerText = balance;
-rollBtn.disabled = true;
-});
+}
+
 
 </script>
 </body>
