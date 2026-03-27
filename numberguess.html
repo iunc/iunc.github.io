@@ -947,6 +947,7 @@ function addXP(){
   if(newLevel > currentLevel){
      let oldTitle = getTitle(currentLevel);
      currentLevel = newLevel;
+     capNhatNhiemVu("level_up",1);
      let newTitle = getTitle(currentLevel);
      if(oldTitle !== newTitle){
          showPopup("DANH HIỆU MỚI",`Bạn đã đạt được danh hiệu: ${newTitle}`,"👑");  
