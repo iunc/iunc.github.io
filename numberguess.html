@@ -1074,6 +1074,9 @@ function letGo(){
     capNhatNhiemVu("high_num",1);
     } else{
     capNhatNhiemVu("low_num",1);
+    if(guess<5){
+    capNhatNhiemVu("win_5digits",1);
+    }
     }
     gameOver = true;
     playing = false;
@@ -1243,7 +1246,9 @@ localStorage.setItem("streakCount",totalDays);
 localStorage.setItem("xp",currentXP);
 localStorage.setItem("streak",streak);
 localStorage.setItem("money",money);
-
+if(streak === 7){
+capNhatNhiemVu("keep_streak",1);
+}
 if(streak >= 100){
    bdgMsg += "<br><span style='color:#ffd86b'>Nhận Badge: 🐘<b>Voi Bền Bỉ</b>!</span>";
 localStorage.setItem("hasBdg100","true");
@@ -1457,8 +1462,8 @@ const khoNhiemVu = [
     { id: 16, text: "Đoán trúng chỉ sau 3 lượt", goal: 1, type: "pro_guess" },
     { id: 17, text: "Tích lũy 500 xu", goal: 500, type: "rich" },
     { id: 18, text: "Đoán trúng số có 2 chữ số giống nhau", goal: 1, type: "double_num" },
-    { id: 19, text: "Thắng ván đầu tiên khi mở web", goal: 1, type: "first_win" },
-    { id: 20, text: "Duy trì streak điểm danh", goal: 1, type: "keep_streak" },
+    { id: 19, text: "Đoán trúng số nhỏ hơn 5", goal: 5, type: "win_5digits" },
+    { id: 20, text: "Duy trì streak điểm danh 1 tuần", goal: 1, type: "keep_streak" },
     { id: 21, text: "Đoán trúng số có 2 chữ số", goal: 1, type: "win_2digits" }
 ];
 
