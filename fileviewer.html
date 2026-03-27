@@ -134,14 +134,23 @@ input.addEventListener("change", async () => {
  else if (type === "xlsx") {
   const reader = new FileReader();
   reader.onload = function() {
-   const data = new Uint8Array(reader.result);
-   const workbook = XLSX.read(data, {type: "array"});
-   const sheet = workbook.Sheets[workbook.SheetNames[0]];
-   const html = XLSX.utils.sheet_to_html(sheet);
-   viewer.innerHTML = html;
+    const data = new Uint8Array(reader.result);
+    const workbook = XLSX.read(data, { type: "array" });
+
+    let html = "";
+
+    // 👉 Lặp qua tất cả sheet
+    workbook.SheetNames.forEach((name, index) => {
+      const sheet = workbook.Sheets[name];
+
+      html += `<h2>Sheet ${index + 1}: ${name}</h2>`;
+      html += XLSX.utils.sheet_to_html(sheet);
+    });
+
+    viewer.innerHTML = html;
   };
   reader.readAsArrayBuffer(file);
- }
+}
 
  else {
   viewer.innerHTML = "❌ Không hỗ trợ file này";
