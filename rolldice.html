@@ -186,6 +186,44 @@ transform:translateY(-3px);
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);
 }
+.bgm-container {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 9999;
+}
+#bgmBtn {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+#bgmBtn:active {
+    transform: scale(0.9);
+}
+.is-playing {
+    animation: diskRotate 4s linear infinite;
+    border-color: #ffd86b !important;
+    box-shadow: 0 0 20px rgba(255, 216, 107, 0.4) !important;
+}
+@keyframes diskRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+#bgmAudio {
+    display: none;
+}
 
 </style>
 </head>
@@ -234,6 +272,16 @@ transform:translateY(-3px);
         </div>
     </div>
 
+</div>
+
+
+<div class="bgm-container">
+    <button id="bgmBtn" onclick="toggleBGM()" title="Bật/Tắt nhạc nền">
+        <span id="bgmIcon">🔊</span>
+    </button>
+    <audio id="bgmAudio" loop>
+        <source src="bgm-numberguess.mp3" type="audio/mpeg">
+    </audio>
 </div>
 
 <script>
@@ -354,6 +402,23 @@ currentBet = amount === 'all' ? balance : amount;
 const buttons = document.querySelectorAll('.bet-btn');
 buttons.forEach(btn => btn.classList.remove('active'));
 element.classList.add('active');
+}
+
+
+function toggleBGM(){
+const audio = document.getElementById("bgmAudio");
+const btn = document.getElementById("bgmBtn");
+const icon = document.getElementById("bgmIcon");
+if(audio.paused){
+audio.play().then(()=>{
+btn.classList.add("is-playing");
+icon.textContent = "🔊";
+}).catch(()=>{});
+} else{
+audio.pause();
+btn.classList.remove("is-playing");
+icon.textContent = "🔇";
+}
 }
 
 
