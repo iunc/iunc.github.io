@@ -1058,6 +1058,7 @@ function letGo(){
     msg.innerHTML = `🎉 Chính xác! <br>+${gained}XP <br>Rank:${rank}`;
     msg.classList.add("success");
     clearInterval(gameTimer);
+    capNhatNhiemVu("play_count",1);
     capNhatNhiemVu("win",1);
     if(guess % 2 !== 0){
     capNhatNhiemVu("odd",1);
@@ -1122,7 +1123,8 @@ input.classList.remove("shake","flash")
     let shields = localStorage.getItem("shield") || 0;
     if(shields > 0){
       shields--;
-capNhatNhiemVu("hint",1);      localStorage.setItem("shield",shields);
+capNhatNhiemVu("hint",1);  
+capNhatNhiemVu("play_count",1);    localStorage.setItem("shield",shields);
       updateXPUI();
       showPopup("🛡️ ĐÃ DÙNG KHIÊN", "Khiên giúp bạn không bị tụt level","✨");
     } else {
@@ -1143,6 +1145,7 @@ localStorage.setItem("money",money);
     updateUnlock();
     clearInterval(gameTimer);
     capNhatNhiemVu("total_fail",1);
+    capNhatNhiemVu("play_count",1);
     showPopup("THẤT BẠI!",`Bạn đã bị xuống cấp: <span style="color:#ffd86b">${currentLevel}</span> <br> Số đúng là <span style="color:#ffd86b">${randomNumber}</span>`,"💀");
 }
     gameOver = true;
