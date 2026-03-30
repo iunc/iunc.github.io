@@ -749,6 +749,7 @@ h1{
 
 let gameTimer;
 let timeLeft;
+let startTime = 0;
 let playing = false;
 let randomNumber;
 let attempts;
@@ -1019,6 +1020,7 @@ function letGo(){
   }
   if(!playing){
     playing = true;
+    startTime = Date.now();
     if(currentLevel >= 30 && !gameTimer){
       startTimer();
     }
@@ -1052,6 +1054,9 @@ function letGo(){
   }
 
   if(guess === randomNumber){
+    let timeTaken = (Date.now()-startTime)/1000;
+    if(timeTaken <= 5)
+    capNhatNhiemVu("fast_win",1);
     let gained = addXP();
     capNhatNhiemVu("coin",gained);
     let rank = getRank(attempts);
