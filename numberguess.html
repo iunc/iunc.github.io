@@ -1055,7 +1055,7 @@ function letGo(){
 
   if(guess === randomNumber){
     let timeTaken = (Date.now()-startTime)/1000;
-    if(timeTaken <= 5)
+    if(timeTaken <= 15)
     capNhatNhiemVu("fast_win",1);
     let gained = addXP();
     capNhatNhiemVu("coin",gained);
@@ -1457,7 +1457,7 @@ const khoNhiemVu = [
     { id: 2, text: "Đoán trúng 5 lần", goal: 5, type: "win" },
     { id: 3, text: "Kiếm được 100 xu", goal: 100, type: "coin" },
     { id: 4, text: "Sử dụng 2 lượt trợ giúp", goal: 2, type: "hint" },
-    { id: 5, text: "Đoán trúng trong < 5 giây", goal: 1, type: "fast_win" },
+    { id: 5, text: "Đoán trúng trong < 15 giây", goal: 1, type: "fast_win" },
     { id: 6, text: "Đạt chuỗi thắng 2 trận", goal: 2, type: "streak" },
     { id: 7, text: "Chơi đủ 5 ván game", goal: 5, type: "play_count" },
     { id: 8, text: "Đoán sai 10 lần tổng cộng", goal: 10, type: "total_fail" },
