@@ -290,7 +290,7 @@ let userChoose = "";
 let currentBet = 10;
 let saved = localStorage.getItem("balance")
 let balance = (saved !== null) ? Number(saved) : 1000;
-let diceHistory = JSON.parse(localStorage getItem("diceHistory")) || [];
+let diceHistory = JSON.parse(localStorage.getItem("diceHistory")) || [];
 
 
 const rollBtn = document.getElementById('roll-btn');
