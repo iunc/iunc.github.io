@@ -290,11 +290,21 @@ let userChoose = "";
 let currentBet = 10;
 let saved = localStorage.getItem("balance")
 let balance = (saved !== null) ? Number(saved) : 1000;
+let diceHistory = JSON.parse(localStorage getItem("diceHistory")) || [];
 
 
 const rollBtn = document.getElementById('roll-btn');
 const balanceEl = document.getElementById("balance");
 balanceEl.textContent = balance;
+
+
+function init(){
+if(diceHistory.length>0){
+let lastResult = diceHistory[diceHistory.length-1];
+diceHistory.pop();
+addHistory(lastResult);
+}
+}
 
 
 function rollDice() {
@@ -378,13 +388,17 @@ saveGame();
 
 
 function addHistory(result) {
+diceHistory.push(result);
+if(diceHistory.length>10) diceHistory.shift();
 const history = document.getElementById('history-dots');
+history.innerHTML = "";
+diceHistory.forEach(res => {
 const dot = document.createElement('div');
 dot.classList.add('dot');
-if (result === "Tài") {
+if (res === "Tài") {
 dot.classList.add('dot-tai');
 dot.innerText = "T";
-} else if (result === "Xỉu") {
+} else if (res === "Xỉu") {
 dot.classList.add('dot-xiu');
 dot.innerText = "X";
 } else {
@@ -392,8 +406,7 @@ dot.classList.add('dot-triple');
 dot.innerText = "B";
 }
 history.prepend(dot);
-if(history.children.length > 10){        history.removeChild(history.lastChild);
-}
+});
 }
 
 
@@ -425,8 +438,11 @@ icon.textContent = "🔇";
 function saveGame(){
 localStorage.setItem("balance",balance);
 document.getElementById("balance").innerText = balance;
+localStorage.setItem("diceHistory",JSON.stringify(diceHistory));
 }
 
+
+document.addEventListener('DOMContentLoaded',init);
 
 </script>
 </body>
