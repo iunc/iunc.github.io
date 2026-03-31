@@ -321,6 +321,9 @@ transform:translateY(-3px);
     <audio id="bgmAudio" loop>
         <source src="bgm-numberguess.mp3" type="audio/mpeg">
     </audio>
+    <audio id="sfx-dice" src="rolldice.mp3" preload="auto" loop></audio>
+    <audio id="sfx-win" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3" preload="auto"></audio>
+    <audio id="sfx-lose" src="gameover.mp3" preload="auto"></audio>
 </div>
 
 <script>
@@ -379,6 +382,7 @@ let msg = document.getElementById("message");
 msg.innerText = "Đang quay..";
 msg.style.color = "#f1c40f";
 msg.style.textShadow = "none";
+playSFX('sfx-dice');
 let count = 0;
 let shuffle = setInterval(()=>{
 document.getElementById("dice-1").innerText = Math.floor(Math.random()*6) +1;
@@ -387,6 +391,7 @@ document.getElementById("dice-3").innerText = Math.floor(Math.random()*6) +1;
 count++;
 if(count > 15){
 clearInterval(shuffle);
+document.getElementById("sfx-dice").pause();
 handleRoll();
 }
 },100);
@@ -408,16 +413,19 @@ result = "Xỉu";
 let msg = document.getElementById("message");
 if (result === "Triple") {
 msg.innerText = `BỘ BA (${d1}-${d2}-${d3}). NHÀ CÁI ĂN HẾT!`;
+playSFX('sfx-lose');
 msg.style.color = "#ff4757"; 
 msg.style.textShadow = "0 0 15px #ff4757";
 balance -= currentBet;
 } else if (userChoose === result) {
 msg.innerText = `TỔNG ${total} (${result}). BẠN THẮNG!`;
+playSFX('sfx-win');
 msg.style.color = "#2ed573";
 msg.style.textShadow = "0 0 15px #2ed573";
 balance += currentBet;
 } else {
 msg.innerText = `TỔNG ${total} (${result}). BẠN THUA RỒI!`;
+playSFX('sfx-lose');
 msg.style.color = "#ffa502";
 msg.style.textShadow = "0 0 15px #ffa502";
 balance -= currentBet;
@@ -534,6 +542,14 @@ const stats = document.getElementById("cau-stats");
 stats.innerHTML = `Tài: ${taiPercent}% | Xỉu: ${xiuPercent}%`;
 }
 
+
+function playSFX(id){
+const sfx = document.getElementById(id);
+if(sfx){
+sfx.currentTime = 0;
+sfx.play().catch(() =>{});
+}
+}
 
 
 function saveGame(){
