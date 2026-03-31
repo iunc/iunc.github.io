@@ -253,6 +253,14 @@ transform:translateY(-3px);
     width: 100%;
     height:auto;
 }
+.titleBalance{
+font-size:14px;
+margin-top:10px;
+font-weight:bold;
+}
+#user-title{
+color:#f1c40f;
+}
 
 </style>
 </head>
@@ -265,6 +273,8 @@ transform:translateY(-3px);
     <div class="balance-card">
         <div class="balance-value"><b style="color:white;">Balance:</b>
             <span id="balance">1000</span> <span class="coin-icon">🪙</span>
+        </div>
+        <div class="titleBalance">Danh hiệu: <span id="user-title">Tân Thủ</span>
         </div>
     </div>
 
@@ -347,6 +357,7 @@ diceHistory.pop();
 addHistory(lastResult);
 }
 drawSoiCau();
+updateTitle();
 }
 
 
@@ -432,6 +443,7 @@ balance -= currentBet;
 }
 addHistory(result);
 drawSoiCau();
+updateTitle();
 saveGame();
 }
 
@@ -550,6 +562,36 @@ sfx.currentTime = 0;
 sfx.play().catch(() =>{});
 }
 }
+
+
+function updateTitle(){
+const titleEl = document.getElementById("user-title");
+if(!titleEl) return;
+let title = "Tân Thủ";
+if (balance >= 100000) {
+title = "Huyền Thoại Casino 👑💎";
+} else if (balance >= 50000) {
+title = "Chúa Tể Tài Xỉu 🔱";
+} else if (balance >= 20000) {
+title = "Bậc Thầy Soi Cầu 🧠";
+} else if (balance >= 10000) {
+title = "Trùm Tài Phiệt 💸";
+} else if (balance >= 5000) {
+title = "Thần Bài 🃏";
+} else if (balance >= 2000) {
+title = "Đại Gia 💰";
+} else if (balance >= 1000) {
+title = "Tân Thủ 🐥";
+} else if (balance >= 500) {
+title = "Dân Chơi Bán Chuyên 🎲";
+} else if (balance > 0) {
+title = "Kẻ Khốn Cùng 😢";
+} else {
+title = "Cái Bang (Vỡ Nợ) 🪹";
+}
+titleEl.innerHTML = title;
+}
+
 
 
 function saveGame(){
