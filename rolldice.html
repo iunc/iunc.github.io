@@ -116,7 +116,7 @@ transform:translateY(-3px);
     text-transform: uppercase;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    margin: 15px 0;
+    margin: 0;
     color: #ecf0f1; 
 }
 @media (max-width: 380px) {
@@ -261,6 +261,11 @@ font-weight:bold;
 #user-title{
 color:#f1c40f;
 }
+#streak-container{
+font-size:16px;
+font-weight:bold;
+margin-bottom:30px;
+}
 
 </style>
 </head>
@@ -302,6 +307,8 @@ color:#f1c40f;
 
     <div class="action-board">
         <p id="message">Chọn Tài hoặc Xỉu để bắt đầu!</p>
+        <div id="streak-container">
+        </div>
         <button id="roll-btn" class="btn-roll" disabled>QUAY XÚC XẮC</button>
     </div>
  
@@ -340,6 +347,8 @@ color:#f1c40f;
 
 let userChoose = "";
 let currentBet = 10;
+let winStreak = 0;
+let loseStreak = 0;
 let saved = localStorage.getItem("balance")
 let balance = (saved !== null) ? Number(saved) : 1000;
 let diceHistory = JSON.parse(localStorage.getItem("diceHistory")) || [];
@@ -428,18 +437,32 @@ playSFX('sfx-lose');
 msg.style.color = "#ff4757"; 
 msg.style.textShadow = "0 0 15px #ff4757";
 balance -= currentBet;
+winStreak = 0;
+loseStreak++;
 } else if (userChoose === result) {
 msg.innerText = `TỔNG ${total} (${result}). BẠN THẮNG!`;
 playSFX('sfx-win');
 msg.style.color = "#2ed573";
 msg.style.textShadow = "0 0 15px #2ed573";
 balance += currentBet;
+winStreak++;
+loseStreak = 0;
 } else {
 msg.innerText = `TỔNG ${total} (${result}). BẠN THUA RỒI!`;
 playSFX('sfx-lose');
 msg.style.color = "#ffa502";
 msg.style.textShadow = "0 0 15px #ffa502";
 balance -= currentBet;
+winStreak = 0;
+loseStreak++;
+}
+const streak = document.getElementById("streak-container");
+if(winStreak > 2){
+streak.innerHTML = `<span style="color:#2ed573">🔥 Đang thắng ${winStreak} ván liên tiếp!</span>`;
+} else if(loseStreak>2){
+streak.innerHTML = `<span style="color:#ff4757">❄️ Đang xui ${loseStreak} ván liên tiếp!</span>`;
+}else{
+streak.innerHTML = "";
 }
 addHistory(result);
 drawSoiCau();
