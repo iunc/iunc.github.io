@@ -445,6 +445,11 @@ addHistory(result);
 drawSoiCau();
 updateTitle();
 saveGame();
+userChoose="";
+const btn = document.querySelectorAll('button[onclick*="choose"]');
+btn.forEach(btn=>{
+btn.classList.remove('active');
+});
 }
 
 
