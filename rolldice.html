@@ -266,6 +266,14 @@ font-size:16px;
 font-weight:bold;
 margin-bottom:30px;
 }
+.highScore{
+font-size:14px;
+font-weight:bold;
+margin-top:10px;
+}
+#high-score{
+color:#ffa502;
+}
 
 </style>
 </head>
@@ -280,6 +288,9 @@ margin-bottom:30px;
             <span id="balance">1000</span> <span class="coin-icon">🪙</span>
         </div>
         <div class="titleBalance">Danh hiệu: <span id="user-title">Tân Thủ</span>
+        </div>
+        <div class="highScore">
+    🏆 Kỷ lục: <span id="high-score">0</span> 🪙
         </div>
     </div>
 
@@ -349,6 +360,7 @@ let userChoose = "";
 let currentBet = 10;
 let winStreak = 0;
 let loseStreak = 0;
+let highScore = 0;
 let saved = localStorage.getItem("balance")
 let balance = (saved !== null) ? Number(saved) : 1000;
 let diceHistory = JSON.parse(localStorage.getItem("diceHistory")) || [];
@@ -365,6 +377,8 @@ let lastResult = diceHistory[diceHistory.length-1];
 diceHistory.pop();
 addHistory(lastResult);
 }
+let savedHighScore = Number(localStorage.getItem("highScore"));
+document.getElementById("high-score").innerHTML = savedHighScore;
 drawSoiCau();
 updateTitle();
 }
@@ -626,6 +640,11 @@ function saveGame(){
 localStorage.setItem("balance",balance);
 document.getElementById("balance").innerText = balance;
 localStorage.setItem("diceHistory",JSON.stringify(diceHistory));
+if(balance > highScore){
+highScore = balance;
+document.getElementById("high-score").innerHTML = highScore;
+}
+localStorage.setItem("highScore",highScore);
 }
 
 
