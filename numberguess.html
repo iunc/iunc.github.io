@@ -1065,6 +1065,7 @@ function letGo(){
     let gained = addXP();
     capNhatNhiemVu("coin",gained);
     capNhatNhiemVu("rich",gained);
+    capNhatNhiemVu("streak",1);
     let rank = getRank(attempts);
     msg.innerHTML = `🎉 Chính xác! <br>+${gained}XP <br>Rank:${rank}`;
     msg.classList.add("success");
