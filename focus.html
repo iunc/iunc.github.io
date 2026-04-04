@@ -22,56 +22,48 @@ color:white;
 <div id="player"></div>
 
 <script>
+
 let player;
-
-// YouTube API
-function onYouTubeIframeAPIReady() {
-  player = new YT.Player('player', {
-    height: '0',
-    width: '0',
-    videoId: 'BB8cNVJVtaA',
-    playerVars: { autoplay: 0, controls: 0 }
-  });
-}
-
-function playMusic() {
-  if (player) player.playVideo();
-}
-
-function pauseMusic() {
-  if (player) player.pauseVideo();
-}
-
-// load API
+let time = 25 * 60;
+let interval;
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 document.body.appendChild(tag);
 
 
-// TIMER
-let time = 25 * 60;
-let interval;
+function onYouTubeIframeAPIReady() {
+player = new YT.Player('player', {
+height: '0',
+width: '0',
+videoId: 'BB8cNVJVtaA',
+playerVars: { autoplay: 0, controls: 0 }
+});
+}
+
+
+function playMusic() {
+if (player) player.playVideo();
+}
+
+
+function pauseMusic() {
+if (player) player.pauseVideo();
+}
+
 
 function startTimer() {
-  clearInterval(interval);
-
-  interval = setInterval(() => {
-    time--;
-
-    let m = Math.floor(time / 60);
-    let s = time % 60;
-
-    document.getElementById("timer").innerText =
-      `${m}:${s < 10 ? "0" : ""}${s}`;
-
-    if (time <= 0) {
-      clearInterval(interval);
-
-      // tắt nhạc
-      if (player) player.pauseVideo();
-    }
-  }, 1000);
+clearInterval(interval);
+interval = setInterval(() => {
+time--;
+let m = Math.floor(time / 60);
+let s = time % 60;   document.getElementById("timer").innerText =`${m}:${s < 10 ? "0" : ""}${s}`;
+if (time <= 0) {
+clearInterval(interval);
+if (player) player.pauseVideo();
 }
+}, 1000);
+}
+
 </script>
 </body>
 </html>
