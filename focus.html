@@ -63,6 +63,29 @@ transition: 0.2s;
 .control span {
 font-size: 16px;
 }
+#theme-popup {
+position: fixed;
+bottom: 70px;
+left: 50%;
+transform: translateX(-50%);
+background: rgba(10, 15, 25, 0.9); padding: 15px;
+border-radius: 10px;
+border: 1px solid rgba(255,255,255,0.1);
+z-index: 10;
+}
+.themes-container {
+display: flex;
+gap: 20px;
+font-size: 14px;
+}
+.themes-container span {
+cursor: pointer;
+color: rgba(255, 255, 255, 0.7);
+transition: 0.2s;
+}
+.popup-hidden {
+display: none;
+}
 
 </style>
 </head>
@@ -81,10 +104,22 @@ font-size: 16px;
   <div class="control" onclick="startTimer()">
   <span>⏱</span> start
   </div>
+  <div class="control" onclick="togglePopup()">
+  <span>🎵</span> list
+  </div>
   </div>
 </div>
   
 <div id="player"></div>
+
+<div id="theme-popup" class="popup-hidden">
+  <div class="themes-container">
+    <span onclick="changeTheme('study')">📚 study</span>
+    <span onclick="changeTheme('gym')">💪 gym</span>
+    <span onclick="changeTheme('cafe')">☕ cafe</span>
+    <span onclick="changeTheme('chill')">🌊 chill</span>
+  </div>
+</div>
 
 <script>
 
@@ -145,6 +180,17 @@ if (player) player.pauseVideo();
 }
 }, 1000);
 }
+
+
+function togglePopup(){
+let popup = document.getElementById("theme-popup");
+if(popup.classList.contains("popup-hidden")){
+popup.classList.remove("popup-hidden");
+} else {
+popup.classList.add("popup-hidden");
+}
+}
+
 
 </script>
 </body>
