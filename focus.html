@@ -5,20 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🎧 Focus</title>
 <style>
-body{
-text-align:center; font-family:sans-serif;
-background:#111; 
-color:white;
+
+* {
+  box-sizing: border-box;
 }
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #f1f5f9;
+
+  /* nền ảnh mưa đẹp */
+  background: url("https://images.unsplash.com/photo-1501696461415-6bd6660c6742")
+    no-repeat center center/cover;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* lớp phủ tối */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* blur nhẹ */
+.app {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+
+  padding: 30px 20px;
+  border-radius: 20px;
+
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+/* tiêu đề */
+h1 {
+  font-size: 16px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+/* timer */
+#timer {
+  font-size: 72px;
+  font-weight: 200;
+  margin: 20px 0;
+  letter-spacing: 3px;
+}
+
+/* controls */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* nút */
+button {
+  background: none;
+  border: none;
+  color: #e2e8f0;
+  font-size: 14px;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  opacity: 1;
+}
+
+/* start */
+.start {
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.5;
+}
+
 </style>
 </head>
 <body>
 
-<h1>Focus</h1>
-<button onclick="playMusic()">Play</button>
-<button onclick="pauseMusic()">Pause</button>
-<h2 id="timer">25:00</h2>
-<button onclick="startTimer()">Start</button>
+<div class="app">
+  <h1>focus</h1>
+
+  <div id="timer">25:00</div>
+
+  <div class="controls">
+    <button onclick="playMusic()">play</button>
+    <button onclick="pauseMusic()">pause</button>
+  </div>
+
+  <button class="start" onclick="startTimer()">start</button>
+</div>
+
 <div id="player"></div>
 
 <script>
