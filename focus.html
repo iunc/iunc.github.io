@@ -19,12 +19,13 @@ font-family: "Inter", -apple-system, sans-serif;
 color: rgba(255,255,255,0.9);
 background:url("https://images.unsplash.com/photo-1495567720989-cebdbdd97913") no-repeat center center/cover;
 display: flex;
-justify-content: center;
-align-items: center;
 }
 .app {
-position: relative;
-z-index: 1;
+position: fixed;
+bottom: 20px;
+left: 0;
+width: 100%;
+z-index: 2;
 text-align: center;
 }
 #timer {
@@ -51,13 +52,6 @@ transition: 0.2s;
 .control span {
 font-size: 16px;
 }
-.start {
-margin-top: 15px;
-font-size: 12px;
-letter-spacing: 2px;
-opacity: 0.4;
-cursor: pointer;
-}
 
 </style>
 </head>
@@ -72,9 +66,12 @@ cursor: pointer;
   <div class="control" onclick="pauseMusic()">
   <span>⏸</span> pause
   </div>
+  <div class="control" onclick="startTimer()">
+  <span>⏱</span> start
   </div>
-  <div class="start" onclick="startTimer()">start</div>
+  </div>
 </div>
+  
 <div id="player"></div>
 
 <script>
