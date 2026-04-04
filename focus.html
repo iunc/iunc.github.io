@@ -121,7 +121,7 @@ display: none;
     <span onclick="changeTheme('study')">📚 study</span>
     <span onclick="changeTheme('gym')">💪 gym</span>
     <span onclick="changeTheme('cafe')">☕ cafe</span>
-    <span onclick="changeTheme('chill')">🌊 chill</span>
+    <span onclick="changeTheme('nature')">🌊 chill</span>
   </div>
 </div>
 
@@ -201,20 +201,20 @@ popup.classList.add("popup-hidden");
 
 const themes = {
 study: {
-bg: "https://images.unsplash.com/photo-1434031211128-09549033626c",
-musicId: "jfKfPfyJRdk"
+bg: "https://images.unsplash.com/photo-1548393488-ae8f117cbc1c?q=80&w=830&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+musicId: "ZrKPW5d3idY"
 },
 gym: {
 bg: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd",
-musicId: "5qxG3f7OOnM"
+musicId: "A0bCtkXXw3k"
 },
 cafe: {
 bg: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb",
-musicId: "flo26p6S8-8"
+musicId: "BB8cNVJVtaA"
 },
-chill: {
+natural: {
 bg: "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa",
-musicId: "8DbeoZpM-9k"
+musicId: "yy77J_tf9Lw"
 }
 };
 
@@ -225,8 +225,8 @@ document.body.style.backgroundImage = `url('${selectTheme.bg}')`;
 if(player && typeof player.loadVideoById === "function"){
 player.loadVideoById(selectTheme.musicId);
 }
+togglePopup();
 }
-
 
 </script>
 </body>
