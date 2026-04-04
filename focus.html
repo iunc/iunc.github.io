@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎧 Focus</title>
+<style>
+body{
+text-align:center; font-family:sans-serif;
+background:#111; 
+color:white;
+}
+</style>
+</head>
+<body>
+
+<h1>Focus</h1>
+<button onclick="playMusic()">Play</button>
+<button onclick="pauseMusic()">Pause</button>
+<h2 id="timer">25:00</h2>
+<button onclick="startTimer()">Start</button>
+<div id="player"></div>
+
+<script>
+let player;
+
+// YouTube API
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('player', {
+    height: '0',
+    width: '0',
+    videoId: 'jfKfPfyJRdk',
+    playerVars: { autoplay: 0, controls: 0 }
+  });
+}
+
+function playMusic() {
+  if (player) player.playVideo();
+}
+
+function pauseMusic() {
+  if (player) player.pauseVideo();
+}
+
+// load API
+let tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.body.appendChild(tag);
+
+
+// TIMER
+let time = 25 * 60;
+let interval;
+
+function startTimer() {
+  clearInterval(interval);
+
+  interval = setInterval(() => {
+    time--;
+
+    let m = Math.floor(time / 60);
+    let s = time % 60;
+
+    document.getElementById("timer").innerText =
+      `${m}:${s < 10 ? "0" : ""}${s}`;
+
+    if (time <= 0) {
+      clearInterval(interval);
+
+      // tắt nhạc
+      if (player) player.pauseVideo();
+    }
+  }, 1000);
+}
+</script>
+</body>
+</html>
