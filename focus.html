@@ -199,6 +199,33 @@ popup.classList.add("popup-hidden");
 }
 
 
+const themes = {
+study: {
+bg: "https://images.unsplash.com/photo-1434031211128-09549033626c",
+musicId: "jfKfPfyJRdk"
+},
+gym: {
+bg: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd",
+musicId: "5qxG3f7OOnM"
+},
+cafe: {
+bg: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb",
+musicId: "flo26p6S8-8"
+},
+chill: {
+bg: "https://images.unsplash.com/photo-1494232410401-ad00d5433cfa",
+musicId: "8DbeoZpM-9k"
+}
+};
+
+
+function changeTheme(themeName){
+let selectTheme = themes[themeName];
+document.body.style.backgroundImage = `url('${selectTheme.bg}')`;
+player.loadVideoById(selectTheme.musicId);
+}
+
+
 </script>
 </body>
 </html>
