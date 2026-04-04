@@ -129,7 +129,7 @@ display: none;
 
 let player;
 let time;
-let interval;
+let interval = null;
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 document.body.appendChild(tag);
@@ -138,6 +138,9 @@ document.body.appendChild(tag);
 document.getElementById("timer").addEventListener("keydown",function(e){
 if(e.key === "Enter"){
 e.preventDefault();
+if(interval){
+return;
+}
 this.blur();
 }
 });
