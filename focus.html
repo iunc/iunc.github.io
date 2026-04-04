@@ -11,7 +11,6 @@ margin:0;
 padding:0;
 box-sizing:border-box;
 -webkit-tap-highlight-color: transparent;
-user-select: none;
 }
 body{
 margin: 0;
@@ -20,7 +19,9 @@ font-family: "Inter", -apple-system, sans-serif;
 color: rgba(255,255,255,0.9);
 background:url("https://images.unsplash.com/photo-1495567720989-cebdbdd97913") no-repeat center center/cover;
 display: flex;
-overflow: hidden;
+touch-action: pan-y;
+-webkit-user-select: none;
+user-select: none;
 }
 body::before {
 content: "";
@@ -45,6 +46,8 @@ font-size: 90px;
 font-weight: 800;
 letter-spacing: 5px;
 margin: 20px 0;
+-webkit-user-select: text;
+user-select: text;
 }
 .controls {
 display: flex;
