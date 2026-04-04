@@ -132,6 +132,10 @@ let minutes = parseInt(parts[0]) || 0;
 let seconds = parseInt(parts[1]) || 0;
 time = (minutes * 60) + seconds;
 interval = setInterval(() => {
+if(time <= 0){
+clearInterval(interval);
+return;
+}
 time--;
 let m = Math.floor(time / 60);
 let s = time % 60;   document.getElementById("timer").innerText =`${m<10?"0":""}${m}:${s < 10 ? "0" : ""}${s}`;
