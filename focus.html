@@ -6,89 +6,57 @@
   <title>🎧 Focus</title>
 <style>
 
-* {
-  box-sizing: border-box;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+-webkit-tap-highlight-color: transparent;
 }
-
-body {
-  margin: 0;
-  height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #f1f5f9;
-
-  /* nền ảnh mưa đẹp */
-  background: url("https://images.unsplash.com/photo-1501696461415-6bd6660c6742")
-    no-repeat center center/cover;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+body{
+margin: 0;
+height: 100vh;
+font-family: "Inter", -apple-system, sans-serif;
+color: rgba(255,255,255,0.9);
+background:url("https://images.unsplash.com/photo-1495567720989-cebdbdd97913") no-repeat center center/cover;
+display: flex;
+justify-content: center;
+align-items: center;
 }
-
-/* lớp phủ tối */
-body::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-}
-
-/* blur nhẹ */
 .app {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-
-  padding: 30px 20px;
-  border-radius: 20px;
-
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
+position: relative;
+z-index: 1;
+text-align: center;
 }
-
-/* tiêu đề */
-h1 {
-  font-size: 16px;
-  font-weight: 400;
-  opacity: 0.7;
-}
-
-/* timer */
 #timer {
-  font-size: 72px;
-  font-weight: 200;
-  margin: 20px 0;
-  letter-spacing: 3px;
+font-size: 90px;
+font-weight: 200;
+letter-spacing: 5px;
+margin: 20px 0;
 }
-
-/* controls */
 .controls {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
+display: flex;
+justify-content: center;
+gap: 30px;
 }
-
-/* nút */
-button {
-  background: none;
-  border: none;
-  color: #e2e8f0;
-  font-size: 14px;
-  opacity: 0.6;
-  cursor: pointer;
-  transition: 0.2s;
+.control {
+display: flex;
+align-items: center;
+gap: 6px;
+font-size: 14px;
+letter-spacing: 2px;
+color: rgba(255,255,255,0.6);
+cursor: pointer;
+transition: 0.2s;
 }
-
-button:hover {
-  opacity: 1;
+.control span {
+font-size: 16px;
 }
-
-/* start */
 .start {
-  margin-top: 10px;
-  font-size: 13px;
-  opacity: 0.5;
+margin-top: 15px;
+font-size: 12px;
+letter-spacing: 2px;
+opacity: 0.4;
+cursor: pointer;
 }
 
 </style>
@@ -96,18 +64,17 @@ button:hover {
 <body>
 
 <div class="app">
-  <h1>focus</h1>
-
   <div id="timer">25:00</div>
-
   <div class="controls">
-    <button onclick="playMusic()">play</button>
-    <button onclick="pauseMusic()">pause</button>
+  <div class="control" onclick="playMusic()">
+  <span>▶</span> play
   </div>
-
-  <button class="start" onclick="startTimer()">start</button>
+  <div class="control" onclick="pauseMusic()">
+  <span>⏸</span> pause
+  </div>
+  </div>
+  <div class="start" onclick="startTimer()">start</div>
 </div>
-
 <div id="player"></div>
 
 <script>
