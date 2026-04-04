@@ -125,8 +125,11 @@ display: none;
   </div>
 </div>
 
+<audio id="ping-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+
 <script>
 
+let isGymMode;
 let player;
 let time;
 let interval = null;
@@ -179,6 +182,9 @@ clearInterval(interval);
 return;
 }
 time--;
+if(isGymMode && time%60===0 && time > 0){
+let sound = document.getElementById("ping-sound');
+if(sound) sound.play();
 let m = Math.floor(time / 60);
 let s = time % 60;   document.getElementById("timer").innerText =`${m<10?"0":""}${m}:${s < 10 ? "0" : ""}${s}`;
 if (time <= 0) {
@@ -225,6 +231,7 @@ document.body.style.backgroundImage = `url('${selectTheme.bg}')`;
 if(player && typeof player.loadVideoById === "function"){
 player.loadVideoById(selectTheme.musicId);
 }
+isGymMode = (themeName === 'gym');
 togglePopup();
 }
 
