@@ -49,6 +49,19 @@ font-size:2rem;
 cursor: pointer;
 font-weight:bold;
 }
+@media(orientation: portrait){
+body{overflow:hidden;}
+.container{
+transform:rotate(90deg); 
+width:100vh;
+height:100vw;
+display:flex;
+justify-content:center;
+flex-direction:column;
+align-items:center;
+border-radius:0px;
+}
+}
 
 </style>
 </head>
