@@ -39,7 +39,27 @@ filter:drop-shadow(0px 4px 8px rgba(0,0,0,0.5));
 .score-board{
 display:flex;
 justify-content:space-around;
-margin-bottom:20px;
+align-items:center;
+margin-bottom:25px;
+padding:15px;
+background:#1a1c2c;
+border-radius:12px;
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:0px 4px 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(255,255,255,0.05);
+font-size:1rem;
+font-weight:bold;
+}
+#timer{
+color:#00f0ff;
+text-shadow:0 0 10px rgba(0,240,255,0.5);
+font-family:monospace;
+font-size:1rem;
+}
+#score{
+color:#ffcc00;
+text-shadow:0 0 10px rgba(255,204,0,0.5);
+font-family:monospace;
+font-size:1rem;
 }
 .grid{
 display:grid;
@@ -79,8 +99,8 @@ border-radius:0px;
 <div class="container">
  <h1>Memory Game</h1>
  <div class="score-board">
- <div>⏱️ Thời gian: 60s</div>
- <div>⭐ Điểm: 0</div>
+ <div>⏱️ Thời gian: <span id="timer">60</span>s</div>
+ <div>⭐ Điểm: <span id="score">0</span></div>
  </div>
  <div class="grid">
  <div class="card">?</div>
