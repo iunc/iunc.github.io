@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧠 Memory Card</title>
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+-webkit-tap-highlight-color: transparent;
+}
+body{
+background-color:#1a1c2c;
+color: #fff;
+font-family:sans-serif;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+.container{
+text-align:center;
+padding:20px;
+border-radius:10px;
+background-color:#2b2d42;
+box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+.score-board{
+display:flex;
+justify-content:space-around;
+margin-bottom:20px;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(4,100px);
+grid-gap:10px;
+}
+.card{
+width:100px;
+height:100px;
+background-color:#ef233c;
+border-radius:8px;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:2rem;
+cursor: pointer;
+font-weight:bold;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+ <h1>Memory Game</h1>
+ <div class="score-board">
+ <div>⏱️ Thời gian: 60s</div>
+ <div>⭐ Điểm: 0</div>
+ </div>
+ <div class="grid">
+ <div class="card">?</div>
+ <div class="card">?</div>
+ <div class="card">?</div>
+ <div class="card">?</div>
+ </div>
+</div>
+
+</body>
+</html>
