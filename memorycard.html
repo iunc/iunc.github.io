@@ -82,33 +82,23 @@ font-weight:bold;
 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
-@media (orientation: portrait) {
-body {
-position: fixed;
-width: 100vw;
-height: 100vh;
-overflow: hidden;
+@media(orientation: portrait){
+body{overflow:hidden;}
+.container{
+transform:rotate(90deg); 
+width:100vh;
+height:90vw;
+display:flex;
+justify-content:center;
+flex-direction:column;
+align-items:center;
+border-radius:0px;
 }
-.container {
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%) rotate(90deg);
-width: 100vh;
-height: 100vw;
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-}
-.score-board {
-width: 85%;
-min-width: 300px;
-display: flex;
-justify-content: space-around;
-}
-.grid {
-transform: scale(0.9);
+.score-board{
+width:100vw;
+display:flex;
+justify-content:space-around;
+margin-bottom:20px;
 }
 }
 
