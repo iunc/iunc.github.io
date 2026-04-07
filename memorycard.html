@@ -83,7 +83,13 @@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 @media(orientation: portrait){
-body{overflow:hidden;}
+body{
+overflow:hidden;
+border-radius:12px;
+display:flex;
+justify-content:center;
+align-items:center;
+}
 .container{
 transform:rotate(90deg); 
 width:100vh;
@@ -95,7 +101,7 @@ align-items:center;
 border-radius:0px;
 }
 .score-board{
-width:100vw;
+width:85vw;
 display:flex;
 justify-content:space-around;
 margin-bottom:20px;
