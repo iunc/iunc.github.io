@@ -119,12 +119,30 @@ margin-bottom:20px;
  <div>⭐ Điểm: <span id="score">0</span></div>
  </div>
  <div class="grid">
- <div class="card">?</div>
- <div class="card">?</div>
- <div class="card">?</div>
- <div class="card">?</div>
  </div>
 </div>
 
+<script>
+const grid = document.querySelector('.grid');
+const icons = ['🍎', '🍌', '🍇', '🍓', '🍒', '🍍', '🥝', '🍉'];
+
+
+let gameCards = [...icons,...icons];
+
+
+function createBoard(){
+grid.innerHTML = "";
+gameCards.forEach((icon)=>{
+const card = document.createElement('div');
+card.classList.add('card');
+card.dataset.icon = icon;
+card.innerText = '?';
+grid.appendChild(card);
+});
+}
+
+
+createBoard();
+</script>
 </body>
 </html>
