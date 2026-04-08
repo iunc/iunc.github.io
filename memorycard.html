@@ -82,57 +82,33 @@ font-weight:bold;
 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
-@media (orientation: portrait) {
-    body {
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-    }
-
-    .container {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        /* Căn giữa tuyệt đối rồi mới xoay để tránh lệch tâm */
-        transform: translate(-50%, -50%) rotate(90deg);
-        
-        /* Ép kích thước theo khung nhìn di động */
-        width: 92vh; 
-        height: 92vw; 
-        
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 15px;
-        
-        /* Giữ bo góc cho đẹp */
-        border-radius: 20px; 
-        background-color: #2b2d42;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .score-board {
-        /* Ép bảng điểm giãn ra để space-around có tác dụng */
-        width: 85%; 
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 15px;
-        padding: 10px;
-    }
-
-    .grid {
-        /* Thu nhỏ toàn bộ lưới bài để không bị lòi khỏi container */
-        transform: scale(0.8);
-        transform-origin: center;
-        margin-top: 5px;
-    }
+@media(orientation: portrait){
+body{
+overflow:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
 }
-
-
-
-
+.container{
+transform:rotate(90deg); 
+width:100vh;
+height:90vw;
+display:flex;
+justify-content:center;
+flex-direction:column;
+align-items:center;
+border-radius:10px;
+}
+.score-board{
+width:85vw;
+display:flex;
+justify-content:space-around;
+margin-bottom:20px;
+}
+.grid{
+transform: scale(0.9);
+}
+}
 
 </style>
 </head>
