@@ -186,6 +186,10 @@
                 Incorrect guesses:
                 <b>0 / 6</b>
             </h4>
+            <h4 class="score-text">
+                Score:
+                <b>0</b>
+            </h4>
             <div class="keyboard">
             </div>
         </div>
@@ -455,6 +459,7 @@
     ];
 
     let currentWord, correctLetter, wrongGuessCount;
+    let score = 0;
     const maxGuess = 6;
 
     const keyboardDiv = document.querySelector('.keyboard');
@@ -463,6 +468,7 @@
     const hangmanImg = document.querySelector('.hangman-box img');
     const gameModal = document.querySelector('.game-modal');
     const playAgainBtn = document.querySelector('.play-again');
+    const scoreText = document.querySelector('.score-text b');
 
     const resetGame = () => {
         correctLetter = [];
@@ -499,11 +505,15 @@
                     correctLetter.push(letter);
                     wordDisplay.querySelectorAll('li')[index].innerText = letter;
                     wordDisplay.querySelectorAll('li')[index].classList.add('guessed');
+score+=10;
+scoreText.innerText = score;
                 }
             })
         } else {
             wrongGuessCount++;
             hangmanImg.src = `hangman-${wrongGuessCount}.svg`;
+            score = Math.max(0, score-2);
+            scoreText.innerText = score;
         }
         button.disabled = true;
         guessText.innerHTML = `${wrongGuessCount} / ${maxGuess}`;
